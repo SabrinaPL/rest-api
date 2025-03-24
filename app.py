@@ -5,10 +5,10 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 from flask import Flask, request
 from flask_jwt_extended import JWTManager
-from pymongo import MongoClient
 from dotenv import load_dotenv
 from config.logger import get_logger
 from config.security import configure_talisman
+from config.mongo_engine import connect_to_database
 
 # Load environment variables
 load_dotenv()
@@ -25,15 +25,14 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
-# Setup MongoDB client
-mongo_client = MongoClient(app.config["MONGO_URI"])
-db = mongo_client.movieDB
-
 # Setup JWT authentication
 jwt = JWTManager(app)
 
 # Apply Flask-Talisman security settings
 talisman = configure_talisman(app)
+
+# Connect MongoEngine to the database
+connect_to_database(app)
 
 # TODO: Register Blueprints?
 

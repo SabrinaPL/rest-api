@@ -24,6 +24,8 @@ app = Flask(__name__)
 # Configure env variables into app
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["MONGO_USER"] = os.getenv("MONGODB_USER")
+app.config["MONGO_PASS"] = os.getenv("MONGODB_PASS")
 
 # Setup JWT authentication
 jwt = JWTManager(app)

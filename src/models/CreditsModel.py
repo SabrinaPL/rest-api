@@ -1,7 +1,7 @@
 import mongoengine as m_engine
 from .BaseSchema import BaseDocument
 
-# Defines the schema for the Credits collection
+# Defines the model for the Credits collection
 class Cast(m_engine.EmbeddedDocument):
     cast_id = m_engine.IntField(required=True)
     character = m_engine.StringField(required=True)

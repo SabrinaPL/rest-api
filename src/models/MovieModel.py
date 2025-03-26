@@ -1,7 +1,7 @@
-# Defines the model for the Movies collection
 import mongoengine as m_engine
 from .BaseSchema import BaseDocument
 
+# Defines the model for the Movies collection
 class Genre(m_engine.EmbeddedDocument):
     id = m_engine.IntField(required=True)
     name = m_engine.StringField(required=True)

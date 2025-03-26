@@ -3,7 +3,7 @@ import validators
 from flask_bcrypt import generate_password_hash, check_password_hash
 from .BaseSchema import BaseDocument
 
-# Defines the schema for the User collection
+# Defines the model for the User collection
 class User(BaseDocument):
     first_name = m_engine.StringField(required=True)
     last_name = m_engine.StringField(required=True)

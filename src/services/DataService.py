@@ -7,6 +7,8 @@ from models.CreditsModel import Credit, Cast, Crew
 # Service to save extracted movie data to the database
 class DataService:
     def save_movies(self, movies_metadata):
+        print('in save movies')
+
         for movie in movies_metadata:
             movie_doc = MovieMetadata(
                 adult=movie['adult'],

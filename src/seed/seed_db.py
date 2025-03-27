@@ -1,8 +1,10 @@
 from seed.extract_csv import extract_csv
-from services.DataService import DataService
 
 # Seed the database with extracted movie data
 def seed_database(data_service):
+    print('seeding database')
+    print('data_service instance in seed file', data_service)
+
     ratings_small, movies_metadata, credits_data = extract_csv()
 
     # Save extracted movie data to the database

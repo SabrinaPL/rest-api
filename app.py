@@ -5,6 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
 from flask import Flask, request
 from flask_jwt_extended import JWTManager
+from routes.router import main_blueprint
 from dotenv import load_dotenv
 from config.logger import get_logger
 from config.security import configure_talisman
@@ -15,6 +16,18 @@ from seed.seed_db import seed_database
 # Load environment variables
 load_dotenv()
 
+# Construct the MongoDB URI
+mongo_user = os.getenv("MONGO_USER")
+mongo_pass = os.getenv("MONGO_PASS")
+mongo_host = os.getenv("MONGO_HOST")
+mongo_port = os.getenv("MONGO_PORT")
+mongo_db = os.getenv("MONGO_DB")
+
+if mongo_user and mongo_pass:
+    mongo_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
+else:
+    mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/{mongo_db}"
+
 # TODO: Add rate limiting
 
 # Setup Loguru logger
@@ -24,10 +37,11 @@ logger = get_logger()
 app = Flask(__name__)
 
 # Configure env variables into app
-app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+app.config["MONGO_URI"] = mongo_uri
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-app.config["MONGO_USER"] = os.getenv("MONGODB_USER")
-app.config["MONGO_PASS"] = os.getenv("MONGODB_PASS")
+
+# Register the main router Blueprint
+app.register_blueprint(main_blueprint)
 
 # Setup JWT authentication
 jwt = JWTManager(app)
@@ -44,8 +58,6 @@ data_service = DataService()
 # Seed the database with extracted movie data
 seed_database(data_service)
 
-# TODO: Register Blueprints?
-
 # Log each request
 @app.before_request
 def log_request():
@@ -56,17 +68,6 @@ def log_request():
 def handle_exception(e):
     logger.error(f"Unhandled error: {e}")
     return {"error": "Internal Server Error"}, 500
-
-@app.route("/")
-def home():
-    return {
-        "message": "Welcome to the Movie API!",
-        "endpoints": {
-            "movies": "/api/v1/movies",
-            "actors": "/api/v1/actors",
-            "ratings": "/api/v1/ratings"
-        }
-    }
 
 if __name__ == "__main__":
     logger.info("🚀 Starting Flask API...")

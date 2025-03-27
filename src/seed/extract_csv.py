@@ -9,8 +9,3 @@ def extract_csv():
     return ratings_small, movies_metadata, credits_data
   
 ratings_small, movies_metadata, credits_data = extract_csv()
-
-#prints for testing
-# print('ratings ', ratings_small[0])
-# print('movies ', movies_metadata[0])
-# print('credits ', credits_data[0])

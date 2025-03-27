@@ -53,10 +53,10 @@ talisman = configure_talisman(app)
 connect_to_database(app)
 
 # Instantiate dependencies to adhere to IoC and DI principles
-data_service = DataService()
+data_service = DataService(logger)
 
 # Seed the database with extracted movie data
-seed_database(data_service)
+seed_database(data_service, logger)
 
 # Log each request
 @app.before_request

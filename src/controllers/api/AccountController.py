@@ -1,1 +1,1 @@
-from lib.JsonWebToken import JsonWebToken
+from utils.JsonWebToken import JsonWebToken

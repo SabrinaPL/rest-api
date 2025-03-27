@@ -1,3 +1,5 @@
+import pandas as pandas
+import ast as ast
 from models.MovieModel import MovieMetadata, Genre, ProductionCompany, ProductionCountry, SpokenLanguage
 from models.RatingsModel import Rating
 from models.CreditsModel import Credit, Cast, Crew
@@ -8,10 +10,10 @@ class DataService:
         for movie in movies_metadata:
             movie_doc = MovieMetadata(
                 adult=movie['adult'],
-                belongs_to_collection=movie['belongs_to_collection'],
+                belongs_to_collection=self.convert_to_dict(movie['belongs_to_collection']),
                 budget=movie['budget'],
-                genres=[Genre(**genre) for genre in eval(movie['genres'])],
-                homepage=movie['homepage'],
+                genres=[Genre(**genre) for genre in self.convert_to_list(movie['genres'])],
+                homepage=str(movie['homepage']),
                 movie_id=movie['id'],
                 imdb_id=movie['imdb_id'],
                 original_language=movie['original_language'],
@@ -19,14 +21,14 @@ class DataService:
                 overview=movie['overview'],
                 popularity=movie['popularity'],
                 poster_path=movie['poster_path'],
-                production_companies=[ProductionCompany(**company) for company in eval(movie['production_companies'])],
-                production_countries=[ProductionCountry(**country) for country in eval(movie['production_countries'])],
-                release_date=pd.to_datetime(movie['release_date']),
+                production_companies=[ProductionCompany(**company) for company in self.convert_to_list(movie['production_companies'])],
+                production_countries=[ProductionCountry(**country) for country in self.convert_to_list(movie['production_countries'])],
+                release_date=pandas.to_datetime(movie['release_date']),
                 revenue=movie['revenue'],
                 runtime=movie['runtime'],
-                spoken_languages=[SpokenLanguage(**language) for language in eval(movie['spoken_languages'])],
+                spoken_languages=[SpokenLanguage(**language) for language in self.convert_to_list(movie['spoken_languages'])],
                 status=movie['status'],
-                tagline=movie['tagline'],
+                tagline=str(movie['tagline']),
                 title=movie['title'],
                 video=movie['video'],
                 vote_average=movie['vote_average'],
@@ -48,7 +50,18 @@ class DataService:
         for credit in credits_data:
             credit_doc = Credit(
                 movie_id=credit['movie_id'],
-                cast=[Cast(**cast) for cast in eval(credit['cast'])],
-                crew=[Crew(**crew) for crew in eval(credit['crew'])]
+                cast=[Cast(**cast) for cast in self.convert_to_list(credit['cast'])],
+                crew=[Crew(**crew) for crew in self.convert_to_list(credit['crew'])]
             )
             credit_doc.save()
+
+    def convert_to_dict(self, value):
+        if isinstance(value, str):
+            # ast.literal_eval() used since it will evaluate without executing code (lowers the risk of code injection)
+            return ast.literal_eval(value)
+        return value
+
+    def convert_to_list(self, value):
+        if isinstance(value, str):
+            return ast.literal_eval(value)
+        return value

@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from config.logger import get_logger
 from config.security import configure_talisman
 from config.mongo_engine import connect_to_database
+from services.DataService import DataService
+from seed.seed_db import seed_database
 
 # Load environment variables
 load_dotenv()
@@ -35,6 +37,12 @@ talisman = configure_talisman(app)
 
 # Connect MongoEngine to the database
 connect_to_database(app)
+
+# Instantiate dependencies to adhere to IoC and DI principles
+data_service = DataService()
+
+# Seed the database with extracted movie data
+seed_database(data_service)
 
 # TODO: Register Blueprints?
 

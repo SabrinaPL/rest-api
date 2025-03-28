@@ -10,6 +10,7 @@ class Cast(m_engine.EmbeddedDocument):
     id = m_engine.IntField(default=None)
     name = m_engine.StringField(default="")
     order = m_engine.IntField(default=None)
+    profile_path = m_engine.StringField(default="")
 
 class Crew(m_engine.EmbeddedDocument):
     credit_id = m_engine.StringField(default="")
@@ -18,8 +19,9 @@ class Crew(m_engine.EmbeddedDocument):
     id = m_engine.IntField(default=None)
     job = m_engine.StringField(default="")
     name = m_engine.StringField(default="")
+    profile_path = m_engine.StringField(default="")
 
 class Credit(BaseDocument):
-    movie_id = m_engine.IntField(required=True, unique=True)
+    id = m_engine.StringField(primary_key=True)
     cast = m_engine.EmbeddedDocumentListField(Cast, default=list)
     crew = m_engine.EmbeddedDocumentListField(Crew, default=list)

@@ -7,5 +7,3 @@ class Rating(BaseDocument):
     movie_id = m_engine.IntField(required=True)
     rating = m_engine.FloatField(default=0.0, min_value=0.0, max_value=10.0)
     timestamp = m_engine.IntField(default=None)
-
-# TODO: Add links to related resources - url for method (generates url for a specific resource, links can be generated)

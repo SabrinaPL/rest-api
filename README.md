@@ -1,6 +1,6 @@
 # Project Title
 
-Clearly state the name of your API project.
+RESTful Movies API
 
 ## Implementation type
 
@@ -16,6 +16,9 @@ REST API
 Provide a concise summary of what your API does and its main features
 
 ## Technologies Used
+
+Python
+Flask
 
 List the primary technologies and tools utilized in your project for quick reference.
 

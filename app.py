@@ -11,6 +11,8 @@ from config.logger import get_logger
 from config.security import configure_talisman
 from config.mongo_engine import connect_to_database
 from services.DataService import DataService
+from controllers.api.AccountController import AccountController
+from routes.api.v1.account_router import create_account_blueprint
 from seed.seed_db import seed_database
 
 # Load environment variables
@@ -46,14 +48,16 @@ app.register_blueprint(main_blueprint)
 # Setup JWT authentication
 jwt = JWTManager(app)
 
-# Apply Flask-Talisman security settings
-talisman = configure_talisman(app)
-
 # Connect MongoEngine to the database
 connect_to_database(app)
 
 # Instantiate dependencies to adhere to IoC and DI principles
 data_service = DataService(logger)
+account_controller = AccountController(logger)
+
+# Register the remaining blueprints
+account_blueprint = create_account_blueprint(account_controller)
+app.register_blueprint(account_blueprint, url_prefix='/api/v1')
 
 # Seed the database with extracted movie data, if neccessary
 seed_database(data_service, logger)
@@ -68,6 +72,14 @@ def log_request():
 def handle_exception(e):
     logger.error(f"Unhandled error: {e}")
     return {"error": "Internal Server Error"}, 500
+
+flask_env = os.getenv("FLASK_ENV")
+
+if flask_env == "production":
+    # Configure Flask-Talisman for security headers in production
+    configure_talisman(app, logger)
+else:
+    logger.info("⚠️ Running in development mode, security headers are not applied.")
 
 if __name__ == "__main__":
     logger.info("🚀 Starting Flask API...")

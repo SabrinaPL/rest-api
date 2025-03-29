@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify
-# from .account_router import account_blueprint
 
 v1_blueprint = Blueprint('v1', __name__)
 
@@ -16,6 +15,3 @@ def welcome():
             "ratings": "/api/v1/ratings"
         }
     })
-
-# Registers the account routes under this blueprint
-# v1_blueprint.register_blueprint(account_blueprint, url_prefix='/account')

@@ -1,0 +1,51 @@
+{
+	"info": {
+		"_postman_id": "15ea0645-0ce0-4aea-a883-bd1ede42e722",
+		"name": "REST API Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36896106",
+		"_collection_link": "https://grey-satellite-809596.postman.co/workspace/My-Workspace~9ee5581f-9e2a-4174-88ee-c34bacac577e/collection/36896106-15ea0645-0ce0-4aea-a883-bd1ede42e722?action=share&source=collection_link&creator=36896106"
+	},
+	"item": [
+		{
+			"name": "http://localhost:3000/api/v1/users/register",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"first_name\": \"John\",\r\n    \"last_name\": \"Doe\",\r\n    \"username\": \"johndoe\",\r\n    \"email\": \"john.doe@example.com\",\r\n    \"password\": \"securepassword123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/users/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

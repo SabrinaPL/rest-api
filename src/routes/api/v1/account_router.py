@@ -1,25 +1,28 @@
-from flask import Blueprint, request, jsonify
-from controllers.api.AccountController import AccountController
+from flask import Blueprint
 
-# Create a Blueprint for account-related routes
-account_blueprint = Blueprint('account', __name__)
+def create_account_blueprint(controller):
+    """
+    Factory function to create the account blueprint.
+    This allows for dependency injection of the logger and controller.
+    """
+    # Create a Blueprint for account-related routes
+    account_blueprint = Blueprint('account', __name__)
 
-# Instantiate the controller
-controller = AccountController()
+    # Map HTTP verbs and route paths to controller actions
 
-# Map HTTP verbs and route paths to controller actions
+    # Log in
+    @account_blueprint.route('/users/login', methods=['POST'])
+    def login():
+        return controller.login()
 
-# Log in
-@account_blueprint.route('/login', methods=['POST'])
-def login():
-    return controller.login(request)
+    # Log in with a refresh token
+    @account_blueprint.route('/users/login/refresh', methods=['POST'])
+    def login_refresh():
+        return controller.login_refresh_token()
 
-# Log in with a refresh token
-@account_blueprint.route('/login/refresh', methods=['POST'])
-def login_refresh():
-    return controller.login_refresh_token(request)
+    # Register
+    @account_blueprint.route('/users/register', methods=['POST'])
+    def register():
+        return controller.register()
 
-# Register
-@account_blueprint.route('/register', methods=['POST'])
-def register():
-    return controller.register(request)
+    return account_blueprint

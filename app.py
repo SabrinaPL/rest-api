@@ -55,6 +55,9 @@ connect_to_database(app)
 # Instantiate dependencies to adhere to IoC and DI principles
 data_service = DataService(logger)
 
+# Seed the database with extracted movie data, if neccessary
+seed_database(data_service, logger)
+
 # Log each request
 @app.before_request
 def log_request():
@@ -67,8 +70,5 @@ def handle_exception(e):
     return {"error": "Internal Server Error"}, 500
 
 if __name__ == "__main__":
-    logger.info("🚀 Seeding the database...")
-    # Seed the database with extracted movie data
-    seed_database(data_service, logger)
     logger.info("🚀 Starting Flask API...")
-    app.run(host="0.0.0.0", port=3000, debug=True)
+    app.run(host="0.0.0.0", port=3000, debug=False)

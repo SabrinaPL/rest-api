@@ -45,5 +45,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/wt1:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/rest-api:latest
 

@@ -79,18 +79,21 @@ class AccountController:
       # Validate password
       if not existing_user.check_password(sanitized_data.get("password")):
         return jsonify({"error": "Invalid credentials"}), 400
+      
+      # Convert user ID for JSON serialization
+      user_id = str(existing_user.id)
 
       # Generate JWT token
-      token = self.json_web_token.encode(existing_user.id)
+      token = self.json_web_token.encode({"id": user_id})
 
       self.logger.info(f"User logged in successfully")
 
       response = {
         "message": "User logged in successfully",
         "_links": {
-          "self": f"/api/v1/users/{existing_user.id}",
-          "update": f"/api/v1/users/{existing_user.id}",
-          "delete": f"/api/v1/users/{existing_user.id}",
+          "self": f"/api/v1/users/{user_id}",
+          "update": f"/api/v1/users/{user_id}",
+          "delete": f"/api/v1/users/{user_id}",
           "login": "/api/v1/users/login",
           "refresh": "/api/v1/users/login/refresh"
         },

@@ -1,13 +1,13 @@
 import bleach
 import mongoengine as m_engine
 from flask import request, jsonify
-from utils.JsonWebToken import JsonWebToken
 from models.UserModel import User
 
 class AccountController:
-  def __init__(self, logger):
+  def __init__(self, logger, json_web_token):
+    self.json_web_token = json_web_token
     self.logger = logger
-    
+
   # Sanitize req data to improve security and prevent XSS
   def sanitize_data(self, data):
     # Recursively sanitize dictionary keys and values or list items
@@ -25,11 +25,8 @@ class AccountController:
       
       sanitized_data = self.sanitize_data(raw_data)
       
-      # Check if user already exists
-      existing_user = User.objects(
-        m_engine.Q(username=sanitized_data.get("username")) |
-        m_engine.Q(email=sanitized_data.get("email"))
-      )
+      # Check if user exists
+      existing_user = self.check_user(sanitized_data.get("username"), sanitized_data.get("email"))
       
       if existing_user:
         return jsonify({"error": "Invalid credentials"}), 400
@@ -65,6 +62,58 @@ class AccountController:
       self.logger.error(f"Error registering user: {e}")
       return jsonify({"error": "Internal server error"}), 500
   
-  # def login(self):
+  def login(self):
+    self.logger.info("User login attempt")
+    
+    try:
+      raw_data = request.get_json()
+      
+      sanitized_data = self.sanitize_data(raw_data)
+  
+      # Check if user exists
+      existing_user = self.check_user(sanitized_data.get("username"), sanitized_data.get("email"))
+      
+      if not existing_user:
+        return jsonify({"error": "Invalid credentials"}), 400
+
+      # Validate password
+      if not existing_user.check_password(sanitized_data.get("password")):
+        return jsonify({"error": "Invalid credentials"}), 400
+
+      # Generate JWT token
+      token = self.json_web_token.encode(existing_user.id)
+
+      self.logger.info(f"User logged in successfully")
+
+      response = {
+        "message": "User logged in successfully",
+        "_links": {
+          "self": f"/api/v1/users/{existing_user.id}",
+          "update": f"/api/v1/users/{existing_user.id}",
+          "delete": f"/api/v1/users/{existing_user.id}",
+          "login": "/api/v1/users/login",
+          "refresh": "/api/v1/users/login/refresh"
+        },
+        "token": token
+      }
+      return jsonify(response), 200
+    except Exception as e:
+      self.logger.error(f"Error logging in user: {e}")
+      return jsonify({"error": "Internal server error"}), 500
+    
   
   # def login_refresh(self):
+
+  def check_user(self, username, email):
+      """
+      Check if a user with the given username or email already exists.
+      Returns the user object if found, otherwise None.
+      """
+      try:
+        return User.objects(
+          m_engine.Q(username=username) | 
+          m_engine.Q(email=email)
+        ).first()
+      except Exception as e:
+        self.logger.error(f"Error checking if user exists: {e}")
+        return None

@@ -18,6 +18,7 @@ from routes.api.v1.account_router import create_account_blueprint
 from routes.api.v1.movie_router import create_movie_blueprint
 from routes.api.v1.credit_router import create_credit_blueprint
 from routes.api.v1.rating_router import create_rating_blueprint
+from utils.JsonWebToken import JsonWebToken
 from seed.seed_db import seed_database
 
 # Load environment variables
@@ -54,8 +55,9 @@ jwt = JWTManager(app)
 connect_to_database(app)
 
 # Instantiate dependencies to adhere to IoC and DI principles
+json_web_token = JsonWebToken()
 data_service = DataService(logger)
-account_controller = AccountController(logger)
+account_controller = AccountController(logger, json_web_token)
 movie_controller = MovieController(logger)
 user_controller = UserController(logger)
 

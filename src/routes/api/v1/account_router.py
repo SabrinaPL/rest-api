@@ -22,7 +22,7 @@ def create_account_blueprint(controller):
 
     # Register
     @account_blueprint.route('/users/register', methods=['POST'])
-    def register():
+    def register(): 
         return controller.register()
 
     return account_blueprint

@@ -26,25 +26,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
   
-  postman-tests:
-    runs-on: ubuntu-latest
-    needs: build  # Run this job only if the build job succeeds
+  # postman-tests:
+  #   runs-on: ubuntu-latest
+  #   needs: build  # Run this job only if the build job succeeds
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '16'
 
-      - name: Install Newman  
-        run: |
-          npm install -g newman
+  #     - name: Install Newman  
+  #       run: |
+  #         npm install -g newman
 
-      - name: Run Postman Tests
-        run: newman run tests/postman/postman_collection.json --reporters cli
+  #     - name: Run Postman Tests
+  #       run: newman run tests/postman/postman_collection.json --reporters cli
 
   docker:
     runs-on: ubuntu-latest

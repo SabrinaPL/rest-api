@@ -12,7 +12,12 @@ from config.security import configure_talisman
 from config.mongo_engine import connect_to_database
 from services.DataService import DataService
 from controllers.api.AccountController import AccountController
+from controllers.api.MovieController import MovieController
+from controllers.api.UserController import UserController
 from routes.api.v1.account_router import create_account_blueprint
+from routes.api.v1.movie_router import create_movie_blueprint
+from routes.api.v1.credit_router import create_credit_blueprint
+from routes.api.v1.rating_router import create_rating_blueprint
 from seed.seed_db import seed_database
 
 # Load environment variables
@@ -42,9 +47,6 @@ app = Flask(__name__)
 app.config["MONGO_URI"] = mongo_uri
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 
-# Register the main router Blueprint
-app.register_blueprint(main_blueprint)
-
 # Setup JWT authentication
 jwt = JWTManager(app)
 
@@ -54,10 +56,21 @@ connect_to_database(app)
 # Instantiate dependencies to adhere to IoC and DI principles
 data_service = DataService(logger)
 account_controller = AccountController(logger)
+movie_controller = MovieController(logger)
+user_controller = UserController(logger)
 
-# Register the remaining blueprints
+# Register the main router blueprint
+app.register_blueprint(main_blueprint)
+
+# Create and register the remaining blueprints
 account_blueprint = create_account_blueprint(account_controller)
 app.register_blueprint(account_blueprint, url_prefix='/api/v1')
+movie_blueprint = create_movie_blueprint(movie_controller)
+app.register_blueprint(movie_blueprint, url_prefix='/api/v1')
+credit_blueprint = create_credit_blueprint(movie_controller)
+app.register_blueprint(credit_blueprint, url_prefix='/api/v1')
+rating_blueprint = create_rating_blueprint(movie_controller)
+app.register_blueprint(rating_blueprint, url_prefix='/api/v1')
 
 # Seed the database with extracted movie data, if neccessary
 seed_database(data_service, logger)

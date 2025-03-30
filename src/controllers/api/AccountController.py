@@ -20,8 +20,6 @@ class AccountController:
       return bleach.clean(data, strip=True)
 
   def register(self):
-    print("Registering user...")
-
     try:
       raw_data = request.get_json()
       

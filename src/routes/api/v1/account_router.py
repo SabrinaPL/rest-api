@@ -19,8 +19,8 @@ def create_account_blueprint(controller):
     # Refresh access token
     @account_blueprint.route('/users/refresh', methods=['POST'])
     @jwt_required(refresh=True) # Requires a valid refresh token
-    def login_refresh():
-        return controller.refresh_token()
+    def refresh():
+        return controller.refresh()
 
     # Register
     @account_blueprint.route('/users/register', methods=['POST'])

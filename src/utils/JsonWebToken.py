@@ -18,8 +18,9 @@ class JsonWebToken:
     self.logger.info(f"Decoding JWT token")
     return flask_jwt_extended.decode_token(token)
   
-  def refresh(self, identity):
+  def refresh(self):
     self.logger.info(f"Refreshing JWT token")
-    return flask_jwt_extended.create_refresh_token(identity=identity)
+    identity = flask_jwt_extended.get_jwt_identity()
+    return flask_jwt_extended.create_access_token(identity=identity)
 
 # TODO: add error handling!

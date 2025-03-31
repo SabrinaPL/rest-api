@@ -84,8 +84,8 @@ class AccountController:
       user_id = str(existing_user.id)
 
       # Generate JWT token
-      access_token = self.json_web_token.create_access_token({"id": user_id})
-      refresh_token = self.json_web_token.create_refresh_token({"id": user_id})
+      access_token = self.json_web_token.create_access_token(user_id)
+      refresh_token = self.json_web_token.create_refresh_token(user_id)
 
       self.logger.info(f"User logged in successfully")
 
@@ -107,7 +107,23 @@ class AccountController:
       return jsonify({"error": "Internal server error"}), 500
 
   # Refresh expired access token
-  # def refresh(self):
+  def refresh(self):
+    self.logger.info("User refresh token attempt")
+    
+    try:
+      # Generate a new access token using the identity from the refresh token
+      access_token = self.json_web_token.refresh()
+
+      self.logger.info(f"Token refreshed successfully")
+
+      response = {
+        "message": "Token refreshed successfully",
+        "access_token": access_token
+      }
+      return jsonify(response), 200
+    except Exception as e:
+      self.logger.error(f"Error refreshing token: {e}")
+      return jsonify({"error": "Internal server error"}), 500
 
   def check_user(self, username):
       """

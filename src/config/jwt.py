@@ -8,7 +8,7 @@ def setup_jwt(app):
   
   access_token_expires = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", 3600))  # Default to 1 hour if not set
   refresh_token_expires = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRES", 86400))  # Default to 24 hours if not set
-  
+
   # Convert expiration times to timedelta
   app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(seconds=access_token_expires)
   app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(seconds=refresh_token_expires)

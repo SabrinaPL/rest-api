@@ -10,7 +10,6 @@ class MovieController:
     self.logger.info("Fetching all movies")
 
     movies = self.movie_db_repo.find_all()
-    self.logger.info(movies)
 
     if not movies:
       self.logger.info("No movies found")
@@ -21,5 +20,20 @@ class MovieController:
     movies_json = self.json_convert.serialize_documents(movies)
     self.logger.info("Movies converted to JSON format")
     
-    # TODO: Add pagination, filtering and hateoas links
-    return movies_json, 200
+    response = {
+      "message": "Movies fetched successfully",
+      "total": len(movies),
+      "movies": movies_json,
+      "_links": {
+        "self": "/api/v1/movies",
+        "create": "/api/v1/movies",
+        "update": "/api/v1/movies/{id}",
+        "delete": "/api/v1/movies/{id}",
+        "search": "/api/v1/movies/search",
+        "first": "/api/v1/movies?page=1",
+        "next": f"/api/v1/movies?page=2" if len(movies) > 20 else None,
+        "last": f"/api/v1/movies?page={len(movies) // 20}"
+      }
+    }
+
+    return response, 200

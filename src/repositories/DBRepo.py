@@ -54,16 +54,17 @@ class DBRepo:
         """
         return self.model.objects(id=object_id).delete()
     
-    def find_by_username(self, username):
+    def find_by_field(self, field_name, value):
         """
-        Find a document by its username.
-        :param username: The username of the document.
+        Find a document by a specific field and value.
+        :param field_name: The name of the field to query.
+        :param value: The value to match.
         :return: The document or None if not found.
         """
         try:
             return self.model.objects(
-            m_engine.Q(username=username)
+                m_engine.Q(**{field_name: value})
             ).first()
         except Exception as e:
-            self.logger.error(f"Error checking if user exists: {e}")
+            self.logger.error(f"Error finding document by field {field_name}: {e}")
             return None

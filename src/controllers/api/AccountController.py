@@ -111,4 +111,4 @@ class AccountController:
       Check if a user with the given username or email already exists.
       Returns the user object if found, otherwise None.
       """
-      return self.db_repo.find_by_username(username)
+      return self.db_repo.find_by_field('username', username)

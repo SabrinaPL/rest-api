@@ -11,9 +11,11 @@ from config.logger import get_logger
 from config.security import configure_talisman
 from config.mongo_engine import connect_to_database
 from services.DataService import DataService
+from repositories.DBRepo import DBRepo
 from controllers.api.AccountController import AccountController
 from controllers.api.MovieController import MovieController
 from controllers.api.UserController import UserController
+from models.UserModel import User
 from routes.api.v1.account_router import create_account_blueprint
 from routes.api.v1.movie_router import create_movie_blueprint
 from routes.api.v1.credit_router import create_credit_blueprint
@@ -55,9 +57,10 @@ jwt = JWTManager(app)
 connect_to_database(app)
 
 # Instantiate dependencies to adhere to IoC and DI principles
-json_web_token = JsonWebToken()
+json_web_token = JsonWebToken(logger)
+db_repo = DBRepo(User, logger)
 data_service = DataService(logger)
-account_controller = AccountController(logger, json_web_token)
+account_controller = AccountController(logger, json_web_token, User, db_repo)
 movie_controller = MovieController(logger)
 user_controller = UserController(logger)
 

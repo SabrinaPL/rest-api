@@ -1,11 +1,11 @@
 import bleach
-import mongoengine as m_engine
 from flask import request, jsonify
-from models.UserModel import User
 
 class AccountController:
-  def __init__(self, logger, json_web_token):
+  def __init__(self, logger, json_web_token, user_model, db_repo):
     self.json_web_token = json_web_token
+    self.user_model = user_model
+    self.db_repo = db_repo
     self.logger = logger
 
   # Sanitize req data to improve security and prevent XSS
@@ -26,12 +26,12 @@ class AccountController:
       sanitized_data = self.sanitize_data(raw_data)
       
       # Check if user exists
-      existing_user = self.check_user(sanitized_data.get("username"), sanitized_data.get("email"))
+      existing_user = self.check_user(sanitized_data.get("username"))
       
       if existing_user:
         return jsonify({"error": "Invalid credentials"}), 400
 
-      user = User(
+      user = self.user_model(
         first_name = sanitized_data.get("first_name"),
         last_name = sanitized_data.get("last_name"),
         username = sanitized_data.get("username"),
@@ -71,7 +71,7 @@ class AccountController:
       sanitized_data = self.sanitize_data(raw_data)
   
       # Check if user exists
-      existing_user = self.check_user(sanitized_data.get("username"), sanitized_data.get("email"))
+      existing_user = self.check_user(sanitized_data.get("username"))
       
       if not existing_user:
         return jsonify({"error": "Invalid credentials"}), 400
@@ -103,20 +103,12 @@ class AccountController:
     except Exception as e:
       self.logger.error(f"Error logging in user: {e}")
       return jsonify({"error": "Internal server error"}), 500
-    
-  
+
   # def login_refresh(self):
 
-  def check_user(self, username, email):
+  def check_user(self, username):
       """
       Check if a user with the given username or email already exists.
       Returns the user object if found, otherwise None.
       """
-      try:
-        return User.objects(
-          m_engine.Q(username=username) | 
-          m_engine.Q(email=email)
-        ).first()
-      except Exception as e:
-        self.logger.error(f"Error checking if user exists: {e}")
-        return None
+      return self.db_repo.find_by_username(username)

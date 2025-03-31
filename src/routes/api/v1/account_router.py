@@ -1,4 +1,6 @@
 from flask import Blueprint
+from flask import request, jsonify
+from flask_jwt_extended import jwt_required
 
 def create_account_blueprint(controller):
     """
@@ -17,6 +19,7 @@ def create_account_blueprint(controller):
 
     # Log in with a refresh token
     @account_blueprint.route('/users/login/refresh', methods=['POST'])
+    @jwt_required()
     def login_refresh():
         return controller.login_refresh_token()
 

@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask_jwt_extended import jwt_required
 
 def create_movie_blueprint(controller):
     """
@@ -22,16 +23,19 @@ def create_movie_blueprint(controller):
       
     # Add a new movie
     @movie_blueprint.route('/movies', methods=['POST'])
+    @jwt_required()
     def add_movie():
         return controller.add_movie()
       
     # Update a movie by ID
     @movie_blueprint.route('/movies/<movie_id>', methods=['PUT'])
+    @jwt_required()
     def update_movie(movie_id):
         return controller.update_movie(movie_id)
       
     # Delete a movie by ID
     @movie_blueprint.route('/movies/<movie_id>', methods=['DELETE'])
+    @jwt_required()
     def delete_movie(movie_id):
         return controller.delete_movie(movie_id)
       
@@ -41,4 +45,3 @@ def create_movie_blueprint(controller):
         return controller.get_movie_rating(movie_id)
 
     return movie_blueprint
-  

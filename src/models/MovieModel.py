@@ -18,7 +18,7 @@ class SpokenLanguage(m_engine.EmbeddedDocument):
     iso_639_1 = m_engine.StringField(required=True)
     name = m_engine.StringField(required=True)
 
-class MovieMetadata(BaseDocument):
+class MovieMetaData(BaseDocument):
     movie_id = m_engine.StringField(required=True, unique=True)
     adult = m_engine.BooleanField(default=False)
     belongs_to_collection = m_engine.DictField(default={})

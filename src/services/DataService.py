@@ -1,6 +1,6 @@
 import pandas as pandas
 import ast as ast
-from models.MovieModel import MovieMetadata
+from models.MovieModel import MovieMetaData
 from models.RatingsModel import Rating
 from models.CreditsModel import Credit, Cast, Crew
 
@@ -19,7 +19,7 @@ class DataService:
                 continue
 
             # Check if the movie already exists
-            if MovieMetadata.objects(movie_id=movie_id).first():
+            if MovieMetaData.objects(movie_id=movie_id).first():
                 self.logger.info(f"Skipping duplicate movie with ID: {movie_id}")
                 continue
 
@@ -45,7 +45,7 @@ class DataService:
                 production_companies = self.convert_to_list(movie.get('production_companies'))
                 production_countries = self.convert_to_list(movie.get('production_countries'))
                 
-                movie_doc = MovieMetadata(
+                movie_doc = MovieMetaData(
                     movie_id=movie_id,
                     adult=movie.get('adult', False),
                     belongs_to_collection=belongs_to_collection,

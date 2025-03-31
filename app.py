@@ -17,11 +17,15 @@ from controllers.api.AccountController import AccountController
 from controllers.api.MovieController import MovieController
 from controllers.api.UserController import UserController
 from models.UserModel import User
+from models.MovieModel import MovieMetaData
+from models.CreditsModel import Credit
+from models.RatingsModel import Rating
 from routes.api.v1.account_router import create_account_blueprint
 from routes.api.v1.movie_router import create_movie_blueprint
 from routes.api.v1.credit_router import create_credit_blueprint
 from routes.api.v1.rating_router import create_rating_blueprint
 from utils.JsonWebToken import JsonWebToken
+from utils.JsonConvert import JsonConvert
 from seed.seed_db import seed_database
 
 # Load environment variables
@@ -46,10 +50,14 @@ connect_to_database(app)
 
 # Instantiate dependencies to adhere to IoC and DI principles
 json_web_token = JsonWebToken(logger)
-db_repo = DBRepo(User, logger)
+json_convert = JsonConvert(logger)
+user_db_repo = DBRepo(User, logger)
+movie_db_repo = DBRepo(MovieMetaData, logger)
+credit_db_repo = DBRepo(Credit, logger)
+rating_db_repo = DBRepo(Rating, logger)
 data_service = DataService(logger)
-account_controller = AccountController(logger, json_web_token, User, db_repo)
-movie_controller = MovieController(logger)
+account_controller = AccountController(logger, json_web_token, User, user_db_repo)
+movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, json_convert)
 user_controller = UserController(logger)
 
 # Register the main router blueprint

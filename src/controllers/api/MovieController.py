@@ -10,6 +10,8 @@ class MovieController:
     self.logger.info("Fetching all movies")
 
     movies = self.movie_db_repo.find_all()
+    self.logger.info(movies)
+
     if not movies:
       self.logger.info("No movies found")
       return {"message": "No movies found"}, 404
@@ -19,4 +21,5 @@ class MovieController:
     movies_json = self.json_convert.serialize_documents(movies)
     self.logger.info("Movies converted to JSON format")
     
+    # TODO: Add pagination, filtering and hateoas links
     return movies_json, 200

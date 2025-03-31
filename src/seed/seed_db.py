@@ -5,7 +5,7 @@ from mongoengine import connection
 def is_db_seeded():
     db = connection.get_db()
     if (
-        db["movie_metadata"].count_documents({}) > 0 and
+        db["movie_meta_data"].count_documents({}) > 0 and
         db["rating"].count_documents({}) > 0 and
         db["credit"].count_documents({}) > 0
     ):

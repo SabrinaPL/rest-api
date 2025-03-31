@@ -16,11 +16,11 @@ def create_account_blueprint(controller):
     def login():
         return controller.login()
 
-    # Log in with a refresh token
-    @account_blueprint.route('/users/login/refresh', methods=['POST'])
-    @jwt_required()
+    # Refresh access token
+    @account_blueprint.route('/users/refresh', methods=['POST'])
+    @jwt_required(refresh=True) # Requires a valid refresh token
     def login_refresh():
-        return controller.login_refresh_token()
+        return controller.refresh_token()
 
     # Register
     @account_blueprint.route('/users/register', methods=['POST'])

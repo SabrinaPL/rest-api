@@ -53,7 +53,7 @@ class AccountController:
           "update": f"/api/v1/users/{user_id}",
           "delete": f"/api/v1/users/{user_id}",
           "login": "/api/v1/users/login",
-          "refresh": "/api/v1/users/login/refresh"
+          "refresh": "/api/v1/users/refresh"
         }
       }
       return jsonify(response), 201
@@ -84,7 +84,8 @@ class AccountController:
       user_id = str(existing_user.id)
 
       # Generate JWT token
-      token = self.json_web_token.encode({"id": user_id})
+      access_token = self.json_web_token.create_access_token({"id": user_id})
+      refresh_token = self.json_web_token.create_refresh_token({"id": user_id})
 
       self.logger.info(f"User logged in successfully")
 
@@ -95,20 +96,22 @@ class AccountController:
           "update": f"/api/v1/users/{user_id}",
           "delete": f"/api/v1/users/{user_id}",
           "login": "/api/v1/users/login",
-          "refresh": "/api/v1/users/login/refresh"
+          "refresh": "/api/v1/users/refresh"
         },
-        "token": token
+        "access_token": access_token,
+        "refresh_token": refresh_token
       }
       return jsonify(response), 200
     except Exception as e:
       self.logger.error(f"Error logging in user: {e}")
       return jsonify({"error": "Internal server error"}), 500
 
-  # def login_refresh(self):
+  # Refresh expired access token
+  # def refresh(self):
 
   def check_user(self, username):
       """
-      Check if a user with the given username or email already exists.
+      Check if a user with the given username already exists.
       Returns the user object if found, otherwise None.
       """
       return self.db_repo.find_by_field('username', username)

@@ -6,9 +6,13 @@ class JsonWebToken:
     self.logger = logger
     pass
   
-  def encode(self, data):
-    self.logger.info(f"Encoding JWT token")
+  def create_access_token(self, data):
+    self.logger.info(f"Encoding JWT accecss token")
     return flask_jwt_extended.create_access_token(identity=data)
+  
+  def create_refresh_token(self, data):
+    self.logger.info(f"Encoding JWT refresh token")
+    return flask_jwt_extended.create_refresh_token(identity=data)
   
   def decode(self, token):
     self.logger.info(f"Decoding JWT token")

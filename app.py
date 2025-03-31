@@ -10,6 +10,7 @@ from config.logger import get_logger
 from config.security import configure_talisman
 from config.mongo_engine import connect_to_database
 from config.jwt import setup_jwt
+from config.mongo_uri import setup_mongo_uri
 from services.DataService import DataService
 from repositories.DBRepo import DBRepo
 from controllers.api.AccountController import AccountController
@@ -26,18 +27,6 @@ from seed.seed_db import seed_database
 # Load environment variables
 load_dotenv()
 
-# Construct the MongoDB URI
-mongo_user = os.getenv("MONGO_USER")
-mongo_pass = os.getenv("MONGO_PASS")
-mongo_host = os.getenv("MONGO_HOST")
-mongo_port = os.getenv("MONGO_PORT")
-mongo_db = os.getenv("MONGO_DB")
-
-if mongo_user and mongo_pass:
-    mongo_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
-else:
-    mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/{mongo_db}"
-
 # TODO: Add rate limiting
 
 # Setup Loguru logger
@@ -46,11 +35,11 @@ logger = get_logger()
 # Initialize Flask app
 app = Flask(__name__)
 
-# Configure env variables into app
-app.config["MONGO_URI"] = mongo_uri
+# Set up the mongo URI and configure it to the app
+setup_mongo_uri(app)
 
 # Setup JWT authentication
-jwt = setup_jwt(app)
+setup_jwt(app)
 
 # Connect MongoEngine to the database
 connect_to_database(app)

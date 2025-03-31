@@ -24,5 +24,3 @@ def setup_jwt(app):
       "error": "Token has expired",
       "status": 401
     }, 401
-    
-  return jwt

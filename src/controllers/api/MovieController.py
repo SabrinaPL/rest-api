@@ -37,3 +37,68 @@ class MovieController:
     }
 
     return response, 200
+  
+  def get_movie_by_id(self, movie_id):
+    self.logger.info(f"Fetching movie with ID: {movie_id}")
+
+    movie = self.movie_db_repo.find_by_id(movie_id)
+
+    if not movie:
+      self.logger.info(f"Movie with ID {movie_id} not found")
+      return {"message": "Movie not found"}, 404
+
+    # Convert movie to JSON format
+    movie_json = self.json_convert.serialize_document(movie)
+    self.logger.info("Movie converted to JSON format")
+
+    response = {
+      "message": "Movie fetched successfully",
+      "movie": movie_json,
+      "_links": {
+        "self": f"/api/v1/movies/{movie_id}",
+        "update": f"/api/v1/movies/{movie_id}",
+        "delete": f"/api/v1/movies/{movie_id}",
+        "credits": f"/api/v1/movies/{movie_id}/credits",
+        "ratings": f"/api/v1/movies/{movie_id}/ratings"
+      }
+    }
+
+    return response, 200
+  
+  def get_actors(self):
+    self.logger.info("Fetching all actors")
+
+    credits = self.credit_db_repo.find_all()
+
+    if not credits:
+      self.logger.info("No credits found")
+      return {"message": "No actors found"}, 404
+    
+    # Extract all actors from credits
+    actors = []
+    for credit in credits:
+      actors.extend(credit.cast) # Extracting cast from each credit
+    if not actors:
+      self.logger.info("No actors found")
+      return {"message": "No actors found"}, 404
+    
+    # Convert actors to JSON format
+    actors_json = self.json_convert.serialize_documents(actors)
+    self.logger.info("Actors converted to JSON format")
+
+    response = {
+      "message": "Actors fetched successfully",
+      "total": len(actors),
+      "actors": actors_json,
+      "_links": {
+        "self": "/api/v1/actors",
+        "credits": "/api/v1/movies/{movie_id}/credits",
+        "ratings": "/api/v1/movies/{movie_id}/ratings",
+        "search": "/api/v1/actors/search",
+        "first": "/api/v1/actors?page=1",
+        "next": f"/api/v1/actors?page=2" if len(actors) > 10 else None,
+        "last": f"/api/v1/actors?page={len(actors) // 10}"
+      }
+    }
+
+    return response, 200

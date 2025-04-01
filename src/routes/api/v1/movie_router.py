@@ -18,8 +18,8 @@ def create_movie_blueprint(controller):
 
     # Get a specific movie by ID
     @movie_blueprint.route('/movies/<movie_id>', methods=['GET'])
-    def get_movie(movie_id):
-        return controller.get_movie(movie_id)
+    def get_movie_by_id(movie_id):
+        return controller.get_movie_by_id(movie_id)
       
     # Add a new movie
     @movie_blueprint.route('/movies', methods=['POST'])
@@ -43,5 +43,15 @@ def create_movie_blueprint(controller):
     @movie_blueprint.route('/movies/<movie_id>/rating', methods=['GET'])
     def get_movie_rating(movie_id):
         return controller.get_movie_rating(movie_id)
+    
+    # Retrieve all ratings
+    @movie_blueprint.route('/ratings', methods=['GET'])
+    def get_ratings():
+        return controller.get_ratings()
+    
+    # Retrieve all actors
+    @movie_blueprint.route('/actors', methods=['GET'])
+    def get_actors():
+        return controller.get_actors()
 
     return movie_blueprint

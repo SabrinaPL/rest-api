@@ -23,5 +23,5 @@ class Crew(m_engine.EmbeddedDocument):
 
 class Credit(BaseDocument):
     id = m_engine.StringField(primary_key=True)
-    cast = m_engine.EmbeddedDocumentListField(Cast, default=list)
-    crew = m_engine.EmbeddedDocumentListField(Crew, default=list)
+    cast = m_engine.ListField(m_engine.EmbeddedDocumentField(Cast), default=list)
+    crew = m_engine.ListField(m_engine.EmbeddedDocumentField(Crew), default=list)

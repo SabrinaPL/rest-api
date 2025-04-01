@@ -11,6 +11,7 @@ class DataService:
     
     def save_movies(self, movies_metadata):
         for movie in movies_metadata[:10000]:  # Limit to 10,000 movies for performance
+
             # Validate movie ID
             try:
                 movie_id = str(movie['id'])
@@ -83,7 +84,7 @@ class DataService:
             if not user_id or not movie_id:
                 self.logger.warning(f"Skipping rating data without user ID or movie ID: {rating}")
                 continue
-            
+
             try:
                 rating_doc = Rating(
                     user_id=rating['userId'],
@@ -95,10 +96,12 @@ class DataService:
             except Exception as e:
                 self.logger.error(f"Error saving rating with user ID: {user_id} and movie ID: {movie_id}. Error: {e}")
 
-    def save_credits(self, credits_data):
+    def save_credits(self, credits_data):    
         for credit in credits_data[:10000]:  # Limit to 10,000 credits for performance
-            
+            # Validate credit ID
             id = credit.get('id')
+            
+            print(f"Processing credit with ID: {id}")
             
             if not id:
                 self.logger.warning(f"Skipping credit data without ID: {credit}")

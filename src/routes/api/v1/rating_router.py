@@ -14,10 +14,10 @@ def create_rating_blueprint(controller):
     @rating_blueprint.route('/ratings', methods=['GET'])
     def get_ratings():
         return controller.get_ratings()
-
-    # Get a specific rating by ID
-    @rating_blueprint.route('/ratings/<rating_id>', methods=['GET'])
-    def get_rating(rating_id):
-        return controller.get_rating(rating_id)
+    
+        # Retrieve a movie rating by ID
+    @rating_blueprint.route('/ratings/<movie_id>', methods=['GET'])
+    def get_movie_rating(movie_id):
+        return controller.get_movie_rating(movie_id)
 
     return rating_blueprint

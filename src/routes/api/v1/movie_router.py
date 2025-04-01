@@ -38,20 +38,5 @@ def create_movie_blueprint(controller):
     @jwt_required()
     def delete_movie(movie_id):
         return controller.delete_movie(movie_id)
-      
-    # Retrieve a movie rating by ID
-    @movie_blueprint.route('/movies/<movie_id>/rating', methods=['GET'])
-    def get_movie_rating(movie_id):
-        return controller.get_movie_rating(movie_id)
-    
-    # Retrieve all ratings
-    @movie_blueprint.route('/ratings', methods=['GET'])
-    def get_ratings():
-        return controller.get_ratings()
-    
-    # Retrieve all actors
-    @movie_blueprint.route('/actors', methods=['GET'])
-    def get_actors():
-        return controller.get_actors()
 
     return movie_blueprint

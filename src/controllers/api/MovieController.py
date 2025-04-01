@@ -134,3 +134,41 @@ class MovieController:
     }
 
     return response, 200
+  
+  def get_actors_by_movie(self, movie_id):
+    self.logger.info(f"Fetching actors for movie with ID: {movie_id}")
+
+    credits = self.credit_db_repo.find_all(movie_id=movie_id)
+
+    if not credits:
+      self.logger.info(f"No actors found for movie with ID {movie_id}")
+      return {"message": "No actors found for this movie"}, 404
+
+    # Extract all actors from credits
+    actors = []
+    for credit in credits:
+      actors.extend(credit.cast)
+    if not actors:
+      self.logger.info(f"No actors found for movie with ID {movie_id}")
+      return {"message": "No actors found for this movie"}, 404
+
+    # Convert actors to JSON format
+    actors_json = self.json_convert.serialize_documents(actors)
+    self.logger.info("Actors converted to JSON format")
+    
+    response = {
+      "message": "Actors fetched successfully",
+      "total": len(actors),
+      "actors": actors_json,
+      "_links": {
+        "self": f"/api/v1/movies/{movie_id}/credits",
+        "movies": "/api/v1/movies",
+        "movie ratings": f"/api/v1/movies/{movie_id}/ratings",
+        "ratings": "/api/v1/ratings",
+        "first": f"/api/v1/movies/{movie_id}/credits?page=1",
+        "next": f"/api/v1/movies/{movie_id}/credits?page=2" if len(actors) > 10 else None,
+        "last": f"/api/v1/movies/{movie_id}/credits?page={len(actors) // 10}"
+      }
+    }
+    return response, 200
+    

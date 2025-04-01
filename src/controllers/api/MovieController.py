@@ -92,12 +92,44 @@ class MovieController:
       "actors": actors_json,
       "_links": {
         "self": "/api/v1/actors",
-        "credits": "/api/v1/movies/{movie_id}/credits",
-        "ratings": "/api/v1/movies/{movie_id}/ratings",
+        "movie credits": "/api/v1/movies/{movie_id}/credits",
+        "movie ratings": "/api/v1/movies/{movie_id}/ratings",
+        "ratings": "/api/v1/ratings",
         "search": "/api/v1/actors/search",
         "first": "/api/v1/actors?page=1",
         "next": f"/api/v1/actors?page=2" if len(actors) > 10 else None,
         "last": f"/api/v1/actors?page={len(actors) // 10}"
+      }
+    }
+
+    return response, 200
+  
+  def get_ratings(self):
+    self.logger.info("Fetching all ratings")
+
+    ratings = self.rating_db_repo.find_all()
+
+    if not ratings:
+      self.logger.info("No ratings found")
+      return {"message": "No ratings found"}, 404
+    
+    # Convert ratings to JSON format
+    ratings_json = self.json_convert.serialize_documents(ratings)
+    self.logger.info("Ratings converted to JSON format")
+
+    response = {
+      "message": "Ratings fetched successfully",
+      "total": len(ratings),
+      "ratings": ratings_json,
+      "_links": {
+        "self": "/api/v1/ratings",
+        "movies": "/api/v1/movies/{movie_id}",
+        "movie credits": "/api/v1/movies/{movie_id}/credits",
+        "movie ratings": "/api/v1/movies/{movie_id}/ratings",
+        "actors": "/api/v1/actors/",
+        "first": "/api/v1/ratings?page=1",
+        "next": f"/api/v1/ratings?page=2" if len(ratings) > 20 else None,
+        "last": f"/api/v1/ratings?page={len(ratings) // 20}"
       }
     }
 

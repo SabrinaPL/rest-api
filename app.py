@@ -31,13 +31,13 @@ from seed.seed_db import seed_database
 # Load environment variables
 load_dotenv()
 
+# Initialize Flask app
+app = Flask(__name__)
+
 # TODO: Add rate limiting
 
 # Setup Loguru logger
 logger = get_logger()
-
-# Initialize Flask app
-app = Flask(__name__)
 
 # Set up the mongo URI and configure it to the app
 setup_mongo_uri(app)
@@ -97,4 +97,5 @@ else:
 
 if __name__ == "__main__":
     logger.info("🚀 Starting Flask API...")
-    app.run(host="0.0.0.0", port=3000, debug=False)
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

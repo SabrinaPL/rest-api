@@ -14,12 +14,20 @@ class MovieController:
     if not movies:
       self.logger.info("No movies found")
       return {"message": "No movies found"}, 404
+
     self.logger.info(f"Found {len(movies)} movies")
     
-    # Convert movies to JSON format
-    movies_json = self.json_convert.serialize_documents(movies)
-    self.logger.info("Movies converted to JSON format")
-    
+    movies_json = [
+            {
+                "id": movie.movie_id,
+                "title": movie.title,
+                "release_year": movie.release_date.year if movie.release_date else None,
+                "genre": [genre.name for genre in movie.genres],
+                "description": movie.overview,
+            }
+            for movie in movies
+        ]
+
     # TODO: Fix hateoas links
     response = {
       "message": "Movies fetched successfully",
@@ -139,8 +147,6 @@ class MovieController:
     }
 
     return response, 200
-  
-  # TODO: Finish implementing this function
 
   def get_actors_by_movie(self, movie_id):
     self.logger.info(f"Fetching actors for movie with ID: {movie_id}")
@@ -150,9 +156,6 @@ class MovieController:
     if not credits:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
       return {"message": "No actors found for this movie"}, 404
-    
-    print(credits)
-    print(credits.cast)
 
     # Extract all actors from credits
     actors = []

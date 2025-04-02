@@ -156,8 +156,10 @@ class MovieController:
 
     # Extract all actors from credits
     actors = []
-    for credit in credits:
-      actors.extend(credit.cast)
+    if hasattr(credits, 'cast'):
+      for credit in credits.cast:
+        actors.append(credit)
+        
     if not actors:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
       return {"message": "No actors found for this movie"}, 404

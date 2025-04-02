@@ -17,8 +17,8 @@ Flask-Limiter==3.12
 Flask-SQLAlchemy==3.1.1
 flask-talisman==1.1.0
 greenlet==3.1.1
-gunicorn==23.0.0
 idna==3.10
+iniconfig==2.1.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
 jsonschema==4.23.0
@@ -35,10 +35,12 @@ numpy==2.2.4
 ordered-set==4.1.0
 packaging==24.2
 pandas==2.2.3
+pluggy==1.5.0
 protobuf==6.30.1
 Pygments==2.19.1
 PyJWT==2.10.1
 pymongo==4.11.2
+pytest==8.3.5
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-slugify==8.0.4

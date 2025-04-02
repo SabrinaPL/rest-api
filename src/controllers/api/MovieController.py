@@ -20,6 +20,7 @@ class MovieController:
     movies_json = self.json_convert.serialize_documents(movies)
     self.logger.info("Movies converted to JSON format")
     
+    # TODO: Fix hateoas links
     response = {
       "message": "Movies fetched successfully",
       "total": len(movies),
@@ -51,6 +52,7 @@ class MovieController:
     movie_json = self.json_convert.serialize_document(movie)
     self.logger.info("Movie converted to JSON format")
 
+    # TODO: Fix hateoas links
     response = {
       "message": "Movie fetched successfully",
       "movie": movie_json,
@@ -86,6 +88,7 @@ class MovieController:
     actors_json = self.json_convert.serialize_documents(actors)
     self.logger.info("Actors converted to JSON format")
 
+    # TODO: Fix hateoas links
     response = {
       "message": "Actors fetched successfully",
       "total": len(actors),
@@ -117,6 +120,8 @@ class MovieController:
     ratings_json = self.json_convert.serialize_documents(ratings)
     self.logger.info("Ratings converted to JSON format")
 
+    # TODO: Fix hateoas links
+    
     response = {
       "message": "Ratings fetched successfully",
       "total": len(ratings),
@@ -138,11 +143,14 @@ class MovieController:
   def get_actors_by_movie(self, movie_id):
     self.logger.info(f"Fetching actors for movie with ID: {movie_id}")
 
-    credits = self.credit_db_repo.find_all(movie_id=movie_id)
+    credits = self.credit_db_repo.find_by_id(movie_id)
 
     if not credits:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
       return {"message": "No actors found for this movie"}, 404
+    
+    print(credits)
+    print(credits.cast)
 
     # Extract all actors from credits
     actors = []
@@ -156,6 +164,8 @@ class MovieController:
     actors_json = self.json_convert.serialize_documents(actors)
     self.logger.info("Actors converted to JSON format")
     
+    # TODO: Fix hateoas links
+
     response = {
       "message": "Actors fetched successfully",
       "total": len(actors),

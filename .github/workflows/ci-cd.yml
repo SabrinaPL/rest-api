@@ -112,11 +112,6 @@ jobs:
       - name: Verify Heroku CLI Installation
         run: heroku --version
 
-      - name: Log in to Heroku CLI
-        run: |
-          echo "Logging in to Heroku..."
-          heroku auth:token
-
       - name: Log in to Heroku Container Registry
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com

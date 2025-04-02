@@ -56,9 +56,13 @@ class MovieController:
       self.logger.info(f"Movie with ID {movie_id} not found")
       return {"message": "Movie not found"}, 404
 
-    # Convert movie to JSON format
-    movie_json = self.json_convert.serialize_document(movie)
-    self.logger.info("Movie converted to JSON format")
+    movie_json = {
+        "id": movie.movie_id,
+        "title": movie.title,
+        "release_year": movie.release_date.year if movie.release_date else None,
+        "genre": [genre.name for genre in movie.genres],
+        "description": movie.overview,
+      }
 
     # TODO: Fix hateoas links
     response = {

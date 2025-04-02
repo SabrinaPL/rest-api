@@ -118,7 +118,7 @@ jobs:
 
       - name: Log in to Heroku CLI
         run: |
-          echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
+          echo ${{ secrets.HEROKU_API_KEY }} | heroku login --api-key
 
       - name: Set Heroku Config Vars
         run: |

@@ -116,22 +116,16 @@ jobs:
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
 
-      - name: Debug Heroku App Name
-        run: |
-          echo "HEROKU_APP_NAME is: ${{ secrets.HEROKU_APP_NAME }}"
-
       - name: Set Heroku Config Vars
         run: |
           echo "Setting Heroku config vars for app: ${{ secrets.HEROKU_APP_NAME }}"
-          heroku config:set \
-            MONGO_URI=${{ secrets.MONGO_URI }} \
-            MONGO_HOST=mongodb \
-            MONGO_PORT=27017 \
-            MONGO_DB=movieDB \
-            MONGO_USER=${{ secrets.MONGO_USER }} \
-            MONGO_PASS=${{ secrets.MONGO_PASS }} \
-            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-            --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set MONGO_URI=${{ secrets.MONGO_URI }} --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set MONGO_HOST=mongodb --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set MONGO_PORT=27017 --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set MONGO_DB=movieDB --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set MONGO_USER=${{ secrets.MONGO_USER }} --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set MONGO_PASS=${{ secrets.MONGO_PASS }} --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku config:set JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} --app ${{ secrets.HEROKU_APP_NAME }}
 
       - name: Verify Docker Image Exists
         run: docker images

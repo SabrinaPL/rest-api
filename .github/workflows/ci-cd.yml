@@ -75,9 +75,19 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Verify Heroku CLI Installation
+        run: heroku --version
+
       - name: Log in to Heroku Container Registry
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
+
+      - name: Verify Docker Image Exists
+        run: docker images
 
       - name: Pull Docker Image from Docker Hub
         run: |

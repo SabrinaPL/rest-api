@@ -40,6 +40,9 @@ app = Flask(__name__)
 # Setup Loguru logger
 logger = get_logger()
 
+flask_env = os.getenv("FLASK_ENV")
+app.config["FLASK_ENV"] = flask_env
+
 # Set up the mongo URI and configure it to the app
 setup_mongo_uri(app)
 
@@ -91,8 +94,6 @@ def handle_exception(e):
     logger.error(f"Unhandled error: {e}")
     return {"error": "Internal Server Error"}, 500
 
-flask_env = os.getenv("FLASK_ENV")
-
 if flask_env == "production":
     # Configure Flask-Talisman for security headers in production
     configure_talisman(app, logger)
@@ -102,4 +103,5 @@ else:
 if __name__ == "__main__":
     logger.info("🚀 Starting Flask API...")
     port = int(os.getenv("PORT", 5000))
+    print(port)
     app.run(host="0.0.0.0", port=port)

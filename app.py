@@ -24,6 +24,7 @@ from routes.api.v1.account_router import create_account_blueprint
 from routes.api.v1.movie_router import create_movie_blueprint
 from routes.api.v1.credit_router import create_credit_blueprint
 from routes.api.v1.rating_router import create_rating_blueprint
+from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
 from utils.JsonConvert import JsonConvert
 from seed.seed_db import seed_database
@@ -72,6 +73,9 @@ credit_blueprint = create_credit_blueprint(movie_controller)
 app.register_blueprint(credit_blueprint, url_prefix='/api/v1')
 rating_blueprint = create_rating_blueprint(movie_controller)
 app.register_blueprint(rating_blueprint, url_prefix='/api/v1')
+
+# Health check route
+app.register_blueprint(health_blueprint)
 
 # Seed the database with extracted movie data, if neccessary
 seed_database(data_service, logger)

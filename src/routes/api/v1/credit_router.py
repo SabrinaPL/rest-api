@@ -11,7 +11,7 @@ def create_credit_blueprint(controller):
     # Map HTTP verbs and route paths to controller actions
 
     # Get all actors
-    @credit_blueprint.route('/credits', methods=['GET'])
+    @credit_blueprint.route('/credits/actors', methods=['GET'])
     def get_actors():
         return controller.get_actors()
 

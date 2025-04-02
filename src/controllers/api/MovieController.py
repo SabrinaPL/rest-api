@@ -87,23 +87,30 @@ class MovieController:
     if not credits:
       self.logger.info("No credits found")
       return {"message": "No actors found"}, 404
-    
-    # Extract all actors from credits
-    actors = []
+
+    actor_dict = {}
+
+    # Extract actors from credits (as suggested by copilot)
     for credit in credits:
-      actors.extend(credit.cast) # Extracting cast from each credit
-    if not actors:
-      self.logger.info("No actors found")
-      return {"message": "No actors found"}, 404
-    
-    # Convert actors to JSON format
-    actors_json = self.json_convert.serialize_documents(actors)
-    self.logger.info("Actors converted to JSON format")
+        movie = self.movie_db_repo.find_by_field('movie_id', credit.id)
+        if not movie:
+            continue
+              
+        for cast_member in credit.cast:
+            if cast_member.id not in actor_dict:
+                actor_dict[cast_member.id] = {
+                    "id": cast_member.id,
+                    "name": cast_member.name,
+                    "movies_played": [],
+                }
+            actor_dict[cast_member.id]["movies_played"].append(movie.title)
+
+        actors_json = list(actor_dict.values())
 
     # TODO: Fix hateoas links
     response = {
       "message": "Actors fetched successfully",
-      "total": len(actors),
+      "total": len(actors_json),
       "actors": actors_json,
       "_links": {
         "self": "/api/v1/actors",
@@ -112,8 +119,8 @@ class MovieController:
         "ratings": "/api/v1/ratings",
         "search": "/api/v1/actors/search",
         "first": "/api/v1/actors?page=1",
-        "next": f"/api/v1/actors?page=2" if len(actors) > 10 else None,
-        "last": f"/api/v1/actors?page={len(actors) // 10}"
+        "next": f"/api/v1/actors?page=2" if len(actors_json) > 10 else None,
+        "last": f"/api/v1/actors?page={len(actors_json) // 10}"
       }
     }
 

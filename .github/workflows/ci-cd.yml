@@ -118,7 +118,7 @@ jobs:
 
       - name: Set Heroku Config Vars
         run: |
-          echo "Setting Heroku config vars for app: ${{ secrets.HEROKU_APP_NAME }}"
+          echo "Setting Heroku config vars for app: rest-api-design"
           heroku config:set \
             MONGO_URI=${{ secrets.MONGO_URI }} \
             MONGO_HOST=mongodb \
@@ -127,7 +127,7 @@ jobs:
             MONGO_USER=${{ secrets.MONGO_USER }} \
             MONGO_PASS=${{ secrets.MONGO_PASS }} \
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
-            --app ${{ secrets.HEROKU_APP_NAME }}
+            --app "rest-api-design"
 
       - name: Verify Docker Image Exists
         run: docker images

@@ -20,6 +20,9 @@ class AccountController:
       return bleach.clean(data, strip=True)
 
   def register(self):
+    """
+    Register a new user.
+    """
     try:
       raw_data = request.get_json()
       
@@ -52,8 +55,6 @@ class AccountController:
           "self": f"/api/v1/users/{user_id}",
           "update": f"/api/v1/users/{user_id}",
           "delete": f"/api/v1/users/{user_id}",
-          "login": "/api/v1/users/login",
-          "refresh": "/api/v1/users/refresh"
         }
       }
       return jsonify(response), 201
@@ -63,6 +64,9 @@ class AccountController:
       return jsonify({"error": "Internal server error"}), 500
   
   def login(self):
+    """
+    Log in a user and return an access token and refresh token.
+    """
     self.logger.info("User login attempt")
     
     try:
@@ -95,8 +99,6 @@ class AccountController:
           "self": f"/api/v1/users/{user_id}",
           "update": f"/api/v1/users/{user_id}",
           "delete": f"/api/v1/users/{user_id}",
-          "login": "/api/v1/users/login",
-          "refresh": "/api/v1/users/refresh"
         },
         "access_token": access_token,
         "refresh_token": refresh_token
@@ -106,8 +108,10 @@ class AccountController:
       self.logger.error(f"Error logging in user: {e}")
       return jsonify({"error": "Internal server error"}), 500
 
-  # Refresh expired access token
   def refresh(self):
+    """
+    Refresh the access token using the refresh token.
+    """
     self.logger.info("User refresh token attempt")
     
     try:

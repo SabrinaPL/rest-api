@@ -1,10 +1,9 @@
 class MovieController:
-  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, json_convert):
+  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo):
     self.logger = logger
     self.movie_db_repo = movie_db_repo
     self.credit_db_repo = credit_db_repo
     self.rating_db_repo = rating_db_repo
-    self.json_convert = json_convert
     
   def get_movies(self):
     self.logger.info("Fetching all movies")
@@ -135,9 +134,14 @@ class MovieController:
       self.logger.info("No ratings found")
       return {"message": "No ratings found"}, 404
     
-    # Convert ratings to JSON format
-    ratings_json = self.json_convert.serialize_documents(ratings)
-    self.logger.info("Ratings converted to JSON format")
+    ratings_json = [
+        {
+            "id": rating.id,
+            "text": f"{rating.rating}/10",
+            "movie": self.movie_db_repo.find_by_field('movie_id', rating.movie_id).title if self.movie_db_repo.find_by_field('movie_id', rating.movie_id) else "Unknown",
+        }
+        for rating in ratings
+    ]
 
     # TODO: Fix hateoas links
     

@@ -152,7 +152,7 @@ jobs:
 
       - name: Release the App on Heroku
         run: |
-          heroku restart --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku release --app ${{ secrets.HEROKU_APP_NAME }}
 
   health-check:
     runs-on: ubuntu-latest

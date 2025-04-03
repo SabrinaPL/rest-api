@@ -67,10 +67,6 @@ jobs:
           echo "JWT_COOKIE_SECURE=true" >> $GITHUB_ENV
           echo "PORT=5000" >> $GITHUB_ENV
 
-      - name: Run Docker Compose to Start Services
-        run: |
-          docker-compose up -d
-
       - name: Verify the Containers are Running
         run: |
           docker ps

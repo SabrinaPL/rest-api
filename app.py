@@ -74,11 +74,10 @@ def check_mongo_connection():
         
         print(mongo_uri)
 
-        # Create a PyMongo client
         client = pymongo.MongoClient(mongo_uri)
         
         # Attempt to ping the MongoDB server
-        client.admin.command('ping')  # This is the PyMongo way of checking connection
+        client.admin.command('ping')
         print("DB Connection: SUCCESS")
     except ConnectionFailure as e:
         logger.error(f"ERROR: Could not connect to database. {e}")

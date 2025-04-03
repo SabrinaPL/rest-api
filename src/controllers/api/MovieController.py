@@ -204,6 +204,16 @@ class MovieController:
     }
     return response, 200
   
+  def create_movie (self):
+    self.logger.info("Creating new movie")
+    
+    # Get movie info from req body
+    new_movie_info = request.get_json()
+    # title
+    # release_year
+    # genre
+    # description
+  
   def delete_movie (self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
 

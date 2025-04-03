@@ -116,6 +116,13 @@ jobs:
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
 
+      - name: Authenticate with Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          echo $HEROKU_API_KEY | heroku auth:token
+          heroku auth:whoami
+
       - name: Set Heroku Config Vars
         run: |
           echo "Setting Heroku config vars for app: ${{ secrets.HEROKU_APP_NAME }}"

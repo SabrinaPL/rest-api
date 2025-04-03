@@ -157,9 +157,10 @@ jobs:
       - name: Check Heroku Dyno Status
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
-          heroku ps --app rest-api-design --no-interactive
-        
+          heroku ps --app $HEROKU_APP_NAME
+    
   health-check:
     runs-on: ubuntu-latest
     needs: deploy  # Run this job only if the deploy job succeeds

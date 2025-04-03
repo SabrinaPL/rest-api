@@ -152,7 +152,11 @@ jobs:
 
       - name: Release the App on Heroku
         run: |
-          heroku release --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
+
+      - name: View logs
+        run: |
+          heroku logs --tail --app ${{ secrets.HEROKU_APP_NAME }}
 
   health-check:
     runs-on: ubuntu-latest

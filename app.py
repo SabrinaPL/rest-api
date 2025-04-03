@@ -72,13 +72,13 @@ rating_db_repo = DBRepo(Rating, logger)
 data_service = DataService(logger)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo)
 movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo)
-user_controller = UserController(user_db_repo, logger)
+user_controller = UserController(logger, user_db_repo)
 
 # Register the main router blueprint
 app.register_blueprint(main_blueprint)
 
 # Create and register the remaining blueprints
-account_blueprint = create_account_blueprint(account_controller)
+account_blueprint = create_account_blueprint(account_controller, user_controller)
 app.register_blueprint(account_blueprint, url_prefix='/api/v1')
 movie_blueprint = create_movie_blueprint(movie_controller)
 app.register_blueprint(movie_blueprint, url_prefix='/api/v1')

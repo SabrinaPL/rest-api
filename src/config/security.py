@@ -1,6 +1,6 @@
 from flask_talisman import Talisman
 
-#TODO update CSP settings?
+#TODO update CSP settings
 
 def configure_talisman(app):
     """

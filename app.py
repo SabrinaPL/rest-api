@@ -28,6 +28,7 @@ from routes.api.v1.rating_router import create_rating_blueprint
 from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
 from seed.seed_db import seed_database
+from mongoengine import connect, ConnectionError
 
 # Load environment variables
 load_dotenv()
@@ -62,6 +63,19 @@ setup_jwt(app)
 
 # Connect MongoEngine to the database
 connect_to_database(app)
+
+# Check MongoDB connection using MongoEngine
+def check_mongo_connection():
+    try:
+        # Try connecting to MongoDB using MongoEngine
+        connect(host=os.getenv('MONGO_URI'))
+        print("DB Connection: SUCCESS")
+    except ConnectionError as e:
+        logger.error(f"ERROR: Could not connect to database. {e}")
+        sys.exit(1)
+
+# Perform the database connection check before starting the app
+check_mongo_connection()
 
 # Instantiate dependencies to adhere to IoC and DI principles
 json_web_token = JsonWebToken(logger)

@@ -10,8 +10,5 @@ COPY . /app
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port that the app will run on
-EXPOSE 5000
-
 # Command to run the application using Gunicorn (app will start in production mode)
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "app:app", "-b", "0.0.0.0:$PORT"]

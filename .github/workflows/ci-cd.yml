@@ -154,18 +154,6 @@ jobs:
         run: |
           heroku restart --app ${{ secrets.HEROKU_APP_NAME }}
 
-      - name: Scale Heroku Dynos
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          heroku ps:scale web=1 --app rest-api-design
-
-      - name: Check Heroku Dyno Status
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          heroku ps --app rest-api-design
-    
   health-check:
     runs-on: ubuntu-latest
     needs: deploy  # Run this job only if the deploy job succeeds

@@ -204,11 +204,12 @@ class MovieController:
     }
     return response, 200
   
+  # TODO: Implement this method
   def create_movie (self):
     self.logger.info("Creating new movie")
     
     # Get movie info from req body
-    new_movie_info = request.get_json()
+    # new_movie_info = fetch from the req body
     # title
     # release_year
     # genre

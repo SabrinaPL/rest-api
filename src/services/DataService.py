@@ -10,7 +10,7 @@ class DataService:
         self.logger = logger
     
     def save_movies(self, movies_metadata):
-        for movie in movies_metadata[:1000]:  # Limit to 10,000 movies for performance
+        for movie in movies_metadata[:1000]:  # Limit to 1000 movies for performance
 
             # Validate movie ID
             try:
@@ -77,7 +77,7 @@ class DataService:
                 self.logger.error(f"Error saving movie with ID: {movie_id}. Error: {e}")
 
     def save_ratings(self, ratings_small):
-        for rating in ratings_small[:1000]:  # Limit to 10,000 ratings for performance
+        for rating in ratings_small[:1000]:  # Limit to 1000 ratings for performance
             # Validate user ID and movie ID
             user_id = rating.get('userId')
             movie_id = rating.get('movieId')
@@ -97,7 +97,7 @@ class DataService:
                 self.logger.error(f"Error saving rating with user ID: {user_id} and movie ID: {movie_id}. Error: {e}")
 
     def save_credits(self, credits_data):    
-        for credit in credits_data[:1000]:  # Limit to 10,000 credits for performance
+        for credit in credits_data[:1000]:  # Limit to 1000 credits for performance
             # Validate credit ID
             id = credit.get('id')
             

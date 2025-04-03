@@ -203,4 +203,29 @@ class MovieController:
       }
     }
     return response, 200
+  
+  def delete_movie (self, movie_id):
+    self.logger.info(f"Deleting movie with ID: {movie_id}")
+
+    movie = self.movie_db_repo.find_by_id(movie_id)
+
+    if not movie:
+      self.logger.info(f"Movie with ID {movie_id} not found")
+      return {"message": "Movie not found"}, 404
+
+    # TODO: Delete the movie and its associated credits and ratings
+    self.movie_db_repo.delete(movie_id)
+    # delete movie credits
+    # delete movie ratings
+
+    self.logger.info(f"Movie with ID {movie_id} deleted successfully")
+
+    response = {
+      "message": "Movie deleted successfully",
+      "_links": {
+        "self": "/api/v1/movies",
+      }
+    }
+
+    return response, 200
     

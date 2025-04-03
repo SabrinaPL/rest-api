@@ -29,8 +29,43 @@ def create_account_blueprint(account_controller, user_controller):
     
     # Delete user
     @account_blueprint.route('/users/<user_id>', methods=['DELETE'])
-    # @jwt_required() # Requires a valid access token
+    @jwt_required() # Requires a valid access token
     def delete(user_id):
+        """
+        Delete a user by ID
+        ---
+        tags:
+          - Users
+        summary: Delete a user
+        description: Deletes a user from the database using their unique ID.
+        parameters:
+          - name: user_id
+            in: path
+            type: string
+            required: true
+            description: The unique ID of the user to delete.
+        responses:
+          200:
+            description: User deleted successfully
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: User deleted successfully
+          500:
+            description: User deletion failed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      example: User deletion failed
+        """
         return user_controller.delete_user(user_id)
 
     return account_blueprint

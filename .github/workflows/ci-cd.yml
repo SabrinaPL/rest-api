@@ -154,10 +154,6 @@ jobs:
         run: |
           heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
 
-      - name: View logs
-        run: |
-          heroku logs --tail --app ${{ secrets.HEROKU_APP_NAME }}
-
   health-check:
     runs-on: ubuntu-latest
     needs: deploy  # Run this job only if the deploy job succeeds

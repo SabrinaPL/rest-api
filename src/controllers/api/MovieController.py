@@ -1,9 +1,10 @@
 class MovieController:
-  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo):
+  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links):
     self.logger = logger
     self.movie_db_repo = movie_db_repo
     self.credit_db_repo = credit_db_repo
     self.rating_db_repo = rating_db_repo
+    self.generate_hateoas_links = generate_hateoas_links
     
   def get_movies(self):
     self.logger.info("Fetching all movies")
@@ -54,6 +55,8 @@ class MovieController:
     if not movie:
       self.logger.info(f"Movie with ID {movie_id} not found")
       return {"message": "Movie not found"}, 404
+    
+    movie_link = self.generate_hateoas_links.create_movies_links(movie_id)
 
     movie_json = {
         "id": movie.movie_id,
@@ -67,13 +70,12 @@ class MovieController:
     response = {
       "message": "Movie fetched successfully",
       "movie": movie_json,
-      "_links": {
-        "self": f"/api/v1/movies/{movie_id}",
-        "update": f"/api/v1/movies/{movie_id}",
-        "delete": f"/api/v1/movies/{movie_id}",
-        "credits": f"/api/v1/movies/{movie_id}/credits",
-        "ratings": f"/api/v1/movies/{movie_id}/ratings"
-      }
+      "_links": movie_link
+        # "self": f"/api/v1/movies/{movie_id}",
+        # "update": f"/api/v1/movies/{movie_id}",
+        # "delete": f"/api/v1/movies/{movie_id}",
+        # "credits": f"/api/v1/movies/{movie_id}/credits",
+        # "ratings": f"/api/v1/movies/{movie_id}/ratings"
     }
 
     return response, 200

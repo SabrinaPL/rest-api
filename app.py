@@ -28,6 +28,7 @@ from routes.api.v1.credit_router import create_credit_blueprint
 from routes.api.v1.rating_router import create_rating_blueprint
 from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
+from utils.Hateoas import GenerateHateoasLinks
 from seed.seed_db import seed_database
 from pymongo.errors import ConnectionFailure
 
@@ -91,13 +92,14 @@ check_mongo_connection()
 
 # Instantiate dependencies to adhere to IoC and DI principles
 json_web_token = JsonWebToken(logger)
+generate_hateoas_links = GenerateHateoasLinks(logger, app)
 user_db_repo = DBRepo(User, logger)
 movie_db_repo = DBRepo(MovieMetaData, logger)
 credit_db_repo = DBRepo(Credit, logger)
 rating_db_repo = DBRepo(Rating, logger)
 data_service = DataService(logger)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo)
-movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo)
+movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links)
 user_controller = UserController(logger, user_db_repo)
 
 # Register the main router blueprint

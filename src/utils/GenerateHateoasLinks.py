@@ -9,21 +9,33 @@ class GenerateHateoasLinks:
     self.logger = logger
     self.app = app
     
-  def create_movies_links(self, movie_id):
-    
-    # Test constructing get_movie_by_id
-    
+  def create_movies_links(self, movie_id):  
     with self.app.app_context():
-      url = url_for("movie.get_movie_by_id", movie_id=movie_id, _external=True)
-      
-      print('printing url:')
-      print(url)
+      get_movie_url = url_for("movie.get_movie_by_id", movie_id=movie_id, _external=True)
+      # update_movie_url = url_for("movie.update_movie", movie_id=movie_id, _external=True)
+      delete_movie_url = url_for("movie.delete_movie", movie_id=movie_id, _external=True)
+      get_movie_actors = url_for("credit.get_actors_by_movie", movie_id=movie_id, _external=True)
+      # get_movie_ratings = url_for("rating.get_ratings_by_movie", movie_id=movie_id, _external=True)
 
       links = {
-        "self": url_for("movie.get_movie_by_id", movie_id=movie_id, _external=True),
+        "self": get_movie_url,
+        "delete": delete_movie_url,
+        "credits": get_movie_actors,
+      }
+      
+      return links
+
+  def create_user_links(self, user_id):
+    with self.app.app_context():
+      delete_user_url = url_for("user.delete_user", user_id=user_id, _external=True)
+      login_user_url = url_for("user.login", user_id=user_id, _external=True)
+
+      links = {
+        "login": login_user_url,
+        "delete": delete_user_url
       }
 
-  # def create_user_links(self, user_id):
+      return links
 
 
 # Create movie

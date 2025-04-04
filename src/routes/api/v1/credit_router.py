@@ -31,7 +31,7 @@ def create_credit_blueprint(controller):
         return controller.get_actors()
 
     # Get actors by movie ID
-    @credit_blueprint.route('/credits/<movie_id>/actors', methods=['GET'])
+    @credit_blueprint.route('/credits/actors/<movie_id>', methods=['GET'])
     def get_actors_by_movie(movie_id):
         """
         Get actors by movie ID

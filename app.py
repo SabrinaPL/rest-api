@@ -131,8 +131,9 @@ def handle_exception(e):
     return {"error": "Internal Server Error"}, 500
 
 if flask_env == "production":
+    logger.info("🔒 Running in production mode, configuring security headers.")
     # Configure Flask-Talisman for security headers in production
-    configure_talisman(app, logger)
+    configure_talisman(app)
 else:
     logger.info("⚠️ Running in development mode, security headers are not applied.")
 

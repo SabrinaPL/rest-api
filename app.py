@@ -28,7 +28,7 @@ from routes.api.v1.credit_router import create_credit_blueprint
 from routes.api.v1.rating_router import create_rating_blueprint
 from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
-from utils.Hateoas import GenerateHateoasLinks
+from utils.GenerateHateoasLinks import GenerateHateoasLinks
 from seed.seed_db import seed_database
 from pymongo.errors import ConnectionFailure
 
@@ -72,14 +72,12 @@ def check_mongo_connection():
         mongo_uri = os.getenv("MONGO_URI")
         if not mongo_uri:
             raise ValueError("MONGO_URI is not set in the environment variables.")
-        
-        print(mongo_uri)
 
         client = pymongo.MongoClient(mongo_uri)
         
         # Attempt to ping the MongoDB server
         client.admin.command('ping')
-        print("DB Connection: SUCCESS")
+        logger.info("DB Connection: SUCCESS")
     except ConnectionFailure as e:
         logger.error(f"ERROR: Could not connect to database. {e}")
         sys.exit(1)

@@ -14,11 +14,48 @@ def create_movie_blueprint(controller):
     # Get all movies
     @movie_blueprint.route('/movies', methods=['GET'])
     def get_movies():
+        """
+        Get all movies
+        ---
+        tags:
+          - Movies
+        summary: Retrieve all movies
+        description: Fetches all movies from the database.
+        responses:
+          200:
+            description: Movies fetched successfully
+          404:
+            description: No movies found
+          500:
+            description: Internal server error
+        """
         return controller.get_movies()
 
     # Get a specific movie by ID
     @movie_blueprint.route('/movies/<movie_id>', methods=['GET'])
     def get_movie_by_id(movie_id):
+        """
+        Get movie by ID
+        ---
+        tags:
+          - Movies
+        summary: Retrieve movie by ID
+        description: Fetches a specific movie using its unique ID.
+        parameters:
+          - name: movie_id
+            in: path
+            required: true
+            schema:
+              type: string
+              description: The unique ID of the movie.
+        responses:
+          200:
+            description: Movie fetched successfully
+          404:
+            description: Movie not found
+          500:
+            description: Internal server error
+        """
         return controller.get_movie_by_id(movie_id)
       
     # Add a new movie
@@ -37,6 +74,36 @@ def create_movie_blueprint(controller):
     @movie_blueprint.route('/movies/<movie_id>', methods=['DELETE'])
     @jwt_required()
     def delete_movie(movie_id):
+        """
+        Delete movie by ID
+        ---
+        tags:
+          - Movies
+        summary: Delete a movie
+        description: Deletes a movie from the database using its unique ID. Requires a valid JWT access token.
+        security:
+          - BearerAuth: []
+        parameters:
+          - name: Authorization
+            in: header
+            required: true
+            schema:
+              type: string
+              description: Bearer JWT token for authentication.
+          - name: movie_id
+            in: path
+            required: true
+            schema:
+              type: string
+              description: The unique ID of the movie to delete.
+        responses:
+          200:
+            description: Movie deleted successfully
+          404:
+            description: Movie not found
+          500:
+            description: Internal server error
+        """
         return controller.delete_movie(movie_id)
 
     return movie_blueprint

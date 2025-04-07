@@ -16,5 +16,6 @@ class JsonConvert:
         return json.loads(json_util.dumps(document_dict))
 
     def serialize_documents(self, documents):
+        self.logger.info("Serializing documents to JSON")
         """Convert a list of MongoEngine documents to JSON."""
         return [self.serialize_document(doc) for doc in documents]

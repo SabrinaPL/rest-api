@@ -1,8 +1,7 @@
-from utils.JsonConvert import JsonConvert
-
 class MovieController:
-  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links):
+  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert):
     self.logger = logger
+    self.json_convert = json_convert
     self.movie_db_repo = movie_db_repo
     self.credit_db_repo = credit_db_repo
     self.rating_db_repo = rating_db_repo
@@ -163,13 +162,13 @@ class MovieController:
     if hasattr(credits, 'cast'):
       for credit in credits.cast:
         actors.append(credit)
-        
+    
     if not actors:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
       return {"message": "No actors found for this movie"}, 404
 
     # Convert actors to JSON format
-    actors_json = JsonConvert.serialize_documents(actors)
+    actors_json = self.json_convert.serialize_documents(actors)
     self.logger.info("Actors converted to JSON format")
 
     response = {

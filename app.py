@@ -29,6 +29,7 @@ from routes.api.v1.rating_router import create_rating_blueprint
 from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
 from utils.GenerateHateoasLinks import GenerateHateoasLinks
+from utils.JsonConvert import JsonConvert
 from seed.seed_db import seed_database
 from pymongo.errors import ConnectionFailure
 
@@ -57,21 +58,21 @@ logger = get_logger()
 flask_env = os.getenv("FLASK_ENV")
 app.config["FLASK_ENV"] = flask_env
 
-# Set up the mongo URI and configure it to the app
-setup_mongo_uri(app)
+# Set up the mongo URI
+mongo_uri = setup_mongo_uri(app)
 
 # Setup JWT authentication
 setup_jwt(app)
 
 # Connect MongoEngine to the database
-connect_to_database(app)
+connect_to_database(mongo_uri)
 
 # Test MongoDB connection using PyMongo
 def check_mongo_connection():
     try:
-        mongo_uri = os.getenv("MONGO_URI")
+        mongo_uri
         if not mongo_uri:
-            raise ValueError("MONGO_URI is not set in the environment variables.")
+            raise ValueError("Mongo uri is not valid or set")
 
         client = pymongo.MongoClient(mongo_uri)
         
@@ -91,13 +92,14 @@ check_mongo_connection()
 # Instantiate dependencies to adhere to IoC and DI principles
 json_web_token = JsonWebToken(logger)
 generate_hateoas_links = GenerateHateoasLinks(logger, app)
+json_convert = JsonConvert(logger)
 user_db_repo = DBRepo(User, logger)
 movie_db_repo = DBRepo(MovieMetaData, logger)
 credit_db_repo = DBRepo(Credit, logger)
 rating_db_repo = DBRepo(Rating, logger)
 data_service = DataService(logger)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo)
-movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links)
+movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert)
 user_controller = UserController(logger, user_db_repo)
 
 # Register the main router blueprint

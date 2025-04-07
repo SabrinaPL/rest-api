@@ -15,10 +15,12 @@ def setup_mongo_uri(app):
   if flask_env == "development":
       if mongo_user and mongo_pass:
         mongo_uri = f"mongodb://{mongo_user}:{mongo_pass}@{mongo_host}:{mongo_port}/{mongo_db}?authSource=admin"
-      else:
-        mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/{mongo_db}"
+  
+        return mongo_uri
   else:
        mongo_uri = os.getenv("MONGO_URI")
+       
+       return mongo_uri
 
   # Configure env variables into app
   app.config["MONGO_URI"] = mongo_uri

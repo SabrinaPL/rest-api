@@ -8,12 +8,10 @@ from mongoengine import connect
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-def connect_to_database(app):
+def connect_to_database(mongo_uri):
     """
     Establishes a connection to the MongoDB database using MongoEngine.
     """
-    mongo_uri = app.config['MONGO_URI']
-
     try:
         connect(host=mongo_uri)
         logger.info("MongoEngine connected to MongoDB.")

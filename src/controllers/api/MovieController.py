@@ -123,25 +123,36 @@ class MovieController:
       self.logger.info("No ratings found")
       return {"message": "No ratings found"}, 404
 
-    ratings_json = [
-        {
-            "id": rating.id,
-            "text": f"{rating.rating}/10",
-            "movie": self.movie_db_repo.find_by_field('movie_id', rating.movie_id).title if self.movie_db_repo.find_by_field('movie_id', rating.movie_id) else "Unknown",
-        }
-        for rating in ratings
-    ]
+    ratings_json = self.json_convert.serialize_documents(ratings)
+    self.logger.info("Ratings converted to JSON format")
+
+    # Process ratings and convert them to JSON format
+    processed_ratings = []
+
+    for rating in ratings_json:
+        rating_id = str(rating["_id"]["$oid"])
+        
+        movie_id = str(rating["movie_id"])
+
+        movie = self.movie_db_repo.find_by_field("movie_id", movie_id)
+        movie_title = movie.title if movie else "Unknown"
+
+        processed_ratings.append({
+            "id": rating_id,
+            "text": f"{rating['rating']}/5",
+            "movie": movie_title
+        })
 
     response = {
-      "message": "Ratings fetched successfully",
-      "total": len(ratings),
-      "ratings": ratings_json,
-      "_links": {
-        "first": "/api/v1/ratings?page=1",
-        "next": f"/api/v1/ratings?page=2" if len(ratings) > 20 else None,
-        "last": f"/api/v1/ratings?page={len(ratings) // 20}"
-      }
-    }
+            "message": "Ratings fetched successfully",
+            "total": len(ratings),
+            "ratings": processed_ratings,
+            "_links": {
+                "first": "/api/v1/ratings?page=1",
+                "next": f"/api/v1/ratings?page=2" if len(ratings) > 10 else None,
+                "last": f"/api/v1/ratings?page={len(ratings) // 10}"
+            }
+        }
 
     return response, 200
   
@@ -193,26 +204,24 @@ class MovieController:
     # release_year
     # genre
     # description
-  
+
   def delete_movie (self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
+    
+    # Convert movie id to int since it's stored as an int in the ratings database
+    movie_id_int = int(movie_id)
+    
+    # Delete associated ratings
+    self.rating_db_repo.delete_by_field("movie_id", movie_id_int)
+    self.logger.info(f"Ratings for movie with ID {movie_id} deleted successfully")
 
-    movie = self.movie_db_repo.find_by_id(movie_id)
-
-    if not movie:
-      self.logger.info(f"Movie with ID {movie_id} not found")
-      return {"message": "Movie not found"}, 404
-
-    # TODO: Delete the movie and its associated credits and ratings
+    # Delete the movie
     self.movie_db_repo.delete(movie_id)
-    # delete movie credits
-    # delete movie ratings
-
     self.logger.info(f"Movie with ID {movie_id} deleted successfully")
 
     response = {
       "message": "Movie deleted successfully",
     }
 
-    return response, 200
+    return response, 204
     

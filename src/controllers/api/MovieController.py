@@ -1,3 +1,5 @@
+from flask import request, jsonify
+
 class MovieController:
   def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert):
     self.logger = logger
@@ -155,9 +157,35 @@ class MovieController:
         }
 
     return response, 200
-  
-  # TODO: Implement this method
-  # def get_ratings_by_movie(self, movie_id):
+
+  def get_ratings_by_movie(self, movie_id):
+    self.logger.info(f"Fetching ratings for movie with ID: {movie_id}")
+
+    # Convert movie id to int since it's stored as an int in the ratings database
+    movie_id_int = int(movie_id)
+
+    ratings = self.rating_db_repo.find_by_field("movie_id", movie_id_int)
+
+    if not ratings:
+      self.logger.info(f"No ratings found for movie with ID {movie_id}")
+      return {"message": "No ratings found for this movie"}, 404
+
+    # Convert ratings to JSON format
+    ratings_json = self.json_convert.serialize_documents(ratings)
+    self.logger.info("Ratings converted to JSON format")
+
+    response = {
+      "message": "Ratings fetched successfully",
+      "total": len(ratings),
+      "ratings": ratings_json,
+      "_links": {
+        "first": f"/api/v1/movies/{movie_id}/ratings?page=1",
+        "next": f"/api/v1/movies/{movie_id}/ratings?page=2" if len(ratings) > 10 else None,
+        "last": f"/api/v1/movies/{movie_id}/ratings?page={len(ratings) // 10}"
+      }
+    }
+
+    return response, 200
 
   def get_actors_by_movie(self, movie_id):
     self.logger.info(f"Fetching actors for movie with ID: {movie_id}")
@@ -196,14 +224,29 @@ class MovieController:
   
   # TODO: Implement this method
   def create_movie (self):
-    self.logger.info("Creating new movie")
+    """
+    Handle client request to create a new movie.
+    """
+    self.logger.info("Creating new movie...")
     
-    # Get movie info from req body
-    # new_movie_info = fetch from the req body
-    # title
-    # release_year
-    # genre
-    # description
+    movie_data = request.get_json()
+
+    if not movie_data:
+      self.logger.error("No data provided in request body")
+      return {"message": "No data provided"}, 400
+    
+    # Validate required fields
+    required_fields = ['title', 'release_date', 'genres']
+    missing_fields = [field for field in required_fields if field not in movie_data]
+
+    if missing_fields:
+      self.logger.error(f"Missing required fields: {', '.join(missing_fields)}")
+      return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
+    
+    try:
+      # call the DataService to save the movie data
+
+  # def update_movie (self, movie_id):
 
   def delete_movie (self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")

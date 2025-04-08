@@ -1,5 +1,6 @@
 import pandas as pandas
 import ast as ast
+import uuid
 from models.MovieModel import MovieMetaData
 from models.RatingsModel import Rating
 from models.CreditsModel import Credit, Cast, Crew
@@ -75,6 +76,39 @@ class DataService:
                 movie_doc.save()
             except Exception as e:
                 self.logger.error(f"Error saving movie with ID: {movie_id}. Error: {e}")
+                
+    def save_new_movie(self, movie_data):
+        self.logger.info("Saving new movie to the database")
+    
+        # Check if the movie already exists
+        if MovieMetaData.objects(movie_id=movie_data['id']).first():
+            self.logger.info(f"Movie with ID {movie_data['id']} already exists")
+            # Generate a new unique ID for the movie (as suggested by copilot)
+            movie_data["id"] = self.generate_unique_id()
+            self.logger.info(f"Generated new unique ID for movie: {movie_data['id']}")
+
+        try:
+            # Preprocess fields to handle invalid values (as suggested by copilot)
+            release_date = pandas.to_datetime(movie_data.get('release_date'), errors='coerce')
+            release_date = release_date if not pandas.isna(release_date) else None
+            
+            genres = self.convert_to_list(movie_data.get('genres'))
+            
+            # Create the new movie document
+            movie_doc = MovieMetaData(
+                movie_id=movie_data['id'],
+                title=self.safe_string(movie_data.get('title')),
+                release_date=release_date,
+                genres=genres,
+                overview=self.safe_string(movie_data.get('overview')),
+            )
+
+            movie_doc.save()
+            self.logger.info(f"Movie with ID {movie_data['id']} saved successfully")
+            
+        except Exception as e:
+            self.logger.error(f"Error saving movie with ID: {movie_data['id']}. Error: {e}")
+            return {"message": "Internal server error"}, 500
 
     def save_ratings(self, ratings_small):
         for rating in ratings_small[:1000]:  # Limit to 1000 ratings for performance
@@ -153,3 +187,10 @@ class DataService:
         if value is None or (isinstance(value, float)) and pandas.isna(value):
             return "" # Return an empty string if the value is None or NaN
         return str(value) if value else ""
+    
+    def generate_unique_id(self):
+        while True:
+            # Generate a random unique ID (e.g., UUID or custom logic)
+            new_id = str(uuid.uuid4())  # Example: Generate a UUID
+            if not MovieMetaData.objects(movie_id=new_id).first():
+                return new_id

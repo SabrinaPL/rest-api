@@ -158,7 +158,7 @@ jobs:
       - name: Wait for App to Be Ready
         run: |
           echo "Waiting for app to be fully deployed..."
-          sleep 90  # Wait for 90 seconds to give the app time to start
+          sleep 120  # Wait for 120 seconds to give the app time to start
 
       - name: Health Check - Verify the Application is Running
         run: |

@@ -64,7 +64,7 @@ class DBRepo:
         try:
             return self.model.objects(
                 m_engine.Q(**{field_name: value})
-            ) # Return all matching documents
+            ).first() # Use first() to get a single document
         except Exception as e:
             self.logger.error(f"Error finding document by field {field_name}: {e}")
             return None

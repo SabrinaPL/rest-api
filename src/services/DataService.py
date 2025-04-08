@@ -79,13 +79,10 @@ class DataService:
                 
     def save_new_movie(self, movie_data):
         self.logger.info("Saving new movie to the database")
-    
-        # Check if the movie already exists
-        if MovieMetaData.objects(movie_id=movie_data['id']).first():
-            self.logger.info(f"Movie with ID {movie_data['id']} already exists")
-            # Generate a new unique ID for the movie (as suggested by copilot)
-            movie_data["id"] = self.generate_unique_id()
-            self.logger.info(f"Generated new unique ID for movie: {movie_data['id']}")
+
+        # Generate a new unique ID for the movie (as suggested by copilot)
+        movie_data["id"] = self.generate_unique_id()
+        self.logger.info(f"Generated new unique ID for movie: {movie_data['id']}")
 
         try:
             # Preprocess fields to handle invalid values (as suggested by copilot)

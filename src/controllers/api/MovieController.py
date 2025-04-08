@@ -1,13 +1,14 @@
 from flask import request, jsonify
 
 class MovieController:
-  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert):
+  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service):
     self.logger = logger
     self.json_convert = json_convert
     self.movie_db_repo = movie_db_repo
     self.credit_db_repo = credit_db_repo
     self.rating_db_repo = rating_db_repo
     self.generate_hateoas_links = generate_hateoas_links
+    self.data_service = data_service
     
   def get_movies(self):
     self.logger.info("Fetching all movies")
@@ -70,6 +71,45 @@ class MovieController:
         "self": movie_links['self'],
         "delete": movie_links['delete'],
       }
+    }
+
+    return response, 200
+  
+  def search_movie(self):
+    # Retrieve query parameters
+    field = request.args.get('field')
+    value = request.args.get('value')
+    
+    self.logger.info(f"Fetching movie with {field}: {value}")
+
+    # Convert field to lowercase for case-insensitive comparison (as suggested by copilot)
+    field = field.lower()
+
+    # Validate the field name
+    valid_fields = ['movie_id', 'title', 'release_year', 'actor', 'genre']
+
+    if field not in valid_fields:
+      self.logger.error(f"Invalid field: {field}. Valid fields are: {', '.join(valid_fields)}")
+      return {"message": f"Invalid field: {field}. Valid fields are: {', '.join(valid_fields)}"}, 400
+
+    movie = self.movie_db_repo.find_by_field(field, value)
+
+    if not movie:
+      self.logger.info(f"No movie found with {field}: {value}")
+      return {"message": "Movie not found"}, 404
+
+    movie_json = {
+        "id": movie.movie_id,
+        "title": movie.title,
+        "release_year": movie.release_date.year if movie.release_date else None,
+        "genre": [genre.name for genre in movie.genres],
+        "description": movie.overview,
+      }
+
+    # TODO: Fix hateoas links
+    response = {
+      "message": "Movie fetched successfully",
+      "movie": movie_json,
     }
 
     return response, 200
@@ -221,20 +261,19 @@ class MovieController:
       }
     }
     return response, 200
-  
-  # TODO: Implement this method
-  def create_movie (self):
+
+  def add_movie (self):
     """
     Handle client request to create a new movie.
     """
-    self.logger.info("Creating new movie...")
-    
+    self.logger.info("Adding new movie...")
+
     movie_data = request.get_json()
 
     if not movie_data:
       self.logger.error("No data provided in request body")
       return {"message": "No data provided"}, 400
-    
+
     # Validate required fields
     required_fields = ['title', 'release_date', 'genres']
     missing_fields = [field for field in required_fields if field not in movie_data]
@@ -242,9 +281,15 @@ class MovieController:
     if missing_fields:
       self.logger.error(f"Missing required fields: {', '.join(missing_fields)}")
       return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
-    
+
     try:
       # call the DataService to save the movie data
+      # TODO: add hateoas links
+      self.data_service.save_new_movie(movie_data)
+      return jsonify({"message": "Movie added successfully"}), 201
+    except Exception as e:
+      self.logger.error(f"Error saving movie: {e}")
+      return {"message": "Internal server error"}, 500  
 
   # def update_movie (self, movie_id):
 
@@ -267,4 +312,5 @@ class MovieController:
     }
 
     return response, 204
+
     

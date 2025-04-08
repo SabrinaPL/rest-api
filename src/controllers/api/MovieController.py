@@ -88,7 +88,8 @@ class MovieController:
     self.logger.info(f"Query parameters: {query_params}")
     
     # Validate the query parameters
-    valid_fields = ['movie_id', 'title', 'year', 'genre']
+    valid_fields = ['movie_id', 'title', 'year', 'genre', 
+                    'actor']
     invalid_fields = [field for field in query_params if field not in valid_fields]
     
     if invalid_fields:
@@ -99,7 +100,32 @@ class MovieController:
       query = {}
       
       for field, value in query_params.items():
-        if field == 'genre':
+        if field == 'actor':
+          # Search the credit db collection for the actor
+          self.logger.info(f"Searching for movies with actor: {value}")
+          
+          query['cast__name__icontains'] = value
+    
+          credits_for_actor = self.credit_db_repo.find_by_query(query)
+          
+          # Loop through credits_for_actor and retrieve the _id for all of the objects (movies the actor has acted in)
+          for credit in credits_for_actor:
+            self.logger.info(f"Movie ID: {credit.id}")
+          
+          # TODO:
+          # Create an array of movie id's for the actor
+          # list comprehensions, creating a list through an expression
+          # movie_ids = credit.id for credit in credits_for_actor
+          # when searching for all movies with the movie ids, use the $in operator to match any of the movie ids in the list
+          # movies = self.movie_db_repo.find_by_query({'movie_id': {'$in': movie_ids}}) / or it can be done as it was with the actors
+          
+          print("credits for actor")
+          print(credits_for_actor[0].cast[0].id)
+          print(credits_for_actor[5].cast[0].id)
+  
+          # Retrieve the movie id associated with the actor
+          # Find a way to access sub collections / nested collections
+        elif field == 'genre':
           # Search for movies by genre
           self.logger.info(f"Searching for movies with genre: {value}")
           query['genres__name__icontains'] = value
@@ -235,7 +261,7 @@ class MovieController:
   def get_ratings_by_movie(self, movie_id):
     self.logger.info(f"Fetching ratings for movie with ID: {movie_id}")
 
-    # Convert movie id to int since it's stored as an int in the ratings database
+    # Convert movie id to int since it's stored as an int in the ratings database collection
     movie_id_int = int(movie_id)
 
     ratings = self.rating_db_repo.find_by_field("movie_id", movie_id_int)
@@ -275,7 +301,7 @@ class MovieController:
     if hasattr(credits, 'cast'):
       for credit in credits.cast:
         actors.append(credit)
-    
+
     if not actors:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
       return {"message": "No actors found for this movie"}, 404
@@ -342,7 +368,7 @@ class MovieController:
     self.logger.info(f"Movie with ID {movie_id} deleted successfully")
 
     response = {
-      "message": "Movie deleted successfully",
+      "message": "Movie and associated ratings deleted successfully",
     }
 
     return response, 204

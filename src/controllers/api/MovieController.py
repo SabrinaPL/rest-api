@@ -76,44 +76,91 @@ class MovieController:
     return response, 200
   
   def search_movie(self):
-    # Retrieve query parameters
-    field = request.args.get('field')
-    value = request.args.get('value')
+    self.logger.info("Searching for movies with query parameters...")
     
-    self.logger.info(f"Fetching movie with {field}: {value}")
+    # Retrieve all query parameters
+    query_params = request.args.to_dict()
+    
+    if not query_params:
+      self.logger.info("No query parameters provided")
+      return {"message": "No query parameters provided"}, 400
+    
+    self.logger.info(f"Query parameters: {query_params}")
+    
+    # Validate the query parameters
+    valid_fields = ['movie_id', 'title', 'year', 'actor', 'genre']
+    invalid_fields = [field for field in query_params if field not in valid_fields]
+    
+    if invalid_fields:
+      self.logger.error(f"Invalid query parameters: {', '.join(invalid_fields)}")
+      return {"message": f"Invalid query parameters: {', '.join(invalid_fields)}"}, 400
+    
+    try:
+      query = {}
+      
+      for field, value in query_params.items():
+        if field == 'actor':
+          # Search for actors in credits database collection
+          self.logger.info(f"Searching for movies with actor: {value}")
+          credits = self.credit_db_repo.find_by_field('cast.name', value)
+          
+          if not credits:
+            self.logger.info(f"No movies found with actor: {value}")
+            return {"message": "No movies found with this actor"}, 404
+      
+            # Extract movie IDs from the credits to get the movies with the specified actor
+          movie_ids = [credit.id for credit in credits]
+          query['movie_id'] = movie_ids
+          
+        elif field == 'genre':
+          # Search for movies by genre
+          self.logger.info(f"Searching for movies with genre: {value}")
+          query['genres__name__icontains'] = value
+        elif field == 'year':
+          # Search for movies by release year
+          self.logger.info(f"Searching for movies with release year: {value}")
+          query['release_date__year'] = int(value)
+        else:
+          # Search for movies by other fields
+          self.logger.info(f"Searching for movies with {field}: {value}")
+          query[f"{field}__icontains"] = value
+      
+      # Query the movie database for the movies
+      self.logger.info(f"Querying movies with filters: {query}")
+      movies = self.movie_db_repo.find_by_query(query)
+      
+      if not movies:
+        self.logger.info("No movies found with the given filters")
+        return {"message": "No movies found"}, 404
 
-    # Convert field to lowercase for case-insensitive comparison (as suggested by copilot)
-    field = field.lower()
-
-    # Validate the field name
-    valid_fields = ['movie_id', 'title', 'release_year', 'actor', 'genre']
-
-    if field not in valid_fields:
-      self.logger.error(f"Invalid field: {field}. Valid fields are: {', '.join(valid_fields)}")
-      return {"message": f"Invalid field: {field}. Valid fields are: {', '.join(valid_fields)}"}, 400
-
-    movie = self.movie_db_repo.find_by_field(field, value)
-
-    if not movie:
-      self.logger.info(f"No movie found with {field}: {value}")
-      return {"message": "Movie not found"}, 404
-
-    movie_json = {
-        "id": movie.movie_id,
-        "title": movie.title,
-        "release_year": movie.release_date.year if movie.release_date else None,
-        "genre": [genre.name for genre in movie.genres],
-        "description": movie.overview,
+      movies_json = [
+          {
+              "id": movie.movie_id,
+              "title": movie.title,
+              "release_year": movie.release_date.year if movie.release_date else None,
+              "genre": [genre.name for genre in movie.genres],
+              "description": movie.overview,
+          }
+          for movie in movies
+      ]
+      
+      response = {
+        "message": "Movies fetched successfully",
+        "total": len(movies),
+        "movies": movies_json,
+        "_links": {
+          "first": "/api/v1/movies?page=1",
+          "next": f"/api/v1/movies?page=2" if len(movies) > 20 else None,
+          "last": f"/api/v1/movies?page={len(movies) // 20}"
+        }
       }
 
-    # TODO: Fix hateoas links
-    response = {
-      "message": "Movie fetched successfully",
-      "movie": movie_json,
-    }
+      return response, 200    
+    
+    except Exception as e:
+      self.logger.error(f"Error occurred while searching for movies: {e}")
+      return {"message": "Internal server error"}, 500
 
-    return response, 200
-  
   def get_actors(self):
     self.logger.info("Fetching all actors")
 

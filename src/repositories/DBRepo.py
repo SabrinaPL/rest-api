@@ -56,15 +56,27 @@ class DBRepo:
     
     def find_by_field(self, field_name, value):
         """
-        Find a document by a specific field and value.
+        Find document(s) by a specific field and value.
         :param field_name: The name of the field to query.
         :param value: The value to match.
-        :return: The document or None if not found.
+        :return: The document(s) or None if not found.
         """
         try:
             return self.model.objects(
                 m_engine.Q(**{field_name: value})
-            ).first()
+            ) # Return all matching documents
         except Exception as e:
             self.logger.error(f"Error finding document by field {field_name}: {e}")
             return None
+        
+    def find_by_query(self, query):
+        """
+        Find document(s) by a specific query.
+        :param query: The query to execute.
+        :return: The document(s) or None if not found.
+        """
+        try:
+            return self.model.objects(**query)
+        except Exception as e:
+            self.logger.error(f"Error finding document by query {query}: {e}")
+            return self.model.objects.none()

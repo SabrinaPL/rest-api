@@ -80,7 +80,7 @@ class MovieController:
     
     # Retrieve all query parameters
     query_params = request.args.to_dict()
-    
+
     if not query_params:
       self.logger.info("No query parameters provided")
       return {"message": "No query parameters provided"}, 400
@@ -88,7 +88,7 @@ class MovieController:
     self.logger.info(f"Query parameters: {query_params}")
     
     # Validate the query parameters
-    valid_fields = ['movie_id', 'title', 'year', 'actor', 'genre']
+    valid_fields = ['movie_id', 'title', 'year', 'genre']
     invalid_fields = [field for field in query_params if field not in valid_fields]
     
     if invalid_fields:
@@ -99,20 +99,7 @@ class MovieController:
       query = {}
       
       for field, value in query_params.items():
-        if field == 'actor':
-          # Search for actors in credits database collection
-          self.logger.info(f"Searching for movies with actor: {value}")
-          credits = self.credit_db_repo.find_by_field('cast.name', value)
-          
-          if not credits:
-            self.logger.info(f"No movies found with actor: {value}")
-            return {"message": "No movies found with this actor"}, 404
-      
-            # Extract movie IDs from the credits to get the movies with the specified actor
-          movie_ids = [credit.id for credit in credits]
-          query['movie_id'] = movie_ids
-          
-        elif field == 'genre':
+        if field == 'genre':
           # Search for movies by genre
           self.logger.info(f"Searching for movies with genre: {value}")
           query['genres__name__icontains'] = value

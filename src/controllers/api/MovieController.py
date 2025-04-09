@@ -370,8 +370,16 @@ class MovieController:
     try:
       # call the DataService to save the movie data
       # TODO: add hateoas links
-      self.data_service.save_new_movie(movie_data)
-      return jsonify({"message": "Movie added successfully"}), 201
+      movie_id = self.data_service.save_new_movie(movie_data)
+      
+      response = {
+        "message": "Movie added successfully",
+        "_links": {
+          "self": f"/api/v1/movies/{movie_id}",
+        }
+      }, 201
+      
+      return response
     except Exception as e:
       self.logger.error(f"Error saving movie: {e}")
       return {"message": "Internal server error"}, 500  

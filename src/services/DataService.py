@@ -81,7 +81,7 @@ class DataService:
         self.logger.info("Saving new movie to the database")
 
         # Generate a new unique ID for the movie (as suggested by copilot)
-        movie_data["id"] = self.generate_unique_id()
+        movie_data['id'] = self.generate_unique_id()
         self.logger.info(f"Generated new unique ID for movie: {movie_data['id']}")
 
         try:
@@ -102,6 +102,8 @@ class DataService:
 
             movie_doc.save()
             self.logger.info(f"Movie with ID {movie_data['id']} saved successfully")
+            
+            return str(movie_doc.id)
             
         except Exception as e:
             self.logger.error(f"Error saving movie with ID: {movie_data['id']}. Error: {e}")
@@ -188,6 +190,8 @@ class DataService:
     def generate_unique_id(self):
         while True:
             # Generate a random unique ID (e.g., UUID or custom logic)
-            new_id = str(uuid.uuid4())  # Example: Generate a UUID
+            new_id = str(uuid.uuid4())
+      
             if not MovieMetaData.objects(movie_id=new_id).first():
+                self.logger.info(f"Generated unique ID: {new_id}")
                 return new_id

@@ -124,7 +124,7 @@ class MovieController:
           
           movies_by_rating = self.rating_db_repo.find_by_query(query)
           # Loop through ratings and retrieve the _id for all of the objects (movies with the rating)
-          movie_ids = [rating.movie_id for rating in movies_by_rating]
+          movie_ids = [str(rating.movie_id) for rating in movies_by_rating]
           
           self.logger.info(f"Movie IDs for rating {value}: {movie_ids}")
           
@@ -181,7 +181,7 @@ class MovieController:
           }
           for movie in movies
       ]
-      
+ 
       response = {
         "message": "Movies fetched successfully",
         "total": len(movies),

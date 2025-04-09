@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from datetime import datetime
 
 class MovieController:
   def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service):
@@ -136,7 +137,16 @@ class MovieController:
           # Search for movies by release year
           self.logger.info(f"Searching for movies with release year: {value}")
 
-          query['release_date__year'] = int(value)
+          # Search for movies by year, using datetime to create a date range (as suggested by copilot)
+          year = int(value)
+          if year < 1900 or year > datetime.now().year:
+            self.logger.error(f"Invalid year: {year}")
+            return {"message": "Invalid year"}, 400
+
+          start_date = datetime(year, 1, 1)
+          end_date = datetime(year, 12, 31, 23, 59, 59)
+          query['release_date__gte'] = start_date
+          query['release_date__lte'] = end_date
         else:
           # Search for movies by other fields
           self.logger.info(f"Searching for movies with {field}: {value}")

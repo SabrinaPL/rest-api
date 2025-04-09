@@ -90,7 +90,7 @@ class MovieController:
     
     # Validate the query parameters
     valid_fields = ['movie_id', 'title', 'year', 'genre', 
-                    'actor']
+                    'actor', 'description', 'rating']
     invalid_fields = [field for field in query_params if field not in valid_fields]
     
     if invalid_fields:
@@ -114,15 +114,22 @@ class MovieController:
           self.logger.info(f"Movie IDs for actor {value}: {movie_ids}")
           
           query = {'movie_id': {'$in': movie_ids}}
+        elif field == 'rating':
+          self.logger.info(f"Searching for movies with rating: {value}")
           
-          # TODO:
-          # Create an array of movie id's for the actor
-          # list comprehensions, creating a list through an expression
-          # movie_ids = credit.id for credit in credits_for_actor
-          # when searching for all movies with the movie ids, use the $in operator to match any of the movie ids in the list
-          # movies = self.movie_db_repo.find_by_query({'movie_id': {'$in': movie_ids}}) / or it can be done as it was with the actors
+          query['rating__gte'] = float(value)
+          if query['rating__gte'] < 0 or query['rating__gte'] > 5:
+            self.logger.error(f"Invalid rating: {query['rating__gte']}")
+            return {"message": "Invalid rating"}, 400
+          
+          movies_by_rating = self.rating_db_repo.find_by_query(query)
+          # Loop through ratings and retrieve the _id for all of the objects (movies with the rating)
+          movie_ids = [rating.movie_id for rating in movies_by_rating]
+          
+          self.logger.info(f"Movie IDs for rating {value}: {movie_ids}")
+          
+          query = {'movie_id': {'$in': movie_ids}}
         elif field == 'genre':
-          # Search for movies by genre
           self.logger.info(f"Searching for movies with genre: {value}")
 
           query['genres__name__icontains'] = value
@@ -132,9 +139,12 @@ class MovieController:
           movie_ids = [movie.movie_id for movie in movies_of_genre]
           self.logger.info(f"Movie IDs for genre {value}: {movie_ids}")
           
-          query = {'movie_id': {'$in': movie_ids}}          
+          query = {'movie_id': {'$in': movie_ids}}
+        elif field == 'description':
+          self.logger.info(f"Searching for movies with description: {value}")
+          
+          query['overview__icontains'] = value        
         elif field == 'year':
-          # Search for movies by release year
           self.logger.info(f"Searching for movies with release year: {value}")
 
           # Search for movies by year, using datetime to create a date range (as suggested by copilot)

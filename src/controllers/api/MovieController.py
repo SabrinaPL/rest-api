@@ -347,7 +347,7 @@ class MovieController:
     }
     return response, 200
 
-  def add_movie (self):
+  def create_movie (self):
     """
     Handle client request to create a new movie.
     """
@@ -378,7 +378,7 @@ class MovieController:
 
   # def update_movie (self, movie_id):
 
-  def delete_movie (self, movie_id):
+  def delete_movie(self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
     
     # Convert movie id to int since it's stored as an int in the ratings database
@@ -397,5 +397,32 @@ class MovieController:
     }
 
     return response, 204
+  
+  def update_movie(self, movie_id):
+    self.logger.info(f"Updating movie with ID: {movie_id}")
+
+    # Get the movie data from the request body
+    movie_data = request.get_json()
+
+    if not movie_data:
+      self.logger.error("No data provided in request body")
+      return {"message": "No data provided"}, 400
+
+    # Validate required fields
+    required_fields = ['title', 'release_date', 'genres']
+    missing_fields = [field for field in required_fields if field not in movie_data]
+
+    if missing_fields:
+      self.logger.error(f"Missing required fields: {', '.join(missing_fields)}")
+      return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
+
+    try:
+      # Update the movie data in the database
+      self.movie_db_repo.update(movie_id, **movie_data)
+      self.logger.info(f"Movie with ID {movie_id} updated successfully")
+      return jsonify({"message": "Movie updated successfully"}), 200
+    except Exception as e:
+      self.logger.error(f"Error updating movie: {e}")
+      return {"message": "Internal server error"}, 500
 
     

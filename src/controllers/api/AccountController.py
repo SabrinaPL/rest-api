@@ -49,6 +49,7 @@ class AccountController:
 
       self.logger.info(f"User registered successfully")
       
+      # TODO: hateoas links
       response = {
         "message": "User registered successfully",
         "_links": {

@@ -94,8 +94,8 @@ def create_movie_blueprint(controller):
     # Add a new movie
     @movie_blueprint.route('/movies', methods=['POST'])
     @jwt_required()
-    def add_movie():
-        return controller.add_movie()
+    def create_movie():
+        return controller.create_movie()
 
     # Update a movie by ID
     @movie_blueprint.route('/movies/<movie_id>', methods=['PUT'])

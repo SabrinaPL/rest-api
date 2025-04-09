@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request
 from datetime import datetime
 
 class MovieController:
@@ -24,7 +24,8 @@ class MovieController:
     
     movies_json = [
             {
-                "id": movie.movie_id,
+                "id": str(movie.id),
+                "movie_id": movie.movie_id,
                 "title": movie.title,
                 "release_year": movie.release_date.year if movie.release_date else None,
                 "genre": [genre.name for genre in movie.genres],
@@ -33,7 +34,7 @@ class MovieController:
             for movie in movies
         ]
     
-    pagination_links = self.generate_hateoas_links.generate_pagination_links("movie.get_movies", 1, 20, len(movies))
+    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_movies", 1, 20, len(movies))
     self.logger.info("Pagination links generated")
     
     response = {
@@ -43,9 +44,9 @@ class MovieController:
       "_links": {
         **pagination_links
       }
-    }
+    }, 200
 
-    return response, 200
+    return response
   
   def get_movie_by_id(self, movie_id):
     self.logger.info(f"Fetching movie with ID: {movie_id}")
@@ -72,10 +73,13 @@ class MovieController:
       "_links": {
         "self": movie_links['self'],
         "delete": movie_links['delete'],
+        "update": movie_links['update'],
+        "actors": movie_links['actors'],
+        "ratings": movie_links['ratings'],
       }
-    }
+    }, 200
 
-    return response, 200
+    return response
   
   def search_movie(self):
     self.logger.info("Searching for movies with query parameters...")
@@ -182,19 +186,21 @@ class MovieController:
           }
           for movie in movies
       ]
+      
+      pagination_links = self.generate_hateoas_links.create_pagination_links("movie.search_movie", 1, 20, len(movies))
+      self.logger.info("Pagination links generated")
  
       response = {
         "message": "Movies fetched successfully",
         "total": len(movies),
         "movies": movies_json,
         "_links": {
-          "first": "/api/v1/movies?page=1",
-          "next": f"/api/v1/movies?page=2" if len(movies) > 20 else None,
-          "last": f"/api/v1/movies?page={len(movies) // 20}"
+          "self": f"/api/v1/movies/search?{query}",
+          **pagination_links
         }
-      }
+      }, 200
 
-      return response, 200    
+      return response  
     
     except Exception as e:
       self.logger.error(f"Error occurred while searching for movies: {e}")
@@ -228,19 +234,19 @@ class MovieController:
 
         actors_json = list(actor_dict.values())
 
-    # TODO: Fix hateoas links
+    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_actors", 1, 20, len(actors_json))
+    self.logger.info("Pagination links generated")
+
     response = {
       "message": "Actors fetched successfully",
       "total": len(actors_json),
       "actors": actors_json,
       "_links": {
-        "first": "/api/v1/actors?page=1",
-        "next": f"/api/v1/actors?page=2" if len(actors_json) > 10 else None,
-        "last": f"/api/v1/actors?page={len(actors_json) // 10}"
+        **pagination_links
       }
-    }
+    }, 200
 
-    return response, 200
+    return response
   
   def get_actors_by_movie(self, movie_id):
     self.logger.info(f"Fetching actors for movie with ID: {movie_id}")
@@ -264,18 +270,25 @@ class MovieController:
     # Convert actors to JSON format
     actors_json = self.json_convert.serialize_documents(actors)
     self.logger.info("Actors converted to JSON format")
+    
+    movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
+    pagination_links = self.generate_hateoas_links.create_pagination_links("credit.get_actors_by_movie", 1, 20, len(actors_json), movie_id=movie_id)
+    self.logger.info("Pagination links generated")
 
     response = {
       "message": "Actors fetched successfully",
       "total": len(actors),
       "actors": actors_json,
       "_links": {
-        "first": f"/api/v1/movies/{movie_id}/credits?page=1",
-        "next": f"/api/v1/movies/{movie_id}/credits?page=2" if len(actors) > 10 else None,
-        "last": f"/api/v1/movies/{movie_id}/credits?page={len(actors) // 10}"
+        "self": movie_links['self'],
+        "delete": movie_links['delete'],
+        "update": movie_links['update'],
+        "ratings": movie_links['ratings'],
+        **pagination_links
       }
-    }
-    return response, 200
+    }, 200
+
+    return response
 
   def get_ratings(self):
     self.logger.info("Fetching all ratings")
@@ -305,21 +318,22 @@ class MovieController:
             "text": f"{rating['rating']}/5",
             "movie": movie_title
         })
+        
+        pagination_links = self.generate_hateoas_links.create_pagination_links("rating.get_ratings", 1, 20, len(ratings_json))
+        self.logger.info("Pagination links generated")
 
     response = {
             "message": "Ratings fetched successfully",
             "total": len(ratings),
             "ratings": processed_ratings,
             "_links": {
-                "first": "/api/v1/ratings?page=1",
-                "next": f"/api/v1/ratings?page=2" if len(ratings) > 10 else None,
-                "last": f"/api/v1/ratings?page={len(ratings) // 10}"
+                **pagination_links
             }
-        }
+        }, 200
 
-    return response, 200
+    return response
 
-  def get_ratings_by_movie(self, movie_id):
+  def get_movie_rating(self, movie_id):
     self.logger.info(f"Fetching ratings for movie with ID: {movie_id}")
 
     # Convert movie id to int since it's stored as an int in the ratings database collection
@@ -334,19 +348,25 @@ class MovieController:
     # Convert ratings to JSON format
     ratings_json = self.json_convert.serialize_documents(ratings)
     self.logger.info("Ratings converted to JSON format")
+    
+    movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
+    pagination_links = self.generate_hateoas_links.create_pagination_links("rating.get_ratings_by_movie", 1, 20, len(ratings_json), movie_id=movie_id)
+    self.logger.info("Pagination links generated")
 
     response = {
       "message": "Ratings fetched successfully",
       "total": len(ratings),
       "ratings": ratings_json,
       "_links": {
-        "first": f"/api/v1/movies/{movie_id}/ratings?page=1",
-        "next": f"/api/v1/movies/{movie_id}/ratings?page=2" if len(ratings) > 10 else None,
-        "last": f"/api/v1/movies/{movie_id}/ratings?page={len(ratings) // 10}"
+        "self": movie_links['self'],
+        "delete": movie_links['delete'],
+        "update": movie_links['update'],
+        "actors": movie_links['credits'],
+        **pagination_links
       }
-    }
+    }, 200
 
-    return response, 200
+    return response
 
   def create_movie (self):
     """
@@ -369,14 +389,18 @@ class MovieController:
       return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
 
     try:
-      # call the DataService to save the movie data
-      # TODO: add hateoas links
       movie_id = self.data_service.save_new_movie(movie_data)
+      
+      movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
       
       response = {
         "message": "Movie added successfully",
         "_links": {
-          "self": f"/api/v1/movies/{movie_id}",
+          "self": movie_links['self'],
+          "delete": movie_links['delete'],
+          "update": movie_links['update'],
+          "actors": movie_links['credits'],
+          "ratings": movie_links['ratings']
         }
       }, 201
       
@@ -385,27 +409,36 @@ class MovieController:
       self.logger.error(f"Error saving movie: {e}")
       return {"message": "Internal server error"}, 500  
 
-  # def update_movie (self, movie_id):
-
   def delete_movie(self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
     
     # Convert movie id to int since it's stored as an int in the ratings database
     movie_id_int = int(movie_id)
     
-    # Delete associated ratings
-    self.rating_db_repo.delete_by_field("movie_id", movie_id_int)
-    self.logger.info(f"Ratings for movie with ID {movie_id} deleted successfully")
+    try:
+      # Check if the movie exists before deleting
+      movie = self.movie_db_repo.find_by_id(movie_id_int)
 
-    # Delete the movie
-    self.movie_db_repo.delete(movie_id)
-    self.logger.info(f"Movie with ID {movie_id} deleted successfully")
+      if not movie:
+        self.logger.info(f"Movie with ID {movie_id} not found")
+        return {"message": "Movie not found"}, 404
 
-    response = {
-      "message": "Movie and associated ratings deleted successfully",
-    }
+      # Delete associated ratings
+      self.rating_db_repo.delete_by_field("movie_id", movie_id_int)
+      self.logger.info(f"Ratings for movie with ID {movie_id} deleted successfully")
 
-    return response, 204
+      # Delete the movie
+      self.movie_db_repo.delete(movie_id)
+      self.logger.info(f"Movie with ID {movie_id} deleted successfully")
+
+      response = {
+        "message": "Movie and associated ratings deleted successfully",
+      }, 204
+
+      return response
+    except Exception as e:
+      self.logger.error(f"Error deleting movie: {e}")
+      return {"message": "Internal server error"}, 500
   
   def update_movie(self, movie_id):
     self.logger.info(f"Updating movie with ID: {movie_id}")
@@ -429,7 +462,21 @@ class MovieController:
       # Update the movie data in the database
       self.movie_db_repo.update(movie_id, **movie_data)
       self.logger.info(f"Movie with ID {movie_id} updated successfully")
-      return jsonify({"message": "Movie updated successfully"}), 200
+      
+      movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
+      
+      response = {
+        "message": "Movie updated successfully",
+        "_links": {
+          "self": movie_links['self'],
+          "delete": movie_links['delete'],
+          "update": movie_links['update'],
+          "actors": movie_links['credits'],
+          "ratings": movie_links['ratings']
+        }
+      }, 200
+
+      return response
     except Exception as e:
       self.logger.error(f"Error updating movie: {e}")
       return {"message": "Internal server error"}, 500

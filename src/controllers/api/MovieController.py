@@ -109,8 +109,10 @@ class MovieController:
           credits_for_actor = self.credit_db_repo.find_by_query(query)
           
           # Loop through credits_for_actor and retrieve the _id for all of the objects (movies the actor has acted in)
-          for credit in credits_for_actor:
-            self.logger.info(f"Movie ID: {credit.id}")
+          movie_ids = [credit.id for credit in credits_for_actor]
+          self.logger.info(f"Movie IDs for actor {value}: {movie_ids}")
+          
+          query = {'movie_id': {'$in': movie_ids}}
           
           # TODO:
           # Create an array of movie id's for the actor
@@ -118,24 +120,27 @@ class MovieController:
           # movie_ids = credit.id for credit in credits_for_actor
           # when searching for all movies with the movie ids, use the $in operator to match any of the movie ids in the list
           # movies = self.movie_db_repo.find_by_query({'movie_id': {'$in': movie_ids}}) / or it can be done as it was with the actors
-          
-          print("credits for actor")
-          print(credits_for_actor[0].cast[0].id)
-          print(credits_for_actor[5].cast[0].id)
-  
-          # Retrieve the movie id associated with the actor
-          # Find a way to access sub collections / nested collections
         elif field == 'genre':
           # Search for movies by genre
           self.logger.info(f"Searching for movies with genre: {value}")
+
           query['genres__name__icontains'] = value
+          
+          movies_of_genre = self.movie_db_repo.find_by_query(query)
+          # Loop through genres and retrieve the _id for all of the objects (movies with the genre)
+          movie_ids = [movie.movie_id for movie in movies_of_genre]
+          self.logger.info(f"Movie IDs for genre {value}: {movie_ids}")
+          
+          query = {'movie_id': {'$in': movie_ids}}          
         elif field == 'year':
           # Search for movies by release year
           self.logger.info(f"Searching for movies with release year: {value}")
+
           query['release_date__year'] = int(value)
         else:
           # Search for movies by other fields
           self.logger.info(f"Searching for movies with {field}: {value}")
+
           query[f"{field}__icontains"] = value
       
       # Query the movie database for the movies

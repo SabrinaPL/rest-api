@@ -1,5 +1,5 @@
 
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from utils.CustomErrors import CustomError 
 
 class RatingController:
@@ -12,9 +12,31 @@ class RatingController:
     self.logger = logger
  
   def get_ratings(self):
-    self.logger.info("Fetching all ratings")
+    # Get potential query parameters from the request
+    query_params = request.args.to_dict()
 
-    ratings = self.rating_db_repo.find_all()
+    # Extract and validate pagination parameters
+    try:
+      page = int(query_params.pop('page', 1))
+      per_page = int(query_params.pop('per_page', 20))
+
+      if page < 1 or per_page < 1:
+        raise ValueError("Page and per_page must be greater than 0")
+    except ValueError:
+      self.logger.error("Invalid pagination parameters")
+      raise CustomError("Invalid pagination parameters", 400)
+    
+    if query_params:
+      self.logger.info("Query parameters provided, fetching ratings by filter...")
+      
+      # Validate the query parameters
+      query = self.movie_query_service.build_query(query_params)
+      self.logger.info("Query built successfully")
+    else:
+      self.logger.info("Query parameters not provided, fetching all ratings...")
+      query = {}
+    
+    ratings = self.rating_db_repo.find_by_query(query)
 
     if not ratings:
       self.logger.info("No ratings found")
@@ -40,7 +62,7 @@ class RatingController:
             "movie": movie_title
         })
         
-        pagination_links = self.generate_hateoas_links.create_pagination_links("rating.get_ratings", 1, 20, len(ratings_json))
+        pagination_links = self.generate_hateoas_links.create_pagination_links("rating.get_ratings", page, per_page, len(ratings_json))
         self.logger.info("Pagination links generated")
 
     response = {

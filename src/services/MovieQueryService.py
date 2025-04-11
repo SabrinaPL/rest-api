@@ -11,14 +11,11 @@ class MovieQueryService:
   
   def build_query(self, query_params):
     self.logger.info("Searching for movies with query parameters...")
-    
-    # Retrieve all query parameters
-    # query_params = request.args.to_dict()
 
     if not query_params:
       self.logger.info("No query parameters provided")
       return {"message": "No query parameters provided"}, 400
-    
+
     self.logger.info(f"Query parameters: {query_params}")
     
     # Validate the query parameters
@@ -95,38 +92,6 @@ class MovieQueryService:
           self.logger.info(f"Searching for movies with {field}: {value}")
 
           query[f"{field}__icontains"] = value
-      
-      # Query the movie database for the movies
-      # self.logger.info(f"Querying movies with filters: {query}")
-      # movies = self.movie_db_repo.find_by_query(query)
-      
-      # if not movies:
-      #  self.logger.info("No movies found with the given filters")
-      #  return {"message": "Not found"}, 404
-
-      # movies_json = [
-      #     {
-      #         "id": movie.movie_id,
-      #         "title": movie.title,
-      #         "release_year": movie.release_date.year if movie.release_date else None,
-      #         "genre": [genre.name for genre in movie.genres],
-      #         "description": movie.overview,
-      #     }
-      #     for movie in movies
-      # ]
-      
-      # pagination_links = self.generate_hateoas_links.create_pagination_links("movie.search_movie", 1, 20, len(movies))
-      # self.logger.info("Pagination links generated")
- 
-      # response = {
-      #   "message": "Movies fetched successfully",
-      #   "total": len(movies),
-      #   "movies": movies_json,
-      #   "_links": {
-      #     "self": f"/api/v1/movies/search?{query}",
-      #     **pagination_links
-      #   }
-      # }, 200
 
       return query 
     

@@ -1,4 +1,4 @@
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from utils.CustomErrors import CustomError  
 
 class ActorController:
@@ -10,9 +10,31 @@ class ActorController:
     self.logger = logger
 
   def get_actors(self):
-    self.logger.info("Fetching all actors")
+    # Get potential query parameters from the request
+    query_params = request.args.to_dict()
+    
+    # Extract and validate pagination parameters
+    try:
+      page = int(query_params.pop('page', 1))
+      per_page = int(query_params.pop('per_page', 20))
 
-    credits = self.credit_db_repo.find_all()
+      if page < 1 or per_page < 1:
+        raise ValueError("Page and per_page must be greater than 0")
+    except ValueError:
+      self.logger.error("Invalid pagination parameters")
+      raise CustomError("Invalid pagination parameters", 400)
+    
+    if query_params:
+      self.logger.info("Query parameters provided, fetching actors by filter...")
+      
+      # Validate the query parameters
+      query = self.movie_query_service.build_query(query_params)
+      self.logger.info("Query built successfully")
+    else: 
+      self.logger.info("Query parameters not provided, fetching all actors...")
+      query = {}
+
+    credits = self.credit_db_repo.find_by_query(query)
 
     if not credits:
       self.logger.info("No credits found")
@@ -38,7 +60,7 @@ class ActorController:
 
         actors_json = list(actor_dict.values())
 
-    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_actors", 1, 20, len(actors_json))
+    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_actors", page, per_page, len(actors_json))
     self.logger.info("Pagination links generated")
 
     response = {

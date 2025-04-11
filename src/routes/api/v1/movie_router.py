@@ -62,12 +62,106 @@ def create_movie_blueprint(controller):
     @movie_blueprint.route('/movies', methods=['POST'])
     @jwt_required()
     def create_movie():
+        """
+        Create a new movie
+        ---
+        tags:
+          - Movies
+        summary: Create a new movie
+        description: Adds a new movie to the database. Requires a     valid JWT access token.
+        security:
+          - BearerAuth: []
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+          type: object
+          properties:
+            title:
+              type: string
+              description: Title of the movie.
+            director:
+              type: string
+              description: Director of the movie.
+            year:
+              type: integer
+              description: Release year of the movie.
+            genre:
+              type: string
+              description: Genre of the movie.
+          required:
+            - title
+            - director
+        responses:
+          201:
+            description: Movie created successfully
+          400:
+            description: Bad request (e.g., missing or invalid fields)
+          401:
+            description: Unauthorized (JWT token missing or invalid)
+          500:
+            description: Internal server error
+        """
         return controller.create_movie()
 
     # Update a movie by ID
     @movie_blueprint.route('/movies/<movie_id>', methods=['PUT'])
     @jwt_required()
     def update_movie(movie_id):
+        """
+        Update movie by ID
+        ---
+        tags:
+          - Movies
+        summary: Update a movie
+        description: Updates an existing movie's details by its unique ID. Requires a valid JWT access token.
+        security:
+          - BearerAuth: []
+        parameters:
+          - name: Authorization
+            in: header
+            required: true
+            schema:
+              type: string
+              description: Bearer JWT token for authentication.
+          - name: movie_id
+            in: path
+            required: true
+            schema:
+              type: string
+              description: The unique ID of the movie to update.
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: Updated title of the movie.
+                  director:
+                    type: string
+                    description: Updated director of the movie.
+                  year:
+                    type: integer
+                    description: Updated release year of the movie.
+                  genre:
+                    type: string
+                    description: Updated genre of the movie.
+        responses:
+          200:
+            description: Movie updated successfully
+          400:
+            description: Bad request (e.g., invalid fields)
+          401:
+            description: Unauthorized (JWT token missing or invalid)
+          404:
+            description: Movie not found
+          500:
+            description: Internal server error
+        """
         return controller.update_movie(movie_id)
       
     # Delete a movie by ID

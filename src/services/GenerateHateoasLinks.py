@@ -43,16 +43,18 @@ class GenerateHateoasLinks:
       base_url = url_for(resource, _external=True, **kwargs)
          
       # Validate inputs (as suggested by copilot)
-      page = int(page) if page else 1
-      per_page = int(per_page) if per_page else 20
+      page = int(page)
+      per_page = int(per_page)
       total_pages = (total + per_page - 1) // per_page  # Calculate total pages
 
       next_page = page + 1 if page < total_pages else None
+      previous_page = page - 1 if page > 1 else None
 
       # Per page is added to the URL to allow the client to specify the number of items per page
       pagination_links = {
           "first": f"{base_url}?page={page}&per_page={per_page}",
           "next": f"{base_url}?page={next_page}&per_page={per_page}" if next_page else None,
+          "previous": f"{base_url}?page={previous_page}&per_page={per_page}" if previous_page else None,
           "last": f"{base_url}?page={total_pages}&per_page={per_page}" if total_pages > 0 else None,
       }
 

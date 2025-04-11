@@ -3,11 +3,12 @@ from flask import jsonify, make_response
 from utils.CustomErrors import CustomError 
 
 class RatingController:
-  def __init__(self, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, logger):
+  def __init__(self, logger, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, movie_query_service):
     self.rating_db_repo = rating_db_repo
     self.movie_db_repo = movie_db_repo
     self.json_convert = json_convert
     self.generate_hateoas_links = generate_hateoas_links
+    self.movie_query_service = movie_query_service
     self.logger = logger
  
   def get_ratings(self):

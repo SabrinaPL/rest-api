@@ -1,5 +1,5 @@
 from flask import jsonify, make_response
-from utils.CustomErrors import CustomError, NotFoundError
+from utils.CustomErrors import CustomError
 
 class UserController:
     def __init__(self, logger, user_db_repo):
@@ -19,7 +19,7 @@ class UserController:
             user = self.user_db_repo.find_by_id(user_id)
             if not user:
                 self.logger.warning(f"User with ID {user_id} not found")
-                raise NotFoundError(f"User with ID {user_id} not found")
+                raise CustomError("Not found", 404)
 
             # Delete the user
             self.user_db_repo.delete(user_id)
@@ -29,10 +29,6 @@ class UserController:
                 "message": "User deleted successfully"
             }
             return make_response(jsonify(response), 200)
-
-        except NotFoundError as e:
-            self.logger.warning(str(e))
-            raise e
 
         except Exception as e:
             self.logger.error(f"Unexpected error while deleting user {user_id}: {e}")

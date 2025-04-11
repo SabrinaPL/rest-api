@@ -2,8 +2,9 @@ from flask import jsonify, make_response
 from utils.CustomErrors import CustomError  
 
 class ActorController:
-  def __init__(self, credit_db_repo, json_convert, generate_hateoas_links, logger):
+  def __init__(self, logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service):
     self.credit_db_repo = credit_db_repo
+    self.movie_query_service = movie_query_service
     self.json_convert = json_convert
     self.generate_hateoas_links = generate_hateoas_links
     self.logger = logger

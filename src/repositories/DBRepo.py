@@ -1,5 +1,6 @@
 import mongoengine as m_engine
 from mongoengine import Document
+from utils.CustomErrors import CustomError
 
 class DBRepo:
     def __init__(self, model: Document, logger):
@@ -17,7 +18,11 @@ class DBRepo:
         :param object_id: The ID of the document.
         :return: The document or None if not found.
         """
-        return self.model.objects(id=object_id).first()
+        try:
+            return self.model.objects(id=object_id).first()
+        except Exception as e:
+            self.logger.error(f"Error finding document by ID {object_id}: {e}")
+            raise CustomError("Internal server error", 500)
 
     def find_all(self, **filters):
         """
@@ -25,7 +30,11 @@ class DBRepo:
         :param filters: Query filters as keyword arguments.
         :return: A queryset of matching documents.
         """
-        return self.model.objects(**filters)
+        try:
+            return self.model.objects(**filters)
+        except Exception as e:
+            self.logger.error(f"Error finding documents with filters {filters}: {e}")
+            raise CustomError("Internal server error", 500)
 
     def create(self, **kwargs):
         """
@@ -33,9 +42,13 @@ class DBRepo:
         :param kwargs: Fields and values for the new document.
         :return: The created document.
         """
-        document = self.model(**kwargs)
-        document.save()
-        return document
+        try:
+            document = self.model(**kwargs)
+            document.save()
+            return document
+        except Exception as e:
+            self.logger.error(f"Error creating document with data {kwargs}: {e}")
+            raise CustomError("Internal server error", 500)
 
     def update(self, object_id, **kwargs):
         """
@@ -44,7 +57,11 @@ class DBRepo:
         :param kwargs: Fields and values to update.
         :return: The number of documents updated (0 or 1).
         """
-        return self.model.objects(id=object_id).update_one(**kwargs)
+        try:
+            return self.model.objects(id=object_id).update_one(**kwargs)
+        except Exception as e:
+            self.logger.error(f"Error updating document with ID {object_id}: {e}")
+            raise CustomError("Internal server error", 500)
 
     def delete(self, object_id):
         """
@@ -52,14 +69,17 @@ class DBRepo:
         :param object_id: The ID of the document to delete.
         :return: The number of documents deleted (0 or 1).
         """
-        return self.model.objects(id=object_id).delete()
+        try:
+            return self.model.objects(id=object_id).delete()
+        except Exception as e:
+            self.logger.error(f"Error deleting document with ID {object_id}: {e}")
+            raise CustomError("Internal server error", 500)
     
     def find_by_field(self, field_name, value):
         """
         Find document(s) by a specific field and value.
         :param field_name: The name of the field to query.
         :param value: The value to match.
-        :return: The document(s) or None if not found.
         """
         try:
             return self.model.objects(
@@ -67,16 +87,15 @@ class DBRepo:
             ).first() # Use first() to get a single document
         except Exception as e:
             self.logger.error(f"Error finding document by field {field_name}: {e}")
-            return None
-        
+            raise CustomError("Internal server error", 500)
+
     def find_by_query(self, query):
         """
         Find document(s) by a specific query.
         :param query: The query to execute.
-        :return: The document(s) or None if not found.
         """
         try:
             return self.model.objects(**query)
         except Exception as e:
             self.logger.error(f"Error finding document by query {query}: {e}")
-            return self.model.objects.none()
+            raise CustomError("Internal server error", 500)

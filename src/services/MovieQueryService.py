@@ -1,4 +1,5 @@
 from datetime import datetime
+from utils.CustomErrors import CustomError
 
 # Service class used to query movies from the database by parameters
 class MovieQueryService:
@@ -131,4 +132,4 @@ class MovieQueryService:
     
     except Exception as e:
       self.logger.error(f"Error occurred while building the query: {e}")
-      return {"message": "Internal server error"}, 500
+      raise CustomError("Internal server error", 500)

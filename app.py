@@ -14,6 +14,7 @@ from config.mongo_engine import connect_to_database
 from config.jwt import setup_jwt
 from config.mongo_uri import setup_mongo_uri
 from services.DataService import DataService
+from services.MovieQueryService import MovieQueryService
 from repositories.DBRepo import DBRepo
 from controllers.api.AccountController import AccountController
 from controllers.api.MovieController import MovieController
@@ -100,11 +101,12 @@ movie_db_repo = DBRepo(MovieMetaData, logger)
 credit_db_repo = DBRepo(Credit, logger)
 rating_db_repo = DBRepo(Rating, logger)
 data_service = DataService(logger)
+movie_query_service = MovieQueryService(logger, movie_db_repo, credit_db_repo, rating_db_repo)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo, generate_hateoas_links)
-movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service)
+movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service, movie_query_service)
 user_controller = UserController(logger, user_db_repo)
-rating_controller = RatingController(rating_db_repo, json_convert, generate_hateoas_links, logger)
-actor_controller = ActorController(credit_db_repo, json_convert, generate_hateoas_links, logger)
+rating_controller = RatingController(logger, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, movie_query_service)
+actor_controller = ActorController(logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service)
 
 # Register the main router blueprint
 app.register_blueprint(main_blueprint)

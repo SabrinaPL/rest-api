@@ -3,7 +3,7 @@ from utils.CustomErrors import CustomError
 from utils.validate import validate_fields
 
 class MovieController:
-  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service):
+  def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service, movie_query_service):
     self.logger = logger
     self.json_convert = json_convert
     self.movie_db_repo = movie_db_repo
@@ -11,11 +11,34 @@ class MovieController:
     self.rating_db_repo = rating_db_repo
     self.generate_hateoas_links = generate_hateoas_links
     self.data_service = data_service
-    
-  def get_movies(self):
-    self.logger.info("Fetching all movies")
+    self.movie_query_service = movie_query_service
 
-    movies = self.movie_db_repo.find_all()
+  def get_movies(self):
+    # Get potential query parameters from the request
+    query_params = request.args.to_dict()
+  
+    # Extract and validate pagination parameters
+    try:
+      page = int(query_params.pop('page', 1))
+      per_page = int(query_params.pop('per_page', 20))
+
+      if page < 1 or per_page < 1:
+        raise ValueError("Page and per_page must be greater than 0")
+    except ValueError:
+      self.logger.error("Invalid pagination parameters")
+      raise CustomError("Invalid pagination parameters", 400)
+
+    if query_params:
+      self.logger.info("Query parameters provided, fetching movies by filter...")
+      
+      # Validate the query parameters
+      query = self.movie_query_service.build_query(query_params)
+      self.logger.info("Query built successfully")
+    else: 
+      self.logger.info("Query parameters not provided, fetching all movies...")
+      query = {}
+     
+    movies = self.movie_db_repo.find_by_query(query)
 
     if not movies:
       self.logger.info("No movies found")
@@ -35,7 +58,7 @@ class MovieController:
             for movie in movies
         ]
     
-    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_movies", 1, 20, len(movies))
+    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_movies", page, per_page, len(movies))
     self.logger.info("Pagination links generated")
   
     response = {

@@ -165,20 +165,4 @@ class AccountController:
       Returns the user object if found, otherwise None.
       """
       return self.db_repo.find_by_field('username', username)
-  
-  # Helper methods for validation (as suggested by copilot)  
-  def is_valid_email(self, email):
-    """
-    Validate email format.
-    """
-    import re
-    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
-    return re.match(email_regex, email) is not None
 
-  def is_strong_password(self, password):
-    """
-    Validate password strength.
-    """
-    import re
-    password_regex = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
-    return re.match(password_regex, password) is not None

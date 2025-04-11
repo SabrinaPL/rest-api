@@ -8,8 +8,6 @@ def create_credit_blueprint(controller):
     # Create a Blueprint for credit-related routes
     credit_blueprint = Blueprint('credit', __name__)
 
-    # Map HTTP verbs and route paths to controller actions
-
     # Get all actors
     @credit_blueprint.route('/credits/actors', methods=['GET'])
     def get_actors():

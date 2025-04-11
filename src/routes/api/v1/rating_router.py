@@ -81,6 +81,64 @@ def create_rating_blueprint(controller):
     # Retrieve a movie rating by ID
     @rating_blueprint.route('/ratings/<movie_id>', methods=['GET'])
     def get_movie_rating(movie_id):
+        """
+      Fetch movie rating by ID
+      ---
+      tags:
+        - Ratings
+      summary: Fetch a movie rating by movie ID
+      description: Retrieves the rating details for a specific movie using its unique ID.
+      parameters:
+        - name: movie_id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The unique ID of the movie to retrieve the   rating for.
+      responses:
+        200:
+          description: Successfully fetched movie rating
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Success message
+                example: Rating fetched successfully
+              rating:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The unique identifier for the rating
+                    example: 1
+                  text:
+                    type: string
+                    description: Rating text (e.g., "9/10")
+                    example: "9/10"
+                  movie:
+                    type: string
+                    description: The title of the rated movie
+                    example: The Godfather
+        404:
+          description: Rating not found
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message
+                example: Rating not found
+        500:
+          description: Internal server error
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message
+                example: An unexpected error occurred
+        """
         return controller.get_movie_rating(movie_id)
 
     return rating_blueprint

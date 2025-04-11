@@ -27,7 +27,7 @@ class MovieQueryService:
     
     if invalid_fields:
       self.logger.error(f"Invalid query parameters: {', '.join(invalid_fields)}")
-      return {"message": f"Invalid query parameters: {', '.join(invalid_fields)}"}, 400
+      raise ValueError(f"Invalid query parameters: {', '.join(invalid_fields)}")
     
     try:
       query = {}

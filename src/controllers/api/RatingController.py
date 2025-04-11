@@ -1,4 +1,7 @@
 
+from flask import jsonify, make_response
+from utils.CustomErrors import CustomError 
+
 class RatingController:
   def __init__(self, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, logger):
     self.rating_db_repo = rating_db_repo
@@ -14,7 +17,7 @@ class RatingController:
 
     if not ratings:
       self.logger.info("No ratings found")
-      return {"message": "No ratings found"}, 404
+      raise CustomError("Not found", 404)
 
     ratings_json = self.json_convert.serialize_documents(ratings)
     self.logger.info("Ratings converted to JSON format")
@@ -46,9 +49,9 @@ class RatingController:
             "_links": {
                 **pagination_links
             }
-        }, 200
+        }
 
-    return response
+    return make_response(jsonify(response), 200)
 
   def get_movie_rating(self, movie_id):
     self.logger.info(f"Fetching ratings for movie with ID: {movie_id}")
@@ -60,7 +63,7 @@ class RatingController:
 
     if not ratings:
       self.logger.info(f"No ratings found for movie with ID {movie_id}")
-      return {"message": "No ratings found for this movie"}, 404
+      raise CustomError("Not found", 404)
 
     # Convert ratings to JSON format
     ratings_json = self.json_convert.serialize_documents(ratings)
@@ -81,7 +84,7 @@ class RatingController:
         "actors": movie_links['credits'],
         **pagination_links
       }
-    }, 200
+    }
 
-    return response
+    return make_response(jsonify(response), 200)
   

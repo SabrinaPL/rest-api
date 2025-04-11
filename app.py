@@ -17,6 +17,8 @@ from services.DataService import DataService
 from repositories.DBRepo import DBRepo
 from controllers.api.AccountController import AccountController
 from controllers.api.MovieController import MovieController
+from controllers.api.RatingController import RatingController
+from controllers.api.ActorController import ActorController
 from controllers.api.UserController import UserController
 from models.UserModel import User
 from models.MovieModel import MovieMetaData
@@ -28,7 +30,7 @@ from routes.api.v1.credit_router import create_credit_blueprint
 from routes.api.v1.rating_router import create_rating_blueprint
 from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
-from utils.GenerateHateoasLinks import GenerateHateoasLinks
+from services.GenerateHateoasLinks import GenerateHateoasLinks
 from utils.JsonConvert import JsonConvert
 from seed.seed_db import seed_database
 from pymongo.errors import ConnectionFailure
@@ -101,6 +103,8 @@ data_service = DataService(logger)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo, generate_hateoas_links)
 movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service)
 user_controller = UserController(logger, user_db_repo)
+rating_controller = RatingController(rating_db_repo, json_convert, generate_hateoas_links, logger)
+actor_controller = ActorController(credit_db_repo, json_convert, generate_hateoas_links, logger)
 
 # Register the main router blueprint
 app.register_blueprint(main_blueprint)
@@ -110,9 +114,9 @@ account_blueprint = create_account_blueprint(account_controller, user_controller
 app.register_blueprint(account_blueprint, url_prefix='/api/v1')
 movie_blueprint = create_movie_blueprint(movie_controller)
 app.register_blueprint(movie_blueprint, url_prefix='/api/v1')
-credit_blueprint = create_credit_blueprint(movie_controller)
+credit_blueprint = create_credit_blueprint(actor_controller)
 app.register_blueprint(credit_blueprint, url_prefix='/api/v1')
-rating_blueprint = create_rating_blueprint(movie_controller)
+rating_blueprint = create_rating_blueprint(rating_controller)
 app.register_blueprint(rating_blueprint, url_prefix='/api/v1')
 
 # Health check route

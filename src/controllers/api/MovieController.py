@@ -1,5 +1,6 @@
-from flask import request, abort
-from datetime import datetime
+from flask import request, jsonify, make_response
+from utils.CustomErrors import CustomError
+from utils.validate import validate_fields
 
 class MovieController:
   def __init__ (self, logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service):
@@ -18,7 +19,7 @@ class MovieController:
 
     if not movies:
       self.logger.info("No movies found")
-      return {"message": "Not found"}, 404
+      raise CustomError("Not found", 404)
 
     self.logger.info(f"Found {len(movies)} movies")
     
@@ -44,9 +45,9 @@ class MovieController:
       "_links": {
         **pagination_links
       }
-    }, 200
+    }
 
-    return response
+    return make_response(jsonify(response), 200)
   
   def get_movie_by_id(self, movie_id):
     self.logger.info(f"Fetching movie with ID: {movie_id}")
@@ -55,8 +56,7 @@ class MovieController:
 
     if not movie:
       self.logger.info(f"Movie with ID {movie_id} not found")
-      # return {"message": "Movie not found"}, 404
-      abort(404)
+      raise CustomError("Not found", 404)
     
     movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
 
@@ -78,52 +78,10 @@ class MovieController:
         "actors": movie_links['actors'],
         "ratings": movie_links['ratings'],
       }
-    }, 200
+    }
 
-    return response
+    return make_response(jsonify(response), 200)
   
-  def get_actors(self):
-    self.logger.info("Fetching all actors")
-
-    credits = self.credit_db_repo.find_all()
-
-    if not credits:
-      self.logger.info("No credits found")
-      return {"message": "No actors found"}, 404
-
-    actor_dict = {}
-
-    # Extract actors from credits (as suggested by copilot)
-    for credit in credits:
-        movie = self.movie_db_repo.find_by_field('movie_id', credit.id)
-        if not movie:
-            continue
-              
-        for cast_member in credit.cast:
-            if cast_member.id not in actor_dict:
-                actor_dict[cast_member.id] = {
-                    "id": cast_member.id,
-                    "name": cast_member.name,
-                    "movies_played": [],
-                }
-            actor_dict[cast_member.id]["movies_played"].append(movie.title)
-
-        actors_json = list(actor_dict.values())
-
-    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_actors", 1, 20, len(actors_json))
-    self.logger.info("Pagination links generated")
-
-    response = {
-      "message": "Actors fetched successfully",
-      "total": len(actors_json),
-      "actors": actors_json,
-      "_links": {
-        **pagination_links
-      }
-    }, 200
-
-    return response
-
   def create_movie (self):
     """
     Handle client request to create a new movie.
@@ -134,15 +92,11 @@ class MovieController:
 
     if not movie_data:
       self.logger.error("No data provided in request body")
-      return {"message": "No data provided"}, 400
+      raise CustomError("No data provided", 400)
 
     # Validate required fields
     required_fields = ['title', 'release_date', 'genres']
-    missing_fields = [field for field in required_fields if field not in movie_data]
-
-    if missing_fields:
-      self.logger.error(f"Missing required fields: {', '.join(missing_fields)}")
-      return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
+    validate_fields(movie_data, required_fields)
 
     try:
       movie_id = self.data_service.save_new_movie(movie_data)
@@ -158,12 +112,12 @@ class MovieController:
           "actors": movie_links['credits'],
           "ratings": movie_links['ratings']
         }
-      }, 201
+      }
       
-      return response
+      return make_response(jsonify(response), 201)
     except Exception as e:
       self.logger.error(f"Error saving movie: {e}")
-      return {"message": "Internal server error"}, 500  
+      raise CustomError("Internal server error", 500)
 
   def delete_movie(self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
@@ -177,7 +131,7 @@ class MovieController:
 
       if not movie:
         self.logger.info(f"Movie with ID {movie_id} not found")
-        return {"message": "Movie not found"}, 404
+        raise CustomError("Not found", 404)
 
       # Delete associated ratings
       self.rating_db_repo.delete_by_field("movie_id", movie_id_int)
@@ -189,12 +143,12 @@ class MovieController:
 
       response = {
         "message": "Movie and associated ratings deleted successfully",
-      }, 204
+      }
 
-      return response
+      return make_response(jsonify(response), 204)
     except Exception as e:
       self.logger.error(f"Error deleting movie: {e}")
-      return {"message": "Internal server error"}, 500
+      raise CustomError("Internal server error", 500)
   
   def update_movie(self, movie_id):
     self.logger.info(f"Updating movie with ID: {movie_id}")
@@ -204,15 +158,11 @@ class MovieController:
 
     if not movie_data:
       self.logger.error("No data provided in request body")
-      return {"message": "No data provided"}, 400
+      raise CustomError("No data provided", 400)
 
     # Validate required fields
     required_fields = ['title', 'release_date', 'genres']
-    missing_fields = [field for field in required_fields if field not in movie_data]
-
-    if missing_fields:
-      self.logger.error(f"Missing required fields: {', '.join(missing_fields)}")
-      return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
+    validate_fields(movie_data, required_fields)
 
     try:
       # Update the movie data in the database
@@ -220,7 +170,7 @@ class MovieController:
       self.logger.info(f"Movie with ID {movie_id} updated successfully")
       
       movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
-      
+
       response = {
         "message": "Movie updated successfully",
         "_links": {
@@ -230,11 +180,11 @@ class MovieController:
           "actors": movie_links['credits'],
           "ratings": movie_links['ratings']
         }
-      }, 200
+      }
 
-      return response
+      return make_response(jsonify(response), 200)
     except Exception as e:
       self.logger.error(f"Error updating movie: {e}")
-      return {"message": "Internal server error"}, 500
+      raise CustomError("Internal server error", 500)
 
     

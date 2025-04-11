@@ -26,7 +26,7 @@ class ActorController:
       raise CustomError("Invalid pagination parameters", 400)
     
     if query_params:
-      self.logger.info("Query parameters provided, fetching actors by filter...")
+      self.logger.info("Query parameter provided, fetching actors by filter...")
       
       # Validate the query parameters
       query = self.movie_query_service.build_query('actors', query_params)
@@ -54,16 +54,17 @@ class ActorController:
         # Filter actors based on query parameters, allow partial matches (as suggested by copilot)          
         for cast_member in credit.cast:
             if query_params.get('actor', '').lower() in cast_member.name.lower():
-              self.logger.info(f"Matched actor: {cast_member.name}")
               if cast_member.id not in actor_dict:
                 actor_dict[cast_member.id] = {
                     "id": cast_member.id,
                     "name": cast_member.name,
                     "movies_played": [],
                 }
+              # Add the movie title to the movies_played list if not already present
+              if movie.title not in actor_dict[cast_member.id]["movies_played"]:
                 actor_dict[cast_member.id]["movies_played"].append(movie.title)
 
-        actors_json = list(actor_dict.values())
+    actors_json = list(actor_dict.values())
 
     pagination_links = self.generate_hateoas_links.create_pagination_links("credit.get_actors", page, per_page, len(actors_json))
     self.logger.info("Pagination links generated")

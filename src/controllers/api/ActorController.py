@@ -2,8 +2,9 @@ from flask import jsonify, make_response, request
 from utils.CustomErrors import CustomError  
 
 class ActorController:
-  def __init__(self, logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service):
+  def __init__(self, logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service, movie_db_repo):
     self.credit_db_repo = credit_db_repo
+    self.movie_db_repo = movie_db_repo
     self.movie_query_service = movie_query_service
     self.json_convert = json_convert
     self.generate_hateoas_links = generate_hateoas_links
@@ -35,6 +36,8 @@ class ActorController:
       query = {}
 
     credits = self.credit_db_repo.find_by_query(query)
+    print("credits:")
+    print(credits)
 
     if not credits:
       self.logger.info("No credits found")
@@ -46,21 +49,25 @@ class ActorController:
     # Extract actors from credits (as suggested by copilot)
     for credit in credits:
         movie = self.movie_db_repo.find_by_field('movie_id', credit.id)
+
         if not movie:
             continue
-              
+    
+        # Filter actors based on query parameters, allow partial matches (as suggested by copilot)          
         for cast_member in credit.cast:
-            if cast_member.id not in actor_dict:
+            if query_params.get('actor', '').lower() in cast_member.name.lower():
+              self.logger.info(f"Matched actor: {cast_member.name}")
+              if cast_member.id not in actor_dict:
                 actor_dict[cast_member.id] = {
                     "id": cast_member.id,
                     "name": cast_member.name,
                     "movies_played": [],
                 }
-            actor_dict[cast_member.id]["movies_played"].append(movie.title)
+                actor_dict[cast_member.id]["movies_played"].append(movie.title)
 
         actors_json = list(actor_dict.values())
 
-    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_actors", page, per_page, len(actors_json))
+    pagination_links = self.generate_hateoas_links.create_pagination_links("credit.get_actors", page, per_page, len(actors_json))
     self.logger.info("Pagination links generated")
 
     response = {

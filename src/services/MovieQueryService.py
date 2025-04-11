@@ -36,14 +36,13 @@ class MovieQueryService:
           self.logger.info(f"Searching for movies with actor: {value}")
           
           query['cast__name__icontains'] = value
-    
           credits_for_actor = self.credit_db_repo.find_by_query(query)
           
           # Loop through credits_for_actor and retrieve the _id for all of the objects (movies the actor has acted in)
           movie_ids = [credit.id for credit in credits_for_actor]
           self.logger.info(f"Movie IDs for actor {value}: {movie_ids}")
           
-          query = {'movie_id': {'$in': movie_ids}}
+          query = {'id': {'$in': movie_ids}}
         elif field == 'rating':
           self.logger.info(f"Searching for movies with rating: {value}")
           
@@ -51,7 +50,7 @@ class MovieQueryService:
           if query['rating__gte'] < 0 or query['rating__gte'] > 5:
             self.logger.error(f"Invalid rating: {query['rating__gte']}")
             return {"message": "Invalid rating"}, 400
-          
+
           movies_by_rating = self.rating_db_repo.find_by_query(query)
           # Loop through ratings and retrieve the _id for all of the objects (movies with the rating)
           movie_ids = [str(rating.movie_id) for rating in movies_by_rating]
@@ -79,6 +78,7 @@ class MovieQueryService:
 
           # Search for movies by year, using datetime to create a date range (as suggested by copilot)
           year = int(value)
+
           if year < 1900 or year > datetime.now().year:
             self.logger.error(f"Invalid year: {year}")
             return {"message": "Invalid year"}, 400
@@ -93,7 +93,7 @@ class MovieQueryService:
 
           query[f"{field}__icontains"] = value
 
-      return query 
+      return query
     
     except Exception as e:
       self.logger.error(f"Error occurred while building the query: {e}")

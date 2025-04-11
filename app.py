@@ -106,7 +106,7 @@ account_controller = AccountController(logger, json_web_token, User, user_db_rep
 movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service, movie_query_service)
 user_controller = UserController(logger, user_db_repo)
 rating_controller = RatingController(logger, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, movie_query_service)
-actor_controller = ActorController(logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service)
+actor_controller = ActorController(logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service, movie_db_repo)
 
 # Register the main router blueprint
 app.register_blueprint(main_blueprint)

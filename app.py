@@ -98,7 +98,7 @@ movie_db_repo = DBRepo(MovieMetaData, logger)
 credit_db_repo = DBRepo(Credit, logger)
 rating_db_repo = DBRepo(Rating, logger)
 data_service = DataService(logger)
-account_controller = AccountController(logger, json_web_token, User, user_db_repo)
+account_controller = AccountController(logger, json_web_token, User, user_db_repo, generate_hateoas_links)
 movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service)
 user_controller = UserController(logger, user_db_repo)
 

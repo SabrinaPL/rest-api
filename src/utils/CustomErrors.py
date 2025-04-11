@@ -8,9 +8,10 @@ class CustomError(Exception):
     Base class for custom errors.
     
     """
-    def __init__(self, message):
+    def __init__(self, message, status_code):
       """Inherit from the Exception class and set the error message."""
       self.message = message
+      self.status_code = status_code
       super().__init__(self.message)
   
     def to_response(self):
@@ -18,14 +19,4 @@ class CustomError(Exception):
       response = jsonify({"error": self.message})
       response.status_code = self.status_code
       return response
-    
-    REGISTER_CUSTOM_STATUS_CODES = {
-    400: "The request cannot be processed due to a client error (e.g., validation error).",
-    409: "The username and/or email address is already registered.",
-    500: "An undefined error occurred."
-    }
 
-    LOGIN_CUSTOM_STATUS_CODES = {
-    401: "Credentials invalid or not provided.",
-    500: "An unexpected condition was encountered."
-    }

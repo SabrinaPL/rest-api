@@ -2,11 +2,12 @@ import bleach
 from flask import request, jsonify
 
 class AccountController:
-  def __init__(self, logger, json_web_token, user_model, db_repo):
+  def __init__(self, logger, json_web_token, user_model, db_repo, generate_hateoas_links):
     self.json_web_token = json_web_token
     self.user_model = user_model
     self.db_repo = db_repo
     self.logger = logger
+    self.generate_hateoas_links = generate_hateoas_links
 
   # Sanitize req data to improve security and prevent XSS
   def sanitize_data(self, data):
@@ -49,13 +50,13 @@ class AccountController:
 
       self.logger.info(f"User registered successfully")
       
-      # TODO: hateoas links
+      user_links = self.generate_hateoas_links.create_user_links(user_id)
+      
       response = {
         "message": "User registered successfully",
         "_links": {
-          "self": f"/api/v1/users/{user_id}",
-          "update": f"/api/v1/users/{user_id}",
-          "delete": f"/api/v1/users/{user_id}",
+          "self": user_links["self"],
+          "delete": user_links["delete"]
         }
       }
       return jsonify(response), 201
@@ -93,13 +94,14 @@ class AccountController:
       refresh_token = self.json_web_token.create_refresh_token(user_id)
 
       self.logger.info(f"User logged in successfully")
+      
+      user_links = self.generate_hateoas_links.create_user_links(user_id)
 
       response = {
         "message": "User logged in successfully",
         "_links": {
-          "self": f"/api/v1/users/{user_id}",
-          "update": f"/api/v1/users/{user_id}",
-          "delete": f"/api/v1/users/{user_id}",
+          "self": user_links["self"],
+          "delete": user_links["delete"]
         },
         "access_token": access_token,
         "refresh_token": refresh_token

@@ -36,8 +36,7 @@ This dataset consists of many files, but the minimum you would need is:
 - The API **MUST** support `application/json`.
 - Authentication **MUST** be implemented using JWT tokens for modifying resources.
 - The API **MUST** allow users to **create, read, update, and delete movies**, while **actors and ratings are read-only**.
-- The API **MUST** include **error handli
-ng** for incorrect input, authentication failures, and missing resources.
+- The API **MUST** include **error handling** for incorrect input, authentication failures, and missing resources.
 - A **Postman collection** (exported as JSON) **MUST** be provided for testing and included in the CI/CD pipeline. [Testing requirements](TESTING.md) **MUST** be followed.
 - A **seed script** **MUST** be included to populate the database with sample data.
 - The API **MUST** be documented using **Swagger/OpenAPI OR Postman documentation**.

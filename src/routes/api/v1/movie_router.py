@@ -30,39 +30,6 @@ def create_movie_blueprint(controller):
             description: Internal server error
         """
         return controller.get_movies()
-      
-    # Search for a specific movie
-    @movie_blueprint.route('/movies/search', methods=['GET'])
-    def search_movie():
-        """
-        Search for a specific movie
-        ---
-        tags:
-          - Movies
-        summary: Search for a movie
-        description: Searches for a movie based on a specific field and value.
-        parameters:
-          - name: field
-            in: query
-            required: true
-            schema:
-              type: string
-              description: The field to search by (e.g., title, genre).
-          - name: value
-            in: query
-            required: true
-            schema:
-              type: string
-              description: The value to search for.
-        responses:
-          200:
-            description: Movie found successfully
-          404:
-            description: Movie not found
-          500:
-            description: Internal server error
-        """
-        return controller.search_movie()
 
     # Get a specific movie by ID
     @movie_blueprint.route('/movies/<movie_id>', methods=['GET'])

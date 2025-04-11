@@ -9,18 +9,22 @@ class MovieQueryService:
     self.credit_db_repo = credit_db_repo
     self.rating_db_repo = rating_db_repo
   
-  def build_query(self, query_params):
-    self.logger.info("Searching for movies with query parameters...")
+  def build_query(self, resource, query_params):
+    self.logger.info(f"Searching for movies with query parameters {query_params}...")
 
     if not query_params:
       self.logger.info("No query parameters provided")
       return {"message": "No query parameters provided"}, 400
-
-    self.logger.info(f"Query parameters: {query_params}")
     
     # Validate the query parameters
-    valid_fields = ['movie_id', 'title', 'year', 'genre', 
+    if resource == 'movies':
+      valid_fields = ['movie_id', 'title', 'year', 'genre', 
                     'actor', 'description', 'rating']
+    elif resource == 'actors':
+      valid_fields = ['actor']
+    elif resource == 'ratings':
+      valid_fields = ['rating']
+  
     invalid_fields = [field for field in query_params if field not in valid_fields]
     
     if invalid_fields:
@@ -49,7 +53,7 @@ class MovieQueryService:
           query['rating__gte'] = float(value)
           if query['rating__gte'] < 0 or query['rating__gte'] > 5:
             self.logger.error(f"Invalid rating: {query['rating__gte']}")
-            return {"message": "Invalid rating"}, 400
+            raise CustomError("Invalid rating", 400)
 
           movies_by_rating = self.rating_db_repo.find_by_query(query)
           # Loop through ratings and retrieve the _id for all of the objects (movies with the rating)

@@ -29,15 +29,13 @@ class ActorController:
       self.logger.info("Query parameters provided, fetching actors by filter...")
       
       # Validate the query parameters
-      query = self.movie_query_service.build_query(query_params)
+      query = self.movie_query_service.build_query('actors', query_params)
       self.logger.info("Query built successfully")
     else: 
       self.logger.info("Query parameters not provided, fetching all actors...")
       query = {}
 
     credits = self.credit_db_repo.find_by_query(query)
-    print("credits:")
-    print(credits)
 
     if not credits:
       self.logger.info("No credits found")

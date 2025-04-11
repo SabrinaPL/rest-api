@@ -30,7 +30,7 @@ class RatingController:
       self.logger.info("Query parameters provided, fetching ratings by filter...")
       
       # Validate the query parameters
-      query = self.movie_query_service.build_query(query_params)
+      query = self.movie_query_service.build_query('ratings', query_params)
       self.logger.info("Query built successfully")
     else:
       self.logger.info("Query parameters not provided, fetching all ratings...")

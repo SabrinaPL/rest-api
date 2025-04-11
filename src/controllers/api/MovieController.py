@@ -32,7 +32,7 @@ class MovieController:
       self.logger.info("Query parameters provided, fetching movies by filter...")
       
       # Validate the query parameters
-      query = self.movie_query_service.build_query(query_params)
+      query = self.movie_query_service.build_query('movies', query_params)
       self.logger.info("Query built successfully")
     else: 
       self.logger.info("Query parameters not provided, fetching all movies...")

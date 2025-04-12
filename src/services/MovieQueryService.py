@@ -41,27 +41,40 @@ class MovieQueryService:
           
           query['cast__name__icontains'] = value
           credits_for_actor = self.credit_db_repo.find_by_query(query)
-          
+  
           # Loop through credits_for_actor and retrieve the _id for all of the objects (movies the actor has acted in)
           movie_ids = [credit.id for credit in credits_for_actor]
           self.logger.info(f"Movie IDs for actor {value}: {movie_ids}")
           
           query.update({'id': {'$in': movie_ids}})
         elif field == 'rating':
-          self.logger.info(f"Searching for movies with rating: {value}")
-          
-          query['rating__gte'] = float(value)
-          if query['rating__gte'] < 0 or query['rating__gte'] > 5:
-            self.logger.error(f"Invalid rating: {query['rating__gte']}")
-            raise CustomError("Invalid filter value", 400)
+          rating_threshold = float(value)
 
-          movies_by_rating = self.rating_db_repo.find_by_query(query)
-          # Loop through ratings and retrieve the _id for all of the objects (movies with the rating)
-          movie_ids = [str(rating.movie_id) for rating in movies_by_rating]
+          if rating_threshold < 0 or rating_threshold > 5:
+            self.logger.error(f"Invalid rating: {rating_threshold}")
+            raise CustomError("Invalid filter value", 400)
           
-          self.logger.info(f"Movie IDs for rating {value}: {movie_ids}")
-          
-          query.update({'movie_id': {'$in': movie_ids}})
+          ratings = []
+
+          if resource == "ratings":
+            # Filtering ratings by their own value (direct rating filter)
+            query["rating__gte"] = rating_threshold
+
+          elif resource == "movies":
+            # Filtering movies by rating (finding movies whose ratings meet the threshold)
+            ratings_query = {"rating__gte": rating_threshold}
+            ratings = self.rating_db_repo.find_by_query(ratings_query)
+            
+            if ratings:
+              movie_ids = []
+
+              for rating in ratings:
+                try:
+                  movie_ids.append(str(rating.movie_id))
+                except Exception as e:
+                  self.logger.warning(f"Invalid movie_id: {e}")
+                
+              query.update({"movie_id__in": movie_ids})
         elif field == 'genre':
           self.logger.info(f"Searching for movies with genre: {value}")
 

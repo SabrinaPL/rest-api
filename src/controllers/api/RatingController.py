@@ -39,32 +39,33 @@ class RatingController:
     self.logger.info(f"Fetching ratings with query: {query}")
     ratings = self.rating_db_repo.find_by_query(query)
 
+    # Convert ratings to JSON format
+    self.json_convert.serialize_documents(ratings)
+    self.logger.info("Ratings converted to JSON format")
+
     if not ratings:
       self.logger.info("No ratings found")
       raise CustomError("Not found", 404)
 
-    # Process ratings and convert them to JSON format
     processed_ratings = []
 
     for rating in ratings:
-        self.logger.info(f"Processing rating: {rating}")
-        
         try:
-          # rating_id = str(rating["_id"])
-          movie_id = str(rating["movie_id"])
+          rating_id = str(rating.id)
+          movie_id = str(rating.movie_id)
 
           movie = self.movie_db_repo.find_by_field("movie_id", movie_id)
           movie_title = movie.title if movie else "Unknown"
 
           processed_ratings.append({
-              # "id": rating_id,
+              "id": rating_id,
               "text": f"{rating['rating']}/5",
               "movie": movie_title
           })
         except Exception as e:
           self.logger.error(f"Error processing rating: {e}")
           raise CustomError("Internal server error", 500)
-        
+
     pagination_links = self.generate_hateoas_links.create_pagination_links("rating.get_ratings", page, per_page, len(ratings))
     self.logger.info("Pagination links generated")
 

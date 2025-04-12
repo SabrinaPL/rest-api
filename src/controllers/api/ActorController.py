@@ -100,17 +100,17 @@ class ActorController:
       raise CustomError("Not found", 404)
 
     # Convert actors to JSON format
-    actors_json = self.json_convert.serialize_documents(actors)
+    self.json_convert.serialize_documents(actors)
     self.logger.info("Actors converted to JSON format")
     
     movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
-    pagination_links = self.generate_hateoas_links.create_pagination_links("credit.get_actors_by_movie", 1, 20, len(actors_json), movie_id=movie_id)
+    pagination_links = self.generate_hateoas_links.create_pagination_links("credit.get_actors_by_movie", 1, 20, len(actors), movie_id=movie_id)
     self.logger.info("Pagination links generated")
 
     response = {
       "message": "Actors fetched successfully",
       "total": len(actors),
-      "actors": actors_json,
+      "actors": actors,
       "_links": {
         "self": movie_links['self'],
         "delete": movie_links['delete'],

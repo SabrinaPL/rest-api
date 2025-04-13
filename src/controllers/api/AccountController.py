@@ -33,13 +33,6 @@ class AccountController:
       # Validate required fields
       required_fields = ["first_name", "last_name", "username", "password", "email"]
       validate_fields(sanitized_data, required_fields)
-      
-      # Validate format of field values
-      if not self.is_valid_email(sanitized_data.get("email")):
-        raise CustomError("Invalid email format", 400)
-      
-      if not self.is_strong_password(sanitized_data.get("password")):
-        raise CustomError("Password must be at least 8 characters long and include a number and a special character", 400)
 
       # Check if user exists
       existing_user = self.check_user(sanitized_data.get("username"))
@@ -67,7 +60,6 @@ class AccountController:
       response = {
         "message": "User registered successfully",
         "_links": {
-          "self": user_links["self"],
           "delete": user_links["delete"]
         }
       }
@@ -116,7 +108,6 @@ class AccountController:
       response = {
         "message": "User logged in successfully",
         "_links": {
-          "self": user_links["self"],
           "delete": user_links["delete"]
         },
         "access_token": access_token,

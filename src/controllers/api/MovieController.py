@@ -1,4 +1,5 @@
 from flask import request, jsonify, make_response
+from bson import ObjectId
 from utils.CustomErrors import CustomError
 from utils.validate import validate_fields
 
@@ -12,6 +13,28 @@ class MovieController:
     self.generate_hateoas_links = generate_hateoas_links
     self.data_service = data_service
     self.movie_query_service = movie_query_service
+   
+  # Helper methods to check if the movie has actors or ratings 
+  def check_if_actors(self, movie_id):
+    try:
+        has_actors = bool(self.credit_db_repo.find_by_field("id", movie_id))
+    except Exception as e:
+        self.logger.error(f"Error checking actors for movie {movie_id}: {e}")
+        has_actors = False
+
+    return has_actors
+
+  def check_if_ratings(self, movie_id):   
+      try:
+          # Movie id converted to int for querying the ratings collection
+          movie_id_int = int(movie_id)
+        
+          has_ratings = bool(self.rating_db_repo.find_by_field("movie_id", movie_id_int))
+      except Exception as e:
+          self.logger.error(f"Error checking ratings for movie {movie_id}: {e}")
+          has_ratings = False
+        
+      return has_ratings
 
   def get_movies(self):
     # Get potential query parameters from the request
@@ -57,7 +80,7 @@ class MovieController:
             }
             for movie in movies
         ]
-    
+
     pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_movies", page, per_page, len(movies))
     self.logger.info("Pagination links generated")
   
@@ -74,14 +97,25 @@ class MovieController:
   
   def get_movie_by_id(self, movie_id):
     self.logger.info(f"Fetching movie with ID: {movie_id}")
-
-    movie = self.movie_db_repo.find_by_id(movie_id)
+ 
+    # Validate and convert id to ObjectId
+    try:
+      movie_object_id = ObjectId(movie_id)
+    except Exception as e:
+      self.logger.error(f"Invalid ID format: {e}")
+      raise CustomError("Invalid ID format", 400)
+    
+    movie = self.movie_db_repo.find_by_id(movie_object_id)
 
     if not movie:
       self.logger.info(f"Movie with ID {movie_id} not found")
       raise CustomError("Not found", 404)
     
-    movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
+    # Query the credits and ratings collections using the string or int representation of movie_id
+    has_actors = self.check_if_actors(movie.movie_id)
+    has_ratings = self.check_if_ratings(movie.movie_id)
+
+    movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors, has_ratings)
 
     movie_json = {
         "id": movie.movie_id,
@@ -99,7 +133,7 @@ class MovieController:
         "delete": movie_links['delete'],
         "update": movie_links['update'],
         "actors": movie_links['actors'],
-        "ratings": movie_links['ratings'],
+        # "ratings": movie_links['ratings'],
       }
     }
 
@@ -132,8 +166,6 @@ class MovieController:
           "self": movie_links['self'],
           "delete": movie_links['delete'],
           "update": movie_links['update'],
-          "actors": movie_links['credits'],
-          "ratings": movie_links['ratings']
         }
       }
       
@@ -144,28 +176,21 @@ class MovieController:
 
   def delete_movie(self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
-    
-    # Convert movie id to int since it's stored as an int in the ratings database
-    movie_id_int = int(movie_id)
-    
+
     try:
       # Check if the movie exists before deleting
-      movie = self.movie_db_repo.find_by_id(movie_id_int)
+      movie = self.movie_db_repo.find_by_id(movie_id)
 
       if not movie:
         self.logger.info(f"Movie with ID {movie_id} not found")
         raise CustomError("Not found", 404)
-
-      # Delete associated ratings
-      self.rating_db_repo.delete_by_field("movie_id", movie_id_int)
-      self.logger.info(f"Ratings for movie with ID {movie_id} deleted successfully")
 
       # Delete the movie
       self.movie_db_repo.delete(movie_id)
       self.logger.info(f"Movie with ID {movie_id} deleted successfully")
 
       response = {
-        "message": "Movie and associated ratings deleted successfully",
+        "message": "Movie deleted successfully",
       }
 
       return make_response(jsonify(response), 204)
@@ -192,7 +217,10 @@ class MovieController:
       self.movie_db_repo.update(movie_id, **movie_data)
       self.logger.info(f"Movie with ID {movie_id} updated successfully")
       
-      movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
+      has_actors = self.check_if_actors(movie_id)
+      has_ratings = self.check_if_ratings(movie_id)
+
+      movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors, has_ratings)
 
       response = {
         "message": "Movie updated successfully",
@@ -209,5 +237,6 @@ class MovieController:
     except Exception as e:
       self.logger.error(f"Error updating movie: {e}")
       raise CustomError("Internal server error", 500)
+
 
     

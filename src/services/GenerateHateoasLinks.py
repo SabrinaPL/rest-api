@@ -5,31 +5,35 @@ class GenerateHateoasLinks:
     self.logger = logger
     self.app = app
     
-  def create_movies_links(self, movie_id):  
+  def create_movies_links(self, movie_id, has_actors, has_ratings):
     with self.app.app_context():
-      get_movie_url = url_for("movie.get_movie_by_id", movie_id=movie_id, _external=True)
-      update_movie_url = url_for("movie.update_movie", movie_id=movie_id, _external=True)
-      delete_movie_url = url_for("movie.delete_movie", movie_id=movie_id, _external=True)
-      get_movie_actors = url_for("credit.get_actors_by_movie", movie_id=movie_id, _external=True)
-      get_movie_ratings = url_for("rating.get_movie_rating", movie_id=movie_id, _external=True),
+        # Generate basic movie links
+        get_movie_url = url_for("movie.get_movie_by_id", movie_id=movie_id, _external=True)
+        update_movie_url = url_for("movie.update_movie", movie_id=movie_id, _external=True)
+        delete_movie_url = url_for("movie.delete_movie", movie_id=movie_id, _external=True)
 
-      links = {
-        "self": get_movie_url,
-        "update": update_movie_url,
-        "delete": delete_movie_url,
-        "actors": get_movie_actors,
-        "ratings": get_movie_ratings
-      }
-      
-      return links
+        # Initialize the links dictionary with basic links
+        links = {
+            "self": get_movie_url,
+            "update": update_movie_url,
+            "delete": delete_movie_url,
+        }
+        
+        # Conditionally add the actors link if has_actors is True
+        if has_actors:
+            links["actors"] = url_for("credit.get_actors_by_movie", movie_id=movie_id, _external=True)
+            
+        # Conditionally add the ratings link if has_ratings is True
+        if has_ratings:
+            links["ratings"] = url_for("rating.get_movie_rating", movie_id=movie_id, _external=True)
+
+        return links
 
   def create_user_links(self, user_id):
     with self.app.app_context():
-      delete_user_url = url_for("user.delete_user", user_id=user_id, _external=True)
-      login_user_url = url_for("user.login", user_id=user_id, _external=True)
+      delete_user_url = url_for("account.delete", user_id=user_id, _external=True)
 
       links = {
-        "login": login_user_url,
         "delete": delete_user_url
       }
 

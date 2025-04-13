@@ -77,7 +77,7 @@ class DBRepo:
     
     def find_by_field(self, field_name, value):
         """
-        Find document(s) by a specific field and value.
+        Find document by a specific field and value.
         :param field_name: The name of the field to query.
         :param value: The value to match.
         """
@@ -87,6 +87,20 @@ class DBRepo:
             ).first() # Use first() to get a single document
         except Exception as e:
             self.logger.error(f"Error finding document by field {field_name}: {e}")
+            raise CustomError("Internal server error", 500)
+        
+    def find_all_by_field(self, field_name, value):
+        """
+        Find documents by a specific field and value.
+        :param field_name: The name of the field to query.
+        :param value: The value to match.
+        """
+        try:
+            return self.model.objects(
+                m_engine.Q(**{field_name: value})
+            )
+        except Exception as e:
+            self.logger.error(f"Error finding documents by field {field_name}: {e}")
             raise CustomError("Internal server error", 500)
 
     def find_by_query(self, query):

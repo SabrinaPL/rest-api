@@ -56,11 +56,11 @@ class MovieQueryService:
           
           ratings = []
 
-          if resource == "ratings":
+          if resource == "rating":
             # Filtering ratings by their own value (direct rating filter)
             query["rating__gte"] = rating_threshold
 
-          elif resource == "movies":
+          elif resource == "movie":
             # Filtering movies by rating (finding movies whose ratings meet the threshold)
             ratings_query = {"rating__gte": rating_threshold}
             ratings = self.rating_db_repo.find_by_query(ratings_query)

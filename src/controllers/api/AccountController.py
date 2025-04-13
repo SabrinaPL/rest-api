@@ -1,6 +1,7 @@
 import bleach
 from flask import request, jsonify, make_response
 from utils.CustomErrors import CustomError
+from utils.custom_status_codes import ACCOUNT_CUSTOM_STATUS_CODES
 from utils.validate import validate_fields 
 
 class AccountController:
@@ -38,7 +39,7 @@ class AccountController:
       existing_user = self.check_user(sanitized_data.get("username"))
       
       if existing_user:
-        raise CustomError("Invalid credentials", 400)
+        raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_credentials"], 400)
 
       user = self.user_model(
         first_name = sanitized_data.get("first_name"),
@@ -68,7 +69,7 @@ class AccountController:
 
     except Exception as e:
       self.logger.error(f"Error registering user: {e}")
-      raise CustomError("Internal server error", 500)
+      raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   
   def login(self):
     """
@@ -88,11 +89,11 @@ class AccountController:
       existing_user = self.check_user(sanitized_data.get("username"))
       
       if not existing_user:
-        raise CustomError("Invalid credentials", 400)
+        raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_credentials"], 400)
 
       # Validate password
       if not existing_user.check_password(sanitized_data.get("password")):
-        raise CustomError("Invalid credentials", 400)
+        raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_credentials"], 400)
       
       # Convert user ID for JSON serialization
       user_id = str(existing_user.id)
@@ -117,7 +118,7 @@ class AccountController:
       return make_response(jsonify(response), 200)
     except Exception as e:
       self.logger.error(f"Error logging in user: {e}")
-      raise CustomError("Internal server error", 500)
+      raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def refresh(self):
     """
@@ -130,7 +131,7 @@ class AccountController:
       refresh_token = request.headers.get("Authorization")
 
       if not refresh_token:
-        raise CustomError("Refresh token is required", 400)
+        raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["missing_refresh_token"], 400)
  
       # Generate a new access token using the identity from the refresh token
       access_token = self.json_web_token.refresh()
@@ -148,7 +149,7 @@ class AccountController:
       raise e
     except Exception as e:
       self.logger.error(f"Error refreshing token: {e}")
-      raise CustomError("Internal server error", 500)
+      raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def check_user(self, username):
       """

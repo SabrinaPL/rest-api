@@ -1,5 +1,6 @@
 from flask import jsonify, make_response
 from utils.CustomErrors import CustomError
+from utils.custom_status_codes import USER_CUSTOM_STATUS_CODES
 
 class UserController:
     def __init__(self, logger, user_db_repo):
@@ -12,14 +13,15 @@ class UserController:
         # Validate input
         if not user_id:
             self.logger.error("User ID is missing")
-            raise CustomError("User ID is required", 400)
+            raise CustomError(USER_CUSTOM_STATUS_CODES[400]["missing_user_id"], 400)
 
         try:
             # Check if the user exists
             user = self.user_db_repo.find_by_id(user_id)
+
             if not user:
                 self.logger.warning(f"User with ID {user_id} not found")
-                raise CustomError("Not found", 404)
+                raise CustomError(USER_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
             # Delete the user
             self.user_db_repo.delete(user_id)
@@ -32,4 +34,4 @@ class UserController:
 
         except Exception as e:
             self.logger.error(f"Unexpected error while deleting user {user_id}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(USER_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

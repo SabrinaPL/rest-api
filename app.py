@@ -33,6 +33,7 @@ from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
 from services.GenerateHateoasLinks import GenerateHateoasLinks
 from utils.JsonConvert import JsonConvert
+from utils.CustomErrors import CustomError
 from seed.seed_db import seed_database
 from pymongo.errors import ConnectionFailure
 
@@ -131,6 +132,12 @@ seed_database(data_service, logger)
 @app.before_request
 def log_request():
     logger.info(f"{request.method} {request.path} from {request.remote_addr}")
+
+# Handle custom errors
+@app.errorhandler(CustomError)
+def handle_custom_error(error):
+    logger.warning(f"Custom error occurred: {error.message}")
+    return error.to_response()
 
 # Log unhandled errors
 @app.errorhandler(Exception)

@@ -1,6 +1,7 @@
 
 from flask import jsonify, make_response, request
 from utils.CustomErrors import CustomError 
+from utils.custom_status_codes import RATING_CUSTOM_STATUS_CODES
 from bson import ObjectId
 
 class RatingController:
@@ -25,7 +26,7 @@ class RatingController:
         raise ValueError("Page and per_page must be greater than 0")
     except ValueError:
       self.logger.error("Invalid pagination parameters")
-      raise CustomError("Invalid pagination parameters", 400)
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
     
     if query_params:
       self.logger.info("Query parameter provided, fetching ratings by filter...")
@@ -47,7 +48,7 @@ class RatingController:
 
     if not ratings:
       self.logger.info("No ratings found")
-      raise CustomError("Not found", 404)
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[404]["no_ratings"], 404)
 
     processed_ratings = []
 
@@ -66,7 +67,7 @@ class RatingController:
           })
         except Exception as e:
           self.logger.error(f"Error processing rating: {e}")
-          raise CustomError("Internal server error", 500)
+          raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     pagination_links = self.generate_hateoas_links.create_pagination_links("rating.get_ratings", page, per_page, len(ratings))
     self.logger.info("Pagination links generated")
@@ -95,7 +96,7 @@ class RatingController:
         raise ValueError("Page and per_page must be greater than 0")
     except ValueError:
       self.logger.error("Invalid pagination parameters")
-      raise CustomError("Invalid pagination parameters", 400)
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
 
     if query_params:
       self.logger.info("Pagination parameters provided, fetching movie ratings...")
@@ -114,14 +115,14 @@ class RatingController:
       _id = ObjectId(_id)
     except Exception as e:
       self.logger.error(f"Invalid ID format: {e}")
-      raise CustomError("Invalid ID format", 400)
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[400]["invalid_id"], 400)
     
     # Fetch the movie from the db to retrieve the movie_id
     movie = self.movie_db_repo.find_by_id(_id)
 
     if not movie:
       self.logger.info(f"No movie found with ID {_id}")
-      raise CustomError("Not found", 404)
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
 
     # Convert movie id to int since it's stored as an int in the ratings database collection
     movie_id = int(movie.movie_id)
@@ -130,7 +131,7 @@ class RatingController:
 
     if not ratings or len(ratings) == 0:
       self.logger.info(f"No ratings found for movie with ID {movie_id}")
-      raise CustomError("Not found", 404)
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[404]["no_ratings"], 404)
     
     self.logger.info(f"Ratings object: {ratings}")
     self.logger.info(f"Type of ratings: {type(ratings)}")

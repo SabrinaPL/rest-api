@@ -1,6 +1,7 @@
 import mongoengine as m_engine
 from mongoengine import Document
 from utils.CustomErrors import CustomError
+from utils.custom_status_codes import GENERAL_CUSTOM_STATUS_CODES
 
 class DBRepo:
     def __init__(self, model: Document, logger):
@@ -22,7 +23,7 @@ class DBRepo:
             return self.model.objects(id=object_id).first()
         except Exception as e:
             self.logger.error(f"Error finding document by ID {object_id}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def find_all(self, **filters):
         """
@@ -34,7 +35,7 @@ class DBRepo:
             return self.model.objects(**filters)
         except Exception as e:
             self.logger.error(f"Error finding documents with filters {filters}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def create(self, **kwargs):
         """
@@ -48,7 +49,7 @@ class DBRepo:
             return document
         except Exception as e:
             self.logger.error(f"Error creating document with data {kwargs}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def update(self, object_id, **kwargs):
         """
@@ -61,7 +62,7 @@ class DBRepo:
             return self.model.objects(id=object_id).update_one(**kwargs)
         except Exception as e:
             self.logger.error(f"Error updating document with ID {object_id}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def delete(self, object_id):
         """
@@ -73,7 +74,7 @@ class DBRepo:
             return self.model.objects(id=object_id).delete()
         except Exception as e:
             self.logger.error(f"Error deleting document with ID {object_id}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
     
     def find_by_field(self, field_name, value):
         """
@@ -87,7 +88,7 @@ class DBRepo:
             ).first() # Use first() to get a single document
         except Exception as e:
             self.logger.error(f"Error finding document by field {field_name}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
         
     def find_all_by_field(self, field_name, value):
         """
@@ -101,7 +102,7 @@ class DBRepo:
             )
         except Exception as e:
             self.logger.error(f"Error finding documents by field {field_name}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def find_by_query(self, query):
         """
@@ -112,4 +113,4 @@ class DBRepo:
             return self.model.objects(**query)
         except Exception as e:
             self.logger.error(f"Error finding document by query {query}: {e}")
-            raise CustomError("Internal server error", 500)
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

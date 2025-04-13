@@ -17,7 +17,7 @@ def connect_to_database(mongo_uri):
         logger.info("MongoEngine connected to MongoDB.")
     except Exception as e:
         logger.error(f"MongoEngine connection error: {e}")
-        raise
+        raise ConnectionError("Could not connect to MongoDB.") from e
 
 # Handle process exit signals
 import signal

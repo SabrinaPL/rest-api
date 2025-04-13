@@ -1,5 +1,6 @@
 from datetime import datetime
 from utils.CustomErrors import CustomError
+from utils.custom_status_codes import QUERY_CUSTOM_STATUS_CODES
 
 # Service class used to query movies from the database by parameters
 class MovieQueryService:
@@ -14,7 +15,7 @@ class MovieQueryService:
 
     if not query_params:
       self.logger.info("No query parameters provided")
-      return {"message": "No query parameters provided"}, 400
+      raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["missing_query"], 400)
     
     # Validate the query parameters
     if resource == 'movies':
@@ -52,7 +53,7 @@ class MovieQueryService:
 
           if rating_threshold < 0 or rating_threshold > 5:
             self.logger.error(f"Invalid rating: {rating_threshold}")
-            raise CustomError("Invalid filter value", 400)
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_rating_value"], 400)
           
           ratings = []
 
@@ -98,7 +99,7 @@ class MovieQueryService:
 
           if year < 1900 or year > datetime.now().year:
             self.logger.error(f"Invalid year: {year}")
-            raise CustomError("Invalid filter value", 400)
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_year_value"], 400)
 
           start_date = datetime(year, 1, 1)
           end_date = datetime(year, 12, 31, 23, 59, 59)
@@ -114,4 +115,4 @@ class MovieQueryService:
     
     except Exception as e:
       self.logger.error(f"Error occurred while building the query: {e}")
-      raise CustomError("Internal server error", 500)
+      raise CustomError(QUERY_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

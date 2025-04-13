@@ -1,6 +1,7 @@
 from flask import request, jsonify, make_response
 from bson import ObjectId
 from utils.CustomErrors import CustomError
+from utils.custom_status_codes import MOVIE_CUSTOM_STATUS_CODES
 from utils.validate import validate_fields
 
 class MovieController:
@@ -49,7 +50,7 @@ class MovieController:
         raise ValueError("Page and per_page must be greater than 0")
     except ValueError:
       self.logger.error("Invalid pagination parameters")
-      raise CustomError("Invalid pagination parameters", 400)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
 
     if query_params:
       self.logger.info("Query parameters provided, fetching movies by filter...")
@@ -65,7 +66,7 @@ class MovieController:
 
     if not movies:
       self.logger.info("No movies found")
-      raise CustomError("Not found", 404)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
 
     self.logger.info(f"Found {len(movies)} movies")
     
@@ -103,13 +104,13 @@ class MovieController:
       movie_object_id = ObjectId(movie_id)
     except Exception as e:
       self.logger.error(f"Invalid ID format: {e}")
-      raise CustomError("Invalid ID format", 400)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["invalid_id"], 400)
     
     movie = self.movie_db_repo.find_by_id(movie_object_id)
 
     if not movie:
       self.logger.info(f"Movie with ID {movie_id} not found")
-      raise CustomError("Not found", 404)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
     
     # Query the credits and ratings collections using the string or int representation of movie_id
     has_actors = self.check_if_actors(movie.movie_id)
@@ -149,7 +150,7 @@ class MovieController:
 
     if not movie_data:
       self.logger.error("No data provided in request body")
-      raise CustomError("No data provided", 400)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["missing_data"], 400)
 
     # Validate required fields
     required_fields = ['title', 'release_date', 'genres']
@@ -172,7 +173,7 @@ class MovieController:
       return make_response(jsonify(response), 201)
     except Exception as e:
       self.logger.error(f"Error saving movie: {e}")
-      raise CustomError("Internal server error", 500)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def delete_movie(self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
@@ -183,7 +184,7 @@ class MovieController:
 
       if not movie:
         self.logger.info(f"Movie with ID {movie_id} not found")
-        raise CustomError("Not found", 404)
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
 
       # Delete the movie
       self.movie_db_repo.delete(movie_id)
@@ -196,7 +197,7 @@ class MovieController:
       return make_response(jsonify(response), 204)
     except Exception as e:
       self.logger.error(f"Error deleting movie: {e}")
-      raise CustomError("Internal server error", 500)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   
   def update_movie(self, movie_id):
     self.logger.info(f"Updating movie with ID: {movie_id}")
@@ -206,7 +207,7 @@ class MovieController:
 
     if not movie_data:
       self.logger.error("No data provided in request body")
-      raise CustomError("No data provided", 400)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["missing_data"], 400)
 
     # Validate required fields
     required_fields = ['title', 'release_date', 'genres']
@@ -236,7 +237,7 @@ class MovieController:
       return make_response(jsonify(response), 200)
     except Exception as e:
       self.logger.error(f"Error updating movie: {e}")
-      raise CustomError("Internal server error", 500)
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
 
     

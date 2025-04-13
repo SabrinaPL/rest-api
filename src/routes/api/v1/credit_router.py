@@ -16,8 +16,30 @@ def create_credit_blueprint(controller):
         ---
         tags:
           - Credits
-        summary: Retrieve all actors
-        description: Fetches all actors from the database.
+        summary: Retrieve all actors with optional filters
+        description: Fetches all actors from the database with optional filters.
+        parameters:
+          - name: actor
+            in: query
+            required: false
+            schema:
+              type: string
+            description: 
+              Filter actors by name.
+          - name: page
+            in: query
+            required: false
+            schema:
+              type: integer
+            description: 
+              Page number for pagination.
+          - name: per_page
+            in: query
+            required: false
+            schema:
+              type: integer
+            description: 
+              Number of items per page for pagination.
         responses:
           200:
             description: Actors fetched successfully

@@ -1,6 +1,6 @@
 from flask import jsonify, make_response, request
 from utils.CustomErrors import CustomError  
-from utils.custom_status_codes import ACTOR_CUSTOM_STATUS_CODES
+from utils.custom_status_codes import CREDIT_CUSTOM_STATUS_CODES
 
 class ActorController:
   def __init__(self, logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service, movie_db_repo):
@@ -24,7 +24,7 @@ class ActorController:
         raise ValueError("Page and per_page must be greater than 0")
     except ValueError:
       self.logger.error("Invalid pagination parameters")
-      raise CustomError(ACTOR_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
     
     if query_params:
       self.logger.info("Query parameter provided, fetching actors by filter...")
@@ -40,7 +40,7 @@ class ActorController:
 
     if not credits:
       self.logger.info("No credits found")
-      raise CustomError(ACTOR_CUSTOM_STATUS_CODES[404]["no_credits_found"], 404)
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[404]["no_credits_found"], 404)
 
     actor_dict = {}
     actors_json = []
@@ -88,7 +88,7 @@ class ActorController:
 
     if not credits:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
-      raise CustomError(ACTOR_CUSTOM_STATUS_CODES[404]["no_credits_found"], 404)
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[404]["no_credits_found"], 404)
 
     # Extract all actors from credits
     actors = []
@@ -98,7 +98,7 @@ class ActorController:
 
     if not actors:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
-      raise CustomError(ACTOR_CUSTOM_STATUS_CODES[404]["no_actors_found"], 404)
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[404]["no_actors_found"], 404)
 
     # Convert actors to JSON format
     self.json_convert.serialize_documents(actors)

@@ -19,7 +19,7 @@ class MovieQueryService:
     
     # Validate the query parameters
     if resource == 'movies':
-      valid_fields = ['movie_id', 'title', 'year', 'genre', 
+      valid_fields = ['title', 'year', 'genre', 
                     'actor', 'description', 'rating']
     elif resource == 'actors':
       valid_fields = ['actor']

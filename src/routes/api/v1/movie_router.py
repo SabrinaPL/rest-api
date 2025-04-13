@@ -19,8 +19,59 @@ def create_movie_blueprint(controller):
         ---
         tags:
           - Movies
-        summary: Retrieve all movies
-        description: Fetches all movies from the database.
+        summary: Retrieve all movies with optional filters
+        description: Fetches all movies from the database with optional filter (e.g. by title, genre, year).
+        parameters:
+          - name: title
+            in: query
+            required: false
+            schema:
+              type: string
+            description: Filter movies by title.
+          - name: genre 
+            in: query
+            required: false
+            schema:
+              type: string
+            description: Filter movies by genre.
+          - name: release_year
+            in: query
+            required: false
+            schema:
+              type: integer
+            description: Filter movies by release year.
+          - name: description
+            in: query
+            required: false
+            schema:
+              type: string
+            description: Filter movies by description.
+          - name: rating
+            in: query
+            description: Filter movies by rating.
+            required: false
+            schema:
+              type: number
+          - name: actor
+            in: query
+            description: Filter movies by actor.
+            required: false
+            schema:
+              type: string
+          - name: page
+            in: query
+            required: false
+            schema:
+              type: integer
+              default: 1
+            description: Page number for pagination.
+          - name: per_page
+            in: query
+            required: false
+            schema:
+              type: integer
+              default: 20
+            description: Number of items per page for pagination.
         responses:
           200:
             description: Movies fetched successfully
@@ -68,7 +119,7 @@ def create_movie_blueprint(controller):
         tags:
           - Movies
         summary: Create a new movie
-        description: Adds a new movie to the database. Requires a     valid JWT access token.
+        description: Adds a new movie to the database. Requires a valid JWT access token.
         security:
           - BearerAuth: []
         requestBody:

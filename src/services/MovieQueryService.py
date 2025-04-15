@@ -40,14 +40,23 @@ class MovieQueryService:
           # Search the credit db collection for the actor
           self.logger.info(f"Searching for movies with actor: {value}")
           
-          query['cast__name__icontains'] = value
-          credits_for_actor = self.credit_db_repo.find_by_query(query)
+          actor_query = {
+            "cast__elemMatch": {
+                "name__icontains": value
+            }
+          }
+
+          credits_for_actor = self.credit_db_repo.find_by_query(actor_query)
+          
+          if not credits_for_actor:
+            self.logger.info(f"No movies found for actor {value}")
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[404]["no_movies_found"], 404)
 
           # Loop through credits_for_actor and retrieve the _id for all of the objects (movies the actor has acted in)
-          movie_ids = [credit.id for credit in credits_for_actor]
+          movie_ids = [str(credit["id"]) for credit in credits_for_actor]
           self.logger.info(f"Movie IDs for actor {value}: {movie_ids}")
           
-          query.update({'id': {'$in': movie_ids}})
+          query.update({'movie_id': {'$in': movie_ids}})
         elif field == 'rating':
           rating_threshold = float(value)
 

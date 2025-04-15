@@ -159,7 +159,7 @@ class MovieController:
     try:
       movie_id = self.data_service.save_new_movie(movie_data)
       
-      movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
+      movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors=False, has_ratings=False)
       
       response = {
         "message": "Movie added successfully",

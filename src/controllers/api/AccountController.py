@@ -67,6 +67,8 @@ class AccountController:
 
       return make_response(jsonify(response), 201)
 
+    except CustomError as e:
+      raise e
     except Exception as e:
       self.logger.error(f"Error registering user: {e}")
       raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
@@ -116,6 +118,8 @@ class AccountController:
       }
 
       return make_response(jsonify(response), 200)
+    except CustomError as e:
+      raise e
     except Exception as e:
       self.logger.error(f"Error logging in user: {e}")
       raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

@@ -235,8 +235,8 @@ class MovieController:
       }
 
       return make_response(jsonify(response), 200)
-    except Exception as e:
-      self.logger.error(f"Error updating movie: {e}")
+    except Exception as error:
+      self.logger.error(f"Error updating movie: {error}")
       raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
 

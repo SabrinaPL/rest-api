@@ -7,20 +7,53 @@ class JsonWebToken:
     pass
   
   def create_access_token(self, data):
-    self.logger.info(f"Encoding JWT accecss token")
-    return flask_jwt_extended.create_access_token(identity=data)
+    self.logger.info(f"Encoding JWT access token")
+    
+    try:
+      access_token = flask_jwt_extended.create_access_token(identity=data)
+      self.logger.info(f"JWT access token created successfully")
+    except Exception as error:
+      self.logger.info(f"Error creating JWT access token: {error}")
+      raise error
+      
+    return access_token
   
   def create_refresh_token(self, data):
     self.logger.info(f"Encoding JWT refresh token")
-    return flask_jwt_extended.create_refresh_token(identity=data)
+    
+    try:
+      refresh_token = flask_jwt_extended.create_refresh_token(identity=data)
+      self.logger.info(f"JWT refresh token created successfully")
+    except Exception as error:
+      self.logger.info(f"Error creating JWT refresh token: {error}")
+      raise error
+    
+    return refresh_token
   
   def decode(self, token):
     self.logger.info(f"Decoding JWT token")
-    return flask_jwt_extended.decode_token(token)
-  
+    
+    try:
+      # Decode the token to extract the identity
+      decoded_token = flask_jwt_extended.decode_token(token)
+      self.logger.info(f"JWT token decoded successfully")
+    except Exception as error:
+      self.logger.info(f"Error decoding JWT token: {error}")
+      raise error
+
+    return decoded_token
+
   def refresh(self):
     self.logger.info(f"Refreshing JWT token")
-    identity = flask_jwt_extended.get_jwt_identity()
-    return flask_jwt_extended.create_access_token(identity=identity)
+    
+    try:
+      # Refresh the token to get a new access token
+      refreshed_token = flask_jwt_extended.get_jwt()
+      self.logger.info(f"JWT token refreshed successfully")
+    except Exception as error:
+      self.logger.info(f"Error refreshing JWT token: {error}")
+      raise error
 
-# TODO: add error handling!
+    return refreshed_token
+  
+  # TODO: add custom error handling for expired tokens and other JWT errors!

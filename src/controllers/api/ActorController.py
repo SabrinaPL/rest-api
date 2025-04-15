@@ -1,6 +1,7 @@
 from flask import jsonify, make_response, request
 from utils.CustomErrors import CustomError  
 from utils.custom_status_codes import CREDIT_CUSTOM_STATUS_CODES
+from bson import ObjectId
 
 class ActorController:
   def __init__(self, logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service, movie_db_repo):
@@ -10,6 +11,8 @@ class ActorController:
     self.json_convert = json_convert
     self.generate_hateoas_links = generate_hateoas_links
     self.logger = logger
+    
+  # TODO: add try/except block to handle errors
 
   def get_actors(self):
     # Get potential query parameters from the request
@@ -81,12 +84,34 @@ class ActorController:
 
     return make_response(jsonify(response), 200)
 
-  def get_actors_by_movie(self, movie_id):
-    self.logger.info(f"Fetching actors for movie with ID: {movie_id}")
+  def get_actors_by_movie(self, _id):
+    self.logger.info(f"Fetching actors for movie with ID: {_id}")
+    
+    # Fetch movie by ID
+    try:
+      # Convert id to ObjectId
+      _id = ObjectId(_id)
+    except Exception as e:
+      self.logger.error(f"Invalid ID format: {e}")
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[400]["invalid_id"], 400)
+    
+    movie = self.movie_db_repo.find_by_id(_id)
+    
+    if not movie:
+      self.logger.info(f"Movie with ID {_id} not found")
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
+    
+    movie_id = str(movie.movie_id)
+    print(type(movie_id))
+    
+    print("movie id:")
+    print(movie_id)
+    print("movie id type:")
+    print(type(movie_id))
 
-    credits = self.credit_db_repo.find_by_id(movie_id)
+    credits = self.credit_db_repo.find_by_field("id", movie_id)
 
-    if not credits:
+    if not credits or len(credits) == 0:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
       raise CustomError(CREDIT_CUSTOM_STATUS_CODES[404]["no_credits_found"], 404)
 
@@ -99,25 +124,33 @@ class ActorController:
     if not actors:
       self.logger.info(f"No actors found for movie with ID {movie_id}")
       raise CustomError(CREDIT_CUSTOM_STATUS_CODES[404]["no_actors_found"], 404)
-
-    # Convert actors to JSON format
-    self.json_convert.serialize_documents(actors)
-    self.logger.info("Actors converted to JSON format")
     
-    movie_links = self.generate_hateoas_links.create_movies_links(movie_id)
-    pagination_links = self.generate_hateoas_links.create_pagination_links("credit.get_actors_by_movie", 1, 20, len(actors), movie_id=movie_id)
-    self.logger.info("Pagination links generated")
+    # Convert actors to JSON-serializable format
+    actors_json = []
+    for actor in actors:
+        actors_json.append({
+            "cast_id": actor.cast_id,
+            "character": actor.character,
+            "credit_id": actor.credit_id,
+            "gender": actor.gender,
+            "id": actor.id,
+            "name": actor.name,
+            "order": actor.order,
+            "profile_path": actor.profile_path,
+        })
+      
+    self.logger.info(f"Actors converted to JSON format")
+
+    movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors=True, has_ratings=False)
 
     response = {
       "message": "Actors fetched successfully",
-      "total": len(actors),
-      "actors": actors,
+      "total": len(actors_json),
+      "actors": actors_json,
       "_links": {
         "self": movie_links['self'],
         "delete": movie_links['delete'],
-        "update": movie_links['update'],
-        "ratings": movie_links['ratings'],
-        **pagination_links
+        "update": movie_links['update']
       }
     }
 

@@ -42,7 +42,7 @@ class MovieQueryService:
           
           query['cast__name__icontains'] = value
           credits_for_actor = self.credit_db_repo.find_by_query(query)
-  
+
           # Loop through credits_for_actor and retrieve the _id for all of the objects (movies the actor has acted in)
           movie_ids = [credit.id for credit in credits_for_actor]
           self.logger.info(f"Movie IDs for actor {value}: {movie_ids}")

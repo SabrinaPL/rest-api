@@ -1,4 +1,5 @@
 from flask_talisman import Talisman
+from flask import request
 
 def configure_talisman(app):
     """
@@ -15,17 +16,19 @@ def configure_talisman(app):
         referrer_policy="no-referrer"  # Enhances privacy
     )
 
-    # Allow Swagger static files (CSS, JS etc.) to be loaded
     @app.after_request
     def add_swagger_headers(response):
         """
         Add specific headers to allow Flasgger's Swagger UI resources (JS, CSS, etc.) to be loaded.
         """
-        if 'flasgger_static' in response.request.path:
-            response.headers['X-Content-Type-Options'] = 'nosniff'  # Prevent content-type sniffing
-            response.headers['Content-Security-Policy'] = "default-src 'self';"  # Relax CSP for Swagger
-            response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-            response.headers['X-Frame-Options'] = 'ALLOW-FROM *'  # Allow the Swagger UI to be framed
+        if 'flasgger_static' in request.path:
+            return response  # Don't modify headers for Flasgger static assets
+
+        # These headers apply to other responses
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['Content-Security-Policy'] = "default-src 'self';"
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        response.headers['X-Frame-Options'] = 'ALLOW-FROM *'  # or DENY, depending on your use case
 
         return response
 

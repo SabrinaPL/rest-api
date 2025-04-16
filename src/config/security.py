@@ -3,34 +3,40 @@ from flask import request
 
 def configure_talisman(app):
     """
-    Configures Flask-Talisman for security headers.
+    Configures Flask-Talisman with relaxed CSP headers for Swagger UI.
     """
     talisman = Talisman(
         app,
         force_https=True,
         strict_transport_security=True,
-        strict_transport_security_max_age=31536000,  # 1 year
-        frame_options="DENY",  # Prevents clickjacking
-        session_cookie_secure=True,  # Ensures cookies are only sent over HTTPS
-        session_cookie_http_only=True,  # Protects against XSS
-        referrer_policy="no-referrer"  # Enhances privacy
+        strict_transport_security_max_age=31536000,
+        frame_options="DENY",
+        session_cookie_secure=True,
+        session_cookie_http_only=True,
+        referrer_policy="no-referrer"
     )
 
     @app.after_request
     def add_swagger_headers(response):
         """
-        Add specific headers to allow Flasgger's Swagger UI resources (JS, CSS, etc.) to be loaded.
+        Add CSP and other headers allowing Flasgger Swagger UI to function.
         """
-        if 'flasgger_static' in request.path:
-            return response  # Don't modify headers for Flasgger static assets
-
-        # These headers apply to other responses
-        response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['Content-Security-Policy'] = "default-src 'self';"
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-        response.headers['X-Frame-Options'] = 'ALLOW-FROM *'  # or DENY, depending on your use case
+        if 'flasgger_static' in request.path or '/apidocs' in request.path:
+            response.headers['Content-Security-Policy'] = (
+                "default-src 'self'; "
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                "script-src 'self' 'unsafe-inline'; "
+                "font-src 'self' https://fonts.gstatic.com https://migaku-public-data.migaku.com; "
+                "img-src 'self' data:; "
+                "connect-src 'self'; "
+                "frame-ancestors 'none';"
+            )
+        else:
+            response.headers['Content-Security-Policy'] = "default-src 'self';"
+            response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            response.headers['X-Frame-Options'] = 'DENY'
 
         return response
 
     return talisman
-

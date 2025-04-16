@@ -14,21 +14,20 @@ def configure_talisman(app):
         session_cookie_http_only=True,  # Protects against XSS
         referrer_policy="no-referrer"  # Enhances privacy
     )
-    
+
     # Allow Swagger static files (CSS, JS etc.) to be loaded
-    app.after_request(func=add_swagger_headers)
+    @app.after_request
+    def add_swagger_headers(response):
+        """
+        Add specific headers to allow Flasgger's Swagger UI resources (JS, CSS, etc.) to be loaded.
+        """
+        if 'flasgger_static' in response.request.path:
+            response.headers['X-Content-Type-Options'] = 'nosniff'  # Prevent content-type sniffing
+            response.headers['Content-Security-Policy'] = "default-src 'self';"  # Relax CSP for Swagger
+            response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+            response.headers['X-Frame-Options'] = 'ALLOW-FROM *'  # Allow the Swagger UI to be framed
+
+        return response
 
     return talisman
 
-def add_swagger_headers(response):
-    """
-    Add specific headers to allow Flasgger's Swagger UI resources (JS, CSS, etc.) to be loaded.
-    """
-    # Allow Flasgger resources to be accessed without security restrictions
-    if 'flasgger_static' in response.request.path:
-        response.headers['X-Content-Type-Options'] = 'nosniff'  # Prevent content-type sniffing
-        response.headers['Content-Security-Policy'] = "default-src 'self';"  # Relax CSP for Swagger
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-        response.headers['X-Frame-Options'] = 'ALLOW-FROM *'  # Allow the Swagger UI to be framed
-    
-    return response

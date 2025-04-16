@@ -25,7 +25,9 @@ def configure_talisman(app):
             response.headers['Content-Security-Policy'] = (
                 "default-src 'self'; "
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
+                "style-src-elem 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
                 "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+                "script-src-elem 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
                 "font-src 'self' https://fonts.gstatic.com https://migaku-public-data.migaku.com; "
                 "img-src 'self' data:; "
                 "connect-src 'self'; "
@@ -40,3 +42,4 @@ def configure_talisman(app):
         return response
 
     return talisman
+

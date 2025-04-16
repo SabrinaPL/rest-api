@@ -7,7 +7,7 @@ class JsonWebToken:
     pass
   
   def create_access_token(self, data):
-    self.logger.info(f"Encoding JWT access token")
+    self.logger.info(f"Creating JWT access token")
     
     try:
       access_token = flask_jwt_extended.create_access_token(identity=data)
@@ -19,7 +19,7 @@ class JsonWebToken:
     return access_token
   
   def create_refresh_token(self, data):
-    self.logger.info(f"Encoding JWT refresh token")
+    self.logger.info(f"Creating JWT refresh token")
     
     try:
       refresh_token = flask_jwt_extended.create_refresh_token(identity=data)
@@ -48,7 +48,12 @@ class JsonWebToken:
     
     try:
       # Refresh the token to get a new access token
-      refreshed_token = flask_jwt_extended.get_jwt()
+      # Get the user identity from the refresh token
+      identity = flask_jwt_extended.get_jwt_identity()
+        
+      # Generate a new access token
+      refreshed_token = flask_jwt_extended.create_access_token(identity=identity)
+        
       self.logger.info(f"JWT token refreshed successfully")
     except Exception as error:
       self.logger.info(f"Error refreshing JWT token: {error}")

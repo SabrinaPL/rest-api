@@ -17,7 +17,7 @@ class ActorController:
   def get_actors(self):
     # Get potential query parameters from the request
     query_params = request.args.to_dict()
-    
+  
     # Extract and validate pagination parameters
     try:
       page = int(query_params.pop('page', 1))

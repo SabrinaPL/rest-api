@@ -218,8 +218,14 @@ class MovieController:
       self.movie_db_repo.update(movie_id, **movie_data)
       self.logger.info(f"Movie with ID {movie_id} updated successfully")
       
-      has_actors = self.check_if_actors(movie_id)
-      has_ratings = self.check_if_ratings(movie_id)
+      movie = self.movie_db_repo.find_by_id(movie_id)
+      
+      if not movie:
+        self.logger.info(f"Movie with ID {movie_id} not found")
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
+
+      has_actors = self.check_if_actors(movie.movie_id)
+      has_ratings = self.check_if_ratings(movie.movie_id)
 
       movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors, has_ratings)
 
@@ -229,8 +235,8 @@ class MovieController:
           "self": movie_links['self'],
           "delete": movie_links['delete'],
           "update": movie_links['update'],
-          "actors": movie_links['credits'],
-          "ratings": movie_links['ratings']
+          "actors": movie_links['actors'] if has_actors else None,
+          "ratings": movie_links['ratings'] if has_ratings else None
         }
       }
 

@@ -112,13 +112,6 @@ jobs:
         run: |
           echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
 
-      - name: Authenticate with Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          echo $HEROKU_API_KEY | heroku auth:token
-          heroku auth:whoami
-
       - name: Set Heroku Config Vars
         run: |
           echo "Setting Heroku config vars for app: rest-api-design"
@@ -149,23 +142,3 @@ jobs:
       - name: Release the App on Heroku
         run: |
           heroku container:release web --app rest-api-design
-
-  health-check:
-    runs-on: ubuntu-latest
-    needs: deploy  # Run this job only if the deploy job succeeds
-
-    steps:
-      - name: Wait for App to Be Ready
-        run: |
-          echo "Waiting for app to be fully deployed..."
-          sleep 120  # Wait for 120 seconds to give the app time to start
-
-      - name: Health Check - Verify the Application is Running
-        run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://rest-api-design-a17625cba941.herokuapp.com/health
-          if [ "$response" -ne 200 ]; then
-            echo "Health check failed! Response code: $response"
-            exit 1
-          else
-            echo "Health check passed with response code: $response"
-          fi

@@ -35,6 +35,11 @@ class ActorController:
       # Validate the query parameters
       query = self.movie_query_service.build_query('actors', query_params)
       self.logger.info("Query built successfully")
+      
+      # Replace 'movie_id' with '_id' in the query for the credits collection
+      if 'movie_id' in query:
+        query['id'] = query.pop('movie_id')
+        self.logger.info("Replaced 'movie_id' with 'id' in the query for credits collection")
     else: 
       self.logger.info("Query parameters not provided, fetching all actors...")
       query = {}

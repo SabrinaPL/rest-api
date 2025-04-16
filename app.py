@@ -47,10 +47,9 @@ app = Flask(__name__)
 Swagger(app, template={
     "info": {
         "title": "RESTful Movies API",
-        "description": "API documentation for the Movie API",
+        "description": "API documentation for the Movies API",
         "version": "1.0.0"
     },
-    "host": "localhost:5000",
     "basePath": "/api/v1"
 })
 

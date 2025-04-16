@@ -133,8 +133,8 @@ class MovieController:
         "self": movie_links['self'],
         "delete": movie_links['delete'],
         "update": movie_links['update'],
-        "actors": movie_links['actors'],
-        # "ratings": movie_links['ratings'],
+        "actors": movie_links['actors'] if has_actors else None,
+        "ratings": movie_links['ratings'] if has_ratings else None,
       }
     }
 

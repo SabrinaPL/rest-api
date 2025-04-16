@@ -71,27 +71,40 @@ jobs:
         run: |
           docker ps
 
-      # postman-tests:
-  #   runs-on: ubuntu-latest
-  #   needs: build  # Run this job only if the build job succeeds
-  #
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v3
-  #
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '16'
-  #
-  #     - name: Install Newman  
-  #       run: |
-  #         npm install -g newman
-  #
-  #     - name: Run Postman Tests
-  #       run: newman run tests/postman/postman_collection.json --reporters cli
-
-  # curl http://localhost:5000/health
+  postman-tests:
+    runs-on: ubuntu-latest
+    needs: docker  # Ensure backend is up before testing
+        
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+        
+      - name: Install Newman
+        run: npm install -g newman
+        
+      - name: Wait for API to be Ready
+        run: |
+          echo "Waiting for the API to become available..."
+          for i in {1..15}; do
+            if curl --silent http://localhost:5000/health; then
+              echo "API is up!"
+              break
+            fi
+            echo "Still waiting..."
+            sleep 5
+          done
+        
+      - name: Run Postman Tests
+        run: |
+          newman run tests/postman/postman_collection.json \
+            --environment tests/postman/postman_environment.json \
+            --reporters cli,json \
+            --reporter-json-export newman-report.json
 
   deploy:
     runs-on: ubuntu-latest

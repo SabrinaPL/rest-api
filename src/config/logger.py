@@ -1,5 +1,6 @@
 from loguru import logger
 import sys
+import os
 
 # Remove default logging handler
 logger.remove()
@@ -11,6 +12,11 @@ logger.add(
     level="INFO",
     enqueue=True,
 )
+
+# Ensure the logs directory exists
+log_directory = "logs"
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory)
 
 logger.add(
     "logs/app.log",  # Log to a file

@@ -30,8 +30,11 @@ class UserController:
             response = {
                 "message": "User deleted successfully"
             }
-            return make_response(jsonify(response), 200)
+            return make_response(jsonify(response), 204)
 
+        except CustomError as e:
+            self.logger.error(f"Custom error occurred: {e}")
+            raise e
         except Exception as e:
             self.logger.error(f"Unexpected error while deleting user {user_id}: {e}")
             raise CustomError(USER_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

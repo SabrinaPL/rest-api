@@ -36,4 +36,4 @@ def seed_database(data_service, logger):
       
     except Exception as e:
       logger.error(f"❌ Error seeding database: {e}")
-      raise
+      raise e

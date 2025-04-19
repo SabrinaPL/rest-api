@@ -38,107 +38,123 @@ class MovieController:
       return has_ratings
 
   def get_movies(self):
-    # Get potential query parameters from the request
-    query_params = request.args.to_dict()
-  
-    # Extract and validate pagination parameters
     try:
-      page = int(query_params.pop('page', 1))
-      per_page = int(query_params.pop('per_page', 20))
+      # Get potential query parameters from the request
+      query_params = request.args.to_dict()
+  
+      # Extract and validate pagination parameters
+      try:
+        page = int(query_params.pop('page', 1))
+        per_page = int(query_params.pop('per_page', 20))
 
-      if page < 1 or per_page < 1:
-        raise ValueError("Page and per_page must be greater than 0")
-    except ValueError:
-      self.logger.error("Invalid pagination parameters")
-      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
+        if page < 1 or per_page < 1:
+          raise ValueError("Page and per_page must be greater than 0")
+      except ValueError:
+        self.logger.error("Invalid pagination parameters")
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
 
-    if query_params:
-      self.logger.info("Query parameters provided, fetching movies by filter...")
+      if query_params:
+        self.logger.info("Query parameters provided, fetching movies by filter...")
       
-      # Validate the query parameters
-      query = self.movie_query_service.build_query('movies', query_params)
-      self.logger.info("Query built successfully")
-    else: 
-      self.logger.info("Query parameters not provided, fetching all movies...")
-      query = {}
+        # Validate the query parameters
+        query = self.movie_query_service.build_query('movies', query_params)
+        self.logger.info("Query built successfully")
+      else: 
+        self.logger.info("Query parameters not provided, fetching all movies...")
+        query = {}
      
-    movies = self.movie_db_repo.find_by_query(query)
+      movies = self.movie_db_repo.find_by_query(query)
 
-    if not movies:
-      self.logger.info("No movies found")
-      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
+      if not movies:
+        self.logger.info("No movies found")
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
 
-    self.logger.info(f"Found {len(movies)} movies")
+      self.logger.info(f"Found {len(movies)} movies")
     
-    movies_json = [
-            {
-                "id": str(movie.id),
-                "movie_id": movie.movie_id,
-                "title": movie.title,
-                "release_year": movie.release_date.year if movie.release_date else None,
-                "genre": [genre.name for genre in movie.genres],
-                "description": movie.overview,
-            }
-            for movie in movies
-        ]
+      movies_json = [
+              {
+                  "id": str(movie.id),
+                  "movie_id": movie.movie_id,
+                  "title": movie.title,
+                  "release_year": movie.release_date.year if movie.release_date else None,
+                  "genre": [genre.name for genre in movie.genres],
+                  "description": movie.overview,
+              }
+              for movie in movies
+          ]
 
-    pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_movies", page, per_page, len(movies))
-    self.logger.info("Pagination links generated")
+      pagination_links = self.generate_hateoas_links.create_pagination_links("movie.get_movies", page, per_page, len(movies))
+      self.logger.info("Pagination links generated")
   
-    response = {
-      "message": "Movies fetched successfully",
-      "total": len(movies),
-      "movies": movies_json,
-      "_links": {
-        **pagination_links
+      response = {
+        "message": "Movies fetched successfully",
+        "total": len(movies),
+        "movies": movies_json,
+        "_links": {
+          **pagination_links
+        }
       }
-    }
 
-    return make_response(jsonify(response), 200)
-  
-  def get_movie_by_id(self, movie_id):
-    self.logger.info(f"Fetching movie with ID: {movie_id}")
- 
-    # Validate and convert id to ObjectId
-    try:
-      movie_object_id = ObjectId(movie_id)
+      return make_response(jsonify(response), 200)
+    
+    except CustomError as e:
+      self.logger.error(f"Custom error occurred: {e}")
+      raise e
     except Exception as e:
-      self.logger.error(f"Invalid ID format: {e}")
-      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["invalid_id"], 400)
+      self.logger.error(f"Error fetching movies: {e}")
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+
+  def get_movie_by_id(self, movie_id):
+    try:
+      self.logger.info(f"Fetching movie with ID: {movie_id}")
+ 
+      # Validate and convert id to ObjectId
+      try:
+        movie_object_id = ObjectId(movie_id)
+      except Exception as e:
+        self.logger.error(f"Invalid ID format: {e}")
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[400]["invalid_id"], 400)
     
-    movie = self.movie_db_repo.find_by_id(movie_object_id)
+      movie = self.movie_db_repo.find_by_id(movie_object_id)
 
-    if not movie:
-      self.logger.info(f"Movie with ID {movie_id} not found")
-      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
+      if not movie:
+        self.logger.info(f"Movie with ID {movie_id} not found")
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
     
-    # Query the credits and ratings collections using the string or int representation of movie_id
-    has_actors = self.check_if_actors(movie.movie_id)
-    has_ratings = self.check_if_ratings(movie.movie_id)
+      # Query the credits and ratings collections using the string or int representation of movie_id
+      has_actors = self.check_if_actors(movie.movie_id)
+      has_ratings = self.check_if_ratings(movie.movie_id)
 
-    movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors, has_ratings)
+      movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors, has_ratings)
 
-    movie_json = {
-        "id": movie.movie_id,
-        "title": movie.title,
-        "release_year": movie.release_date.year if movie.release_date else None,
-        "genre": [genre.name for genre in movie.genres],
-        "description": movie.overview,
+      movie_json = {
+          "id": movie.movie_id,
+          "title": movie.title,
+          "release_year": movie.release_date.year if movie.release_date else None,
+          "genre": [genre.name for genre in movie.genres],
+          "description": movie.overview,
+        }
+
+      response = {
+        "message": "Movie fetched successfully",
+        "movie": movie_json,
+        "_links": {
+          "self": movie_links['self'],
+          "delete": movie_links['delete'],
+          "update": movie_links['update'],
+          "actors": movie_links['actors'] if has_actors else None,
+          "ratings": movie_links['ratings'] if has_ratings else None,
+        }
       }
 
-    response = {
-      "message": "Movie fetched successfully",
-      "movie": movie_json,
-      "_links": {
-        "self": movie_links['self'],
-        "delete": movie_links['delete'],
-        "update": movie_links['update'],
-        "actors": movie_links['actors'] if has_actors else None,
-        "ratings": movie_links['ratings'] if has_ratings else None,
-      }
-    }
-
-    return make_response(jsonify(response), 200)
+      return make_response(jsonify(response), 200)
+    
+    except CustomError as e:
+      self.logger.error(f"Custom error occurred: {e}")
+      raise e
+    except Exception as e:
+      self.logger.error(f"Error fetching movie: {e}")
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   
   def create_movie (self):
     """
@@ -171,6 +187,10 @@ class MovieController:
       }
       
       return make_response(jsonify(response), 201)
+    
+    except CustomError as e:
+      self.logger.error(f"Custom error occurred: {e}")
+      raise e
     except Exception as e:
       self.logger.error(f"Error saving movie: {e}")
       raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
@@ -186,15 +206,23 @@ class MovieController:
         self.logger.info(f"Movie with ID {movie_id} not found")
         raise CustomError(MOVIE_CUSTOM_STATUS_CODES[404]["movie_not_found"], 404)
 
-      # Delete the movie
-      self.movie_db_repo.delete(movie_id)
-      self.logger.info(f"Movie with ID {movie_id} deleted successfully")
+      try:
+        # Delete the movie
+        self.movie_db_repo.delete(movie_id)
+        self.logger.info(f"Movie with ID {movie_id} deleted successfully")
+      except Exception as e:
+        self.logger.error(f"Error deleting movie: {e}")
+        raise e
 
       response = {
         "message": "Movie deleted successfully",
       }
 
       return make_response(jsonify(response), 204)
+    
+    except CustomError as e:
+      self.logger.error(f"Custom error occurred: {e}")
+      raise e
     except Exception as e:
       self.logger.error(f"Error deleting movie: {e}")
       raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
@@ -218,7 +246,11 @@ class MovieController:
       self.movie_db_repo.update(movie_id, **movie_data)
       self.logger.info(f"Movie with ID {movie_id} updated successfully")
       
-      movie = self.movie_db_repo.find_by_id(movie_id)
+      try:
+        movie = self.movie_db_repo.find_by_id(movie_id)
+      except Exception as e:
+        self.logger.error(f"Error fetching updated movie: {e}")
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
       
       if not movie:
         self.logger.info(f"Movie with ID {movie_id} not found")
@@ -227,7 +259,11 @@ class MovieController:
       has_actors = self.check_if_actors(movie.movie_id)
       has_ratings = self.check_if_ratings(movie.movie_id)
 
-      movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors, has_ratings)
+      try:
+        movie_links = self.generate_hateoas_links.create_movies_links(movie_id, has_actors, has_ratings)
+      except Exception as e:
+        self.logger.error(f"Error generating HATEOAS links: {e}")
+        raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
       response = {
         "message": "Movie updated successfully",
@@ -241,6 +277,10 @@ class MovieController:
       }
 
       return make_response(jsonify(response), 200)
+    
+    except CustomError as e:
+      self.logger.error(f"Custom error occurred: {e}")
+      raise e
     except Exception as error:
       self.logger.error(f"Error updating movie: {error}")
       raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

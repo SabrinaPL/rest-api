@@ -118,6 +118,7 @@ class AccountController:
       }
 
       return make_response(jsonify(response), 200)
+
     except CustomError as e:
       raise e
     except Exception as e:

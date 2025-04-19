@@ -75,6 +75,8 @@ def create_movie_blueprint(controller):
         responses:
           200:
             description: Movies fetched successfully
+          400:
+            description: Invalid query parameters
           404:
             description: No movies found
           500:
@@ -102,6 +104,8 @@ def create_movie_blueprint(controller):
         responses:
           200:
             description: Movie fetched successfully
+          400:
+            description: Invalid movie ID format
           404:
             description: Movie not found
           500:
@@ -242,7 +246,7 @@ def create_movie_blueprint(controller):
               type: string
               description: The unique ID of the movie to delete.
         responses:
-          200:
+          204:
             description: Movie deleted successfully
           404:
             description: Movie not found

@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 from flask_jwt_extended import JWTManager
+from utils.custom_status_codes import JWT_CUSTOM_STATUS_CODES
 
 def setup_jwt(app):
   # Load config settings from .env
@@ -21,6 +22,6 @@ def setup_jwt(app):
   @jwt.expired_token_loader
   def expired_token_callback(jwt_header, jwt_payload):
     return {
-      "error": "Token has expired",
+      "error": JWT_CUSTOM_STATUS_CODES[401]["unauthorized"],
       "status": 401
     }, 401

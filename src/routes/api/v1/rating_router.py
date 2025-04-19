@@ -60,18 +60,18 @@ def create_rating_blueprint(controller):
               items:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                    description: The unique identifier for the rating
-                    example: 1
-                  text:
-                    type: string
-                    description: Rating text (e.g., "5/5")
-                    example: "5/5"
                   movie:
                     type: string
-                    description: The title of the movie being rated
-                    example: The Shawshank Redemption
+                    description: The movie title
+                  text:
+                    type: float
+                    description: The rating score
+                    example: 4.5
+                  id:
+                    type: string
+                    description: The ID of the rating
+                    example: 67eef...
+                  
             _links:
               type: object
               properties:
@@ -87,6 +87,15 @@ def create_rating_blueprint(controller):
                   type: string
                   description: Link to the last page of ratings
                   example: /api/v1/ratings?page=3
+      400:    
+          description: Invalid query parameters
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message
+                example: Invalid query parameters
       404:
         description: No ratings found
         schema:
@@ -96,6 +105,15 @@ def create_rating_blueprint(controller):
               type: string
               description: Error message
               example: No ratings found
+      500:
+        description: Internal server error
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Error message
+              example: An unexpected error occurred
     """
         return controller.get_ratings()
 
@@ -126,21 +144,7 @@ def create_rating_blueprint(controller):
                 type: string
                 description: Success message
                 example: Rating fetched successfully
-              rating:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    description: The unique identifier for the rating
-                    example: 1
-                  text:
-                    type: string
-                    description: Rating text (e.g., "4/5")
-                    example: "4/5"
-                  movie:
-                    type: string
-                    description: The title of the rated movie
-                    example: The Godfather
+          
         404:
           description: Rating not found
           schema:
@@ -158,7 +162,7 @@ def create_rating_blueprint(controller):
               message:
                 type: string
                 description: Error message
-                example: An unexpected error occurred
+                example: An unexpected error occurred while processing the request
         """
         return controller.get_movie_rating(movie_id)
 

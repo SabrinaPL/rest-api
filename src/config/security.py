@@ -1,4 +1,6 @@
 from flask_talisman import Talisman
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 def configure_talisman(app):
     """
@@ -26,3 +28,13 @@ def configure_talisman(app):
         }
     )
     return talisman
+
+def configure_rate_limiting(app):
+    """
+    Configures rate limiting for the app.
+    """
+    limiter = Limiter(
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"]
+    )
+    limiter.init_app(app)

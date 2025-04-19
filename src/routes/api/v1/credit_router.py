@@ -43,6 +43,8 @@ def create_credit_blueprint(controller):
         responses:
           200:
             description: Actors fetched successfully
+          400:
+            description: Invalid query parameters
           404:
             description: No actors found
           500:
@@ -70,8 +72,10 @@ def create_credit_blueprint(controller):
         responses:
           200:
             description: Actors fetched successfully
+          400:
+            description: Invalid movie ID format
           404:
-            description: No actors found for this movie
+            description: No movie found or actors found for this movie
           500:
             description: Internal server error
         """

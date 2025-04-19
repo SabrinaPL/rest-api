@@ -9,7 +9,7 @@ from flasgger import Swagger
 from routes.router import main_blueprint
 from dotenv import load_dotenv
 from config.logger import get_logger
-from config.security import configure_talisman
+from config.security import configure_talisman, configure_rate_limiting
 from config.mongo_engine import connect_to_database
 from config.jwt import setup_jwt
 from config.mongo_uri import setup_mongo_uri
@@ -53,13 +53,14 @@ Swagger(app, template={
     "basePath": "/api/v1"
 })
 
-# TODO: Add rate limiting
-
 # Setup Loguru logger
 logger = get_logger()
 
 flask_env = os.getenv("FLASK_ENV")
 app.config["FLASK_ENV"] = flask_env
+
+# Setup rate limiter
+configure_rate_limiting(app)
 
 # Set up the mongo URI
 mongo_uri = setup_mongo_uri(app)

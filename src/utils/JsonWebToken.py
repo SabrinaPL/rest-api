@@ -1,4 +1,6 @@
 import flask_jwt_extended
+from utils.custom_status_codes import JWT_CUSTOM_STATUS_CODES
+from utils.CustomErrors import CustomError
 
 # Utility class for encoding and decoding jwt tokens and jwt refresh tokens using Flask-JWT-Extended
 class JsonWebToken:
@@ -14,7 +16,7 @@ class JsonWebToken:
       self.logger.info(f"JWT access token created successfully")
     except Exception as error:
       self.logger.info(f"Error creating JWT access token: {error}")
-      raise error
+      raise CustomError(JWT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
       
     return access_token
   
@@ -26,7 +28,7 @@ class JsonWebToken:
       self.logger.info(f"JWT refresh token created successfully")
     except Exception as error:
       self.logger.info(f"Error creating JWT refresh token: {error}")
-      raise error
+      raise CustomError(JWT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
     
     return refresh_token
   
@@ -39,7 +41,7 @@ class JsonWebToken:
       self.logger.info(f"JWT token decoded successfully")
     except Exception as error:
       self.logger.info(f"Error decoding JWT token: {error}")
-      raise error
+      raise CustomError(JWT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     return decoded_token
 
@@ -57,8 +59,6 @@ class JsonWebToken:
       self.logger.info(f"JWT token refreshed successfully")
     except Exception as error:
       self.logger.info(f"Error refreshing JWT token: {error}")
-      raise error
+      raise CustomError(JWT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     return refreshed_token
-  
-  # TODO: add custom error handling for expired tokens and other JWT errors!

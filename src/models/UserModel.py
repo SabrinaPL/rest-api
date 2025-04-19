@@ -2,6 +2,8 @@ import mongoengine as m_engine
 import validators
 from flask_bcrypt import generate_password_hash, check_password_hash
 from .BaseSchema import BaseDocument
+from utils.CustomErrors import CustomError
+from utils.custom_status_codes import ACCOUNT_CUSTOM_STATUS_CODES
 
 # Defines the model for the User collection
 class User(BaseDocument):
@@ -22,23 +24,23 @@ class User(BaseDocument):
     def clean(self):
         # Validate first_name
         if not self.first_name or not self.first_name.strip():
-            raise m_engine.ValidationError("First name is required and cannot be empty.")
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_first_name"], 400)
         
         # Validate last_name
         if not self.last_name or not self.last_name.strip():
-            raise m_engine.ValidationError("Last name is required and cannot be empty.")
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_last_name"], 400)
         
         # Validate username
         if not self.username or not self.username.strip():
-            raise m_engine.ValidationError("Username is required and cannot be empty.")
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_username"], 400)
         
         # Validate email
         if not validators.email(self.email):
-            raise m_engine.ValidationError("Invalid email address.")
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_email"], 400)
         
         # Validate password
         if not self.password or len(self.password) < 8:
-            raise m_engine.ValidationError("Password is required and must be at least 8 characters long.")
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_password"], 400)
 
     # Save the user to the database
     def save(self, *args, **kwargs):

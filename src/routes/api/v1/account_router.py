@@ -39,6 +39,8 @@ def create_account_blueprint(account_controller, user_controller):
             description: User logged in successfully
           400:
             description: Invalid credentials
+          500:
+            description: Internal server error
         """
         return account_controller.login()
 
@@ -67,6 +69,8 @@ def create_account_blueprint(account_controller, user_controller):
         responses:
           200:
             description: Token refreshed successfully
+          400:
+            description: Invalid refresh token
           500:
             description: Internal server error
         """
@@ -107,6 +111,8 @@ def create_account_blueprint(account_controller, user_controller):
         responses:
           201:
             description: User registered successfully
+          400:
+            description: Invalid input data
           500:
             description: Internal server error
         """
@@ -139,8 +145,10 @@ def create_account_blueprint(account_controller, user_controller):
               type: string
               description: The unique ID of the user to delete.
         responses:
-          200:
+          204:
             description: User deleted successfully
+          400:
+            description: Invalid or missing user ID
           500:
             description: User deletion failed
         """

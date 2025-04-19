@@ -61,7 +61,7 @@ RATING_CUSTOM_STATUS_CODES = {
   },
   404: {
     "movie_not_found": "Movie not found",
-    "no_ratings": "No ratings found for the specified movie",
+    "no_ratings": "No ratings found",
   },
   500: {
     "internal_error": "An unexpected error occurred while processing the request",
@@ -100,3 +100,13 @@ GENERAL_CUSTOM_STATUS_CODES = {
     "internal_error": "An unexpected error occurred while processing the request",
   }
 }
+
+JWT_CUSTOM_STATUS_CODES = {
+  401: {
+    "unauthorized": "Access denied. Invalid or expired token.",
+  },
+  500: {
+    "internal_error": "An unexpected error occurred while processing the request",
+  }
+}
+  

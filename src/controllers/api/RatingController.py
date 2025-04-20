@@ -129,20 +129,28 @@ class RatingController:
       if not ratings or len(ratings) == 0:
         self.logger.info(f"No ratings found for movie with ID {movie_id}")
         raise CustomError(RATING_CUSTOM_STATUS_CODES[404]["no_ratings"], 404)
-
+      
+      # Process ratings to extract relevant information
+      processed_ratings = []
       for rating in ratings:
-        self.logger.info(f"Rating element: {rating}, Type: {type(rating)}")
+        try:
+          processed_ratings.append({
+            "id": str(rating.id),
+            "user_id": str(rating.user_id),
+            "movie_title": movie.title,
+            "rating": rating.rating
+          })
 
-      # Convert ratings to JSON format
-      ratings_json = self.json_convert.serialize_documents(ratings)
-      self.logger.info("Ratings converted to JSON format")
-    
+        except Exception as e:
+          self.logger.error(f"Error processing rating: {e}")
+          raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+ 
       movie_links = self.generate_hateoas_links.create_movies_links(_id, has_actors=False, has_ratings=bool(ratings))
 
       response = {
         "message": "Ratings fetched successfully",
-        "total": len(ratings),
-        "ratings": ratings_json,
+        "total": len(processed_ratings),
+        "ratings": processed_ratings,
         "_links": {
           "self": movie_links['ratings'],
           "movie": movie_links['self']

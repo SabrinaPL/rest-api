@@ -75,6 +75,50 @@ def create_movie_blueprint(controller):
         responses:
           200:
             description: Movies fetched successfully
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Success message
+                  example: Movies fetched successfully
+                _links:
+                  type: object
+                  description: Pagination links
+                  example:
+                    first: /api/v1/movies?page=1
+                    next: /api/v1/movies?page=2
+                    last: /api/v1/movies?page=10
+                movies:
+                  type: array
+                  description: List of movies
+                  items:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                        description: Movie description
+                        example: A thrilling adventure of a young hero.
+                      title:
+                        type: string
+                        description: Movie title
+                        example: The Great Adventure
+                      genre: 
+                        type: array
+                        description: List of genres
+                        example: ["Adventure", "Action"]
+                      release_year:
+                        type: integer
+                        desciption: Release year of the movie
+                        example: 2023
+                      id:
+                        type: string
+                        description: Unique ID of the movie
+                        example: 12345abcde
+                      movie_id:
+                        type: string
+                        description: Movie ID
+                        example: 1234        
           400:
             description: Invalid query parameters
           404:
@@ -104,6 +148,40 @@ def create_movie_blueprint(controller):
         responses:
           200:
             description: Movie fetched successfully
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Success message
+                  example: Movie fetched successfully
+                _links:
+                  type: object
+                  description: Links to related resources
+                  example:
+                    self: /api/v1/movies/12345abcde
+                    ratings: /api/v1/ratings/12345abcde/ratings
+                    actors: /api/v1/credits/actors/12345abcde/actors
+                movie:
+                  type: object
+                  description: Movie description
+                  example: Shakespeare's Play transplanted into a 1930s setting.
+                genre:
+                  type: array
+                  description: List of genres
+                  example: ["Drama", "Romance"]
+                release_year:
+                  type: integer
+                  description: Release year of the movie
+                  example: 1979
+                id: 
+                  type: string
+                  description: Unique ID of the movie
+                  example: 12345abcde
+                title:
+                  type: string
+                  description: Movie title
+                  example: The Shakespearian Adventure       
           400:
             description: Invalid movie ID format
           404:
@@ -131,23 +209,44 @@ def create_movie_blueprint(controller):
           content:
             application/json:
               schema:
-          type: object
-          properties:
-            title:
-              type: string
-              description: Title of the movie.
-            director:
-              type: string
-              description: Director of the movie.
-            year:
-              type: integer
-              description: Release year of the movie.
-            genre:
-              type: string
-              description: Genre of the movie.
-          required:
-            - title
-            - director
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the movie.
+                  example: The Great Adventure
+                release year:
+                  type: integer
+                  description: Release year of the movie.
+                  example: 2023
+                genres:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Genre of the movie.
+                        example: Action
+                      id:
+                        type: integer
+                        description: Genre ID.
+                        example: 1
+                overview:
+                    type: string
+                    description: Description of the movie.
+                    example: A thrilling adventure of a young hero.
+              required:
+                  - title
+                  - genres
+                  - release year
+            example:
+              title: The Great Adventure
+              year: 2023
+              genre: 
+                - id: 1
+                  name: Action
+              overview: A thrilling adventure of a young hero.
         responses:
           201:
             description: Movie created successfully

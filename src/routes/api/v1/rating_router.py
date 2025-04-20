@@ -19,7 +19,7 @@ def create_rating_blueprint(controller):
     tags:
       - Ratings
     summary: Fetch all ratings for movies with optional filters
-    description: Retrieves all movie ratings and their details, including the movie title and rating score, with optional filter (rating and pagination filters). If no ratings are found, a 404 error is returned.
+    description: Retrieves all movie ratings and their details, including the movie title and rating score, with optional filter (rating and pagination filters).
     parameters:
     - name: rating
       in: query
@@ -89,31 +89,10 @@ def create_rating_blueprint(controller):
                   example: /api/v1/ratings?page=3
       400:    
           description: Invalid query parameters
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                description: Error message
-                example: Invalid query parameters
       404:
         description: No ratings found
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              description: Error message
-              example: No ratings found
       500:
         description: Internal server error
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              description: Error message
-              example: An unexpected error occurred
     """
         return controller.get_ratings()
 
@@ -144,25 +123,27 @@ def create_rating_blueprint(controller):
                 type: string
                 description: Success message
                 example: Rating fetched successfully
+              id: 
+                  type: string
+                  description: The ID of the rating
+                  example: 67eef...
+              movie_title:
+                  type: string
+                  description: The movie title
+                  example: Cutthroat Island
+              rating:
+                  type: float
+                  description: The rating score
+                  example: 4.5
+              user_id:
+                  type: string
+                  description: The ID of the user who rated the movie
+                  example: 7
           
         404:
           description: Rating not found
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                description: Error message
-                example: Rating not found
         500:
           description: Internal server error
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                description: Error message
-                example: An unexpected error occurred while processing the request
         """
         return controller.get_movie_rating(movie_id)
 

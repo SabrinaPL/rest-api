@@ -43,6 +43,28 @@ def create_credit_blueprint(controller):
         responses:
           200:
             description: Actors fetched successfully
+            schema:
+                type: object
+                properties:
+                  actors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: The ID of the actor
+                          example: "12345"
+                        name:
+                          type: string
+                          description: The name of the actor
+                          example: "Matt Dillon"
+                        movies_played:
+                          type: array
+                          items:
+                            type: string
+                            description: List of movies played by the actor
+                            example: ["Movie 1", "Movie 2"]
           400:
             description: Invalid query parameters
           404:
@@ -72,6 +94,45 @@ def create_credit_blueprint(controller):
         responses:
           200:
             description: Actors fetched successfully
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: Success message
+                  example: Actors fetched successfully
+                actors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      cast_id:
+                        type: string
+                        description: The cast ID of the actor
+                      name:
+                        type: string
+                        description: The name of the actor
+                        example: "Matt Dillon"
+                      character:
+                        type: string
+                        description: The character played by the actor
+                        example: "Larry Maretto"
+                      gender:
+                        type: integer
+                        description: The actors gender
+                        example: 2
+                      order:
+                        type: integer
+                        description: The order of the actor in the cast list
+                        example: 1
+                      profile_path:
+                        type: string
+                        description: The path to the actors profile image
+                        example: "/path/to/profile.jpg"
+                      id:
+                        type: string
+                        description: The ID of the actor
+                        example: "12345"
           400:
             description: Invalid movie ID format
           404:

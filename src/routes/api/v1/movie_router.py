@@ -190,7 +190,7 @@ def create_movie_blueprint(controller):
             description: Internal server error
         """
         return controller.get_movie_by_id(movie_id)
-      
+    
     # Add a new movie
     @movie_blueprint.route('/movies', methods=['POST'])
     @jwt_required()
@@ -202,54 +202,68 @@ def create_movie_blueprint(controller):
           - Movies
         summary: Create a new movie
         description: Adds a new movie to the database. Requires a valid JWT access token.
-        security:
-          - BearerAuth: []
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  description: Title of the movie.
-                  example: The Great Adventure
-                release year:
-                  type: integer
-                  description: Release year of the movie.
-                  example: 2023
-                genres:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      name:
-                        type: string
-                        description: Genre of the movie.
-                        example: Action
-                      id:
-                        type: integer
-                        description: Genre ID.
-                        example: 1
-                overview:
-                    type: string
-                    description: Description of the movie.
-                    example: A thrilling adventure of a young hero.
-              required:
-                  - title
-                  - genres
-                  - release year
-            example:
-              title: The Great Adventure
-              year: 2023
-              genre: 
-                - id: 1
-                  name: Action
-              overview: A thrilling adventure of a young hero.
+        parameters:
+          - name: Authorization
+            in: header
+            required: true
+            schema:
+              type: string
+              description: Bearer JWT token for authentication.
+              example: Bearer <your_jwt_token>
+          - name: title
+            in: body
+            required: true
+            schema:
+              type: string
+              description: Title of the movie.
+              example: The Great Adventure
+          - name: release_year
+            in: body
+            required: true
+            schema:
+              type: integer
+              description: Release year of the movie.
+              example: 2023
+          - name: genres
+            in: body
+            required: true
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: array
+                    description: Genre of the movie.
+                    example: Action
+                  id:
+                    type: integer
+                    description: Genre ID.
+                    example: 1
+          - name: overview
+            in: body
+            required: false
+            schema:
+              type: string
+              description: Description of the movie.
+              example: A thrilling adventure of a young hero.  
         responses:
           201:
             description: Movie created successfully
+            schema:
+                type: object
+                properties:
+                  _links:  
+                      type: object
+                      description: Links to related resources
+                      example:
+                        self: /api/v1/movies/12345abcde
+                        delete: /api/v1/movies/12345abcde
+                        update: /api/v1/movies/12345abcde
+                  message:
+                    type: string
+                    description: Success message
+                    example: Movie created successfully
           400:
             description: Bad request (e.g., missing or invalid fields)
           401:
@@ -270,8 +284,6 @@ def create_movie_blueprint(controller):
           - Movies
         summary: Update a movie
         description: Updates an existing movie's details by its unique ID. Requires a valid JWT access token.
-        security:
-          - BearerAuth: []
         parameters:
           - name: Authorization
             in: header
@@ -279,13 +291,15 @@ def create_movie_blueprint(controller):
             schema:
               type: string
               description: Bearer JWT token for authentication.
+              example: Bearer <your_jwt_token>
           - name: movie_id
             in: path
             required: true
             schema:
               type: string
               description: The unique ID of the movie to update.
-        requestBody:
+              example: 12345abcde
+        requestBody: 
           required: true
           content:
             application/json:
@@ -294,19 +308,48 @@ def create_movie_blueprint(controller):
                 properties:
                   title:
                     type: string
-                    description: Updated title of the movie.
-                  director:
-                    type: string
-                    description: Updated director of the movie.
-                  year:
+                    description: Title of the movie.
+                    example: The Great Adventure
+                  release_year:
                     type: integer
-                    description: Updated release year of the movie.
-                  genre:
+                    description: Release year of the movie.
+                    example: 2023
+                  genres:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: array
+                          description: Genre of the movie.
+                          example: Action
+                        id:
+                          type: integer
+                          description: Genre ID.
+                          example: 1
+                  overview:
                     type: string
-                    description: Updated genre of the movie.
+                    description: Description of the movie.
+                    example: A thrilling adventure of a young hero.   
         responses:
           200:
             description: Movie updated successfully
+            schema:     
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                    example: Movie updated successfully
+                  _links:
+                    type: object
+                    description: Links to related resources
+                    example:
+                      self: /api/v1/movies/12345abcde
+                      delete: /api/v1/movies/12345abcde
+                      update: /api/v1/movies/12345abcde
+                      actors: /api/v1/credits/actors/12345abcde/actors
+                      ratings: /api/v1/ratings/12345abcde/ratings
           400:
             description: Bad request (e.g., invalid fields)
           401:

@@ -388,7 +388,7 @@ def create_movie_blueprint(controller):
               type: string
               description: The unique ID of the movie to delete.
         responses:
-          204:
+          200:
             description: Movie deleted successfully
           404:
             description: Movie not found

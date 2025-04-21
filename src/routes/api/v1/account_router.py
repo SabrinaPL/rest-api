@@ -145,7 +145,7 @@ def create_account_blueprint(account_controller, user_controller):
               type: string
               description: The unique ID of the user to delete.
         responses:
-          204:
+          200:
             description: User deleted successfully
           400:
             description: Invalid or missing user ID

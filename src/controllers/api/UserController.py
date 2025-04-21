@@ -30,7 +30,7 @@ class UserController:
             response = {
                 "message": "User deleted successfully"
             }
-            return make_response(jsonify(response), 204)
+            return make_response(jsonify(response), 200)
 
         except CustomError as e:
             self.logger.error(f"Custom error occurred: {e}")

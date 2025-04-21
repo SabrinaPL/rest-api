@@ -63,6 +63,13 @@ class MovieQueryService:
           
           query.update({'movie_id': {'$in': movie_ids}})
         elif field == 'rating':
+          # Convert rating to a float
+          try:
+            value = float(value)
+          except ValueError:
+            self.logger.error(f"Invalid rating value: {value}")
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_rating_value"], 400)
+          
           # Validate that rating is a valid number
           if not isinstance(value, (int, float)):
             self.logger.error(f"Invalid rating: {type(value)}")
@@ -81,7 +88,7 @@ class MovieQueryService:
             query["rating__gte"] = rating_threshold
 
           elif resource == "movie":
-            # Validate that rating is a valid string
+            # Validate that movie is a valid string
             if not isinstance(value, str):
               self.logger.error(f"Invalid movie: {type(value)}")
               raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_movie_value"], 400)

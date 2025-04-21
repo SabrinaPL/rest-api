@@ -104,14 +104,7 @@ jobs:
       - name: Run Postman Tests
         run: |
           newman run tests/postman/RESTful\ MOVIE\ API.postman_collection.json \
-            --environment tests/postman/postman_environment.json \
-            --reporters cli,json \
-            --reporter-json-export newman-report.json
-      - name: Upload Newman Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: newman-report
-          path: newman-report.json
+            --environment tests/postman/postman_environment.json
 
   deploy:
     runs-on: ubuntu-latest

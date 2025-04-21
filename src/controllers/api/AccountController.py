@@ -49,7 +49,7 @@ class AccountController:
         email = sanitized_data.get("email")
       )
 
-      user.save()
+      user.save(validate=True)
       
       # Convert the user ID to a string for JSON serialization, this is necessary because MongoEngine uses ObjectId which is not JSON serializable
       user_id = str(user.id)

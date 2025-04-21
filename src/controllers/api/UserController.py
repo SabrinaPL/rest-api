@@ -37,4 +37,4 @@ class UserController:
             raise e
         except Exception as e:
             self.logger.error(f"Unexpected error while deleting user {user_id}: {e}")
-            raise e
+            raise CustomError(USER_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

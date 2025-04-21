@@ -102,7 +102,7 @@ class MovieController:
       raise e
     except Exception as e:
       self.logger.error(f"Error fetching movies: {e}")
-      raise e
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def get_movie_by_id(self, movie_id):
     try:
@@ -154,7 +154,7 @@ class MovieController:
       raise e
     except Exception as e:
       self.logger.error(f"Error fetching movie: {e}")
-      raise e
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   
   def create_movie (self):
     """
@@ -193,7 +193,7 @@ class MovieController:
       raise e
     except Exception as e:
       self.logger.error(f"Error saving movie: {e}")
-      raise e
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def delete_movie(self, movie_id):
     self.logger.info(f"Deleting movie with ID: {movie_id}")
@@ -225,7 +225,7 @@ class MovieController:
       raise e
     except Exception as e:
       self.logger.error(f"Error deleting movie: {e}")
-      raise e
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   
   def update_movie(self, movie_id):
     self.logger.info(f"Updating movie with ID: {movie_id}")
@@ -283,7 +283,7 @@ class MovieController:
       raise e
     except Exception as error:
       self.logger.error(f"Error updating movie: {error}")
-      raise e
+      raise CustomError(MOVIE_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
 
     

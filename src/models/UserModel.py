@@ -24,14 +24,23 @@ class User(BaseDocument):
     def clean(self):
         # Validate first_name
         if not self.first_name or not self.first_name.strip():
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["missing_first_name"], 400)
+        
+        if not isinstance(self.first_name, str):
             raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_first_name"], 400)
         
         # Validate last_name
         if not self.last_name or not self.last_name.strip():
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["missing_last_name"], 400)
+        
+        if not isinstance(self.last_name, str):
             raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_last_name"], 400)
         
         # Validate username
         if not self.username or not self.username.strip():
+            raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["missing_username"], 400)
+        
+        if not isinstance(self.username, str):
             raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[400]["invalid_username"], 400)
         
         # Validate email

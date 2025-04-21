@@ -93,7 +93,7 @@ class ActorController:
       raise e
     except Exception as e:
       self.logger.error(f"Unexpected error while fetching actors: {e}")
-      raise e
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def get_actors_by_movie(self, _id):
     try:
@@ -167,5 +167,5 @@ class ActorController:
       raise e
     except Exception as e:
       self.logger.error(f"Unexpected error while fetching actors: {e}")
-      raise e
+      raise CustomError(CREDIT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   

@@ -71,7 +71,7 @@ class AccountController:
       raise e
     except Exception as e:
       self.logger.error(f"Error registering user: {e}")
-      raise e
+      raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   
   def login(self):
     """
@@ -123,7 +123,7 @@ class AccountController:
       raise e
     except Exception as e:
       self.logger.error(f"Error logging in user: {e}")
-      raise e
+      raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def refresh(self):
     """
@@ -154,7 +154,7 @@ class AccountController:
       raise e
     except Exception as e:
       self.logger.error(f"Error refreshing token: {e}")
-      raise e
+      raise CustomError(ACCOUNT_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def check_user(self, username):
       """

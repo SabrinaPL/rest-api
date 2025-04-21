@@ -45,7 +45,7 @@ class RatingController:
         ratings = self.rating_db_repo.find_by_query(query)
       except Exception as e:
         self.logger.error(f"Error fetching ratings: {e}")
-        raise e
+        raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
       
       if not ratings:
         self.logger.info("No ratings found")
@@ -76,7 +76,7 @@ class RatingController:
           })
         except Exception as e:
           self.logger.error(f"Error processing rating: {e}")
-          raise e
+          raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
       try:
         pagination_links = self.generate_hateoas_links.create_pagination_links("rating.get_ratings", page, per_page, len(ratings))
@@ -101,7 +101,7 @@ class RatingController:
       raise e
     except Exception as e:
       self.logger.error(f"Unexpected error while fetching ratings: {e}")
-      raise e
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
   def get_movie_rating(self, _id):
     try:
@@ -164,5 +164,5 @@ class RatingController:
       raise e
     except Exception as e:
       self.logger.error(f"Unexpected error while fetching ratings: {e}")
-      raise e
+      raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
   

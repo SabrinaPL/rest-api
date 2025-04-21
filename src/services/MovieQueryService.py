@@ -122,6 +122,9 @@ class MovieQueryService:
 
       return query
     
+    except CustomError as e:
+      self.logger.error(f"Custom error occurred: {e}")
+      raise e
     except Exception as e:
       self.logger.error(f"Error occurred while building the query: {e}")
       raise CustomError(QUERY_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

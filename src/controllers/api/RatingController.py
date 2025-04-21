@@ -101,7 +101,7 @@ class RatingController:
       raise e
     except Exception as e:
       self.logger.error(f"Unexpected error while fetching ratings: {e}")
-      raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+      raise e
 
   def get_movie_rating(self, _id):
     try:
@@ -164,5 +164,5 @@ class RatingController:
       raise e
     except Exception as e:
       self.logger.error(f"Unexpected error while fetching ratings: {e}")
-      raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+      raise e
   

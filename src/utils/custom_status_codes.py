@@ -88,7 +88,11 @@ QUERY_CUSTOM_STATUS_CODES = {
     "missing_query": "No query parameters provided",
     "invalid_query": "Invalid query parameters",
     "invalid_rating_value": "Rating filter must be a number between 0 and 5",
-    "invalid_year_value": "Year filter must be between 1900 and the current year"
+    "invalid_year_value": "Year filter must be between 1900 and the current year",
+    "invalid_movie_value": "Movie filter must be a string",
+    "invalid_actor_value": "Actor filter must be a string",
+    "invalid_genre_value": "Genre filter must be a string",
+    "invalid_description_value": "Description filter must be a string",
   },
   500: {
     "internal_error": "An unexpected error occurred while processing the request",

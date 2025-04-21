@@ -37,6 +37,11 @@ class MovieQueryService:
       
       for field, value in query_params.items():
         if field == 'actor':
+          # Validate that actor is a valid string
+          if not isinstance(value, str):
+            self.logger.error(f"Invalid actor: {type(value)}")
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_actor_value"], 400)
+
           # Search the credit db collection for the actor
           self.logger.info(f"Searching for movies with actor: {value}")
           
@@ -58,10 +63,15 @@ class MovieQueryService:
           
           query.update({'movie_id': {'$in': movie_ids}})
         elif field == 'rating':
+          # Validate that rating is a valid number
+          if not isinstance(value, (int, float)):
+            self.logger.error(f"Invalid rating: {type(value)}")
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_rating_type"], 400)
+
           rating_threshold = float(value)
 
           if rating_threshold < 0 or rating_threshold > 5:
-            self.logger.error(f"Invalid rating: {rating_threshold}")
+            self.logger.error(f"Invalid rating value: {rating_threshold}")
             raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_rating_value"], 400)
           
           ratings = []
@@ -71,6 +81,11 @@ class MovieQueryService:
             query["rating__gte"] = rating_threshold
 
           elif resource == "movie":
+            # Validate that rating is a valid string
+            if not isinstance(value, str):
+              self.logger.error(f"Invalid movie: {type(value)}")
+              raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_movie_value"], 400)
+            
             # Filtering movies by rating (finding movies whose ratings meet the threshold)
             ratings_query = {"rating__gte": rating_threshold}
             ratings = self.rating_db_repo.find_by_query(ratings_query)
@@ -86,6 +101,11 @@ class MovieQueryService:
                 
               query.update({"movie_id__in": movie_ids})
         elif field == 'genre':
+          # Validate that genre is a valid string
+          if not isinstance(value, str):
+            self.logger.error(f"Invalid genre: {type(value)}")
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_genre_value"], 400)
+          
           self.logger.info(f"Searching for movies with genre: {value}")
 
           query['genres__name__icontains'] = value
@@ -97,6 +117,11 @@ class MovieQueryService:
           
           query.update({'movie_id': {'$in': movie_ids}})
         elif field == 'description':
+          # Validate that description is a valid string
+          if not isinstance(value, str):
+            self.logger.error(f"Invalid description: {type(value)}")
+            raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_description_value"], 400)
+          
           self.logger.info(f"Searching for movies with description: {value}")
           
           query.update({'overview__icontains': value})        

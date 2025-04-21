@@ -1,0 +1,4033 @@
+{
+	"info": {
+		"_postman_id": "244386e6-2bf0-4376-bfa8-4cf1e0caf27e",
+		"name": "RESTful MOVIE API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36896106",
+		"_collection_link": "https://grey-satellite-809596.postman.co/workspace/862f2943-9294-43eb-a6fd-9fb9c1045fdd/collection/36896106-244386e6-2bf0-4376-bfa8-4cf1e0caf27e?action=share&source=collection_link&creator=36896106"
+	},
+	"item": [
+		{
+			"name": "Movie",
+			"item": [
+				{
+					"name": "Fetch all movies w.o. filters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"// Basic array check\r",
+									"pm.test(\"'movies' is an array\", function () {\r",
+									"    pm.expect(response.movies).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Only validate the first movie, if it exists\r",
+									"if (response.movies.length > 0) {\r",
+									"    const movie = response.movies[0]; // or loop over first N with a slice\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'id'\", function () {\r",
+									"        pm.expect(movie.id).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'movie_id'\", function () {\r",
+									"        pm.expect(movie.movie_id).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'title'\", function () {\r",
+									"        pm.expect(movie.title).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'description'\", function () {\r",
+									"        pm.expect(movie.description).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'release_year'\", function () {\r",
+									"        pm.expect(movie.release_year).to.be.a(\"number\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'genre' array\", function () {\r",
+									"        pm.expect(movie.genre).to.be.an(\"array\");\r",
+									"        movie.genre.forEach((g, i) => {\r",
+									"            pm.expect(g, `Genre index ${i}`).to.be.a(\"string\");\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by rating",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getRandomFloat(min, max, decimals = 1) {\r",
+									"    const factor = Math.pow(10, decimals);\r",
+									"    return Math.floor((Math.random() * (max - min) + min) * factor) / factor;\r",
+									"}\r",
+									"\r",
+									"const randomRating = getRandomFloat(0, 5, 1); // Change decimals to 2 if needed\r",
+									"pm.environment.set(\"random_rating\", randomRating);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();\r",
+									"\r",
+									"// Basic array check\r",
+									"pm.test(\"'movies' is an array\", function () {\r",
+									"    pm.expect(response.movies).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"// Only validate the first movie \r",
+									"    const movie = response.movies[0]; // or loop over first N with a slice\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'id'\", function () {\r",
+									"        pm.expect(movie.id).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'movie_id'\", function () {\r",
+									"        pm.expect(movie.movie_id).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'title'\", function () {\r",
+									"        pm.expect(movie.title).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'description'\", function () {\r",
+									"        pm.expect(movie.description).to.be.a(\"string\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'release_year'\", function () {\r",
+									"        pm.expect(movie.release_year).to.be.a(\"number\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"First movie has a valid 'genre' array\", function () {\r",
+									"        pm.expect(movie.genre).to.be.an(\"array\");\r",
+									"        movie.genre.forEach((g, i) => {\r",
+									"            pm.expect(g, `Genre index ${i}`).to.be.a(\"string\");\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?rating={{random_rating}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "rating",
+									"value": "{{random_rating}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by invalid rating",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getRandomString(length = 8) {\r",
+									"    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars.charAt(Math.floor(Math.random() * chars.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"const randomString = getRandomString(10); // You can change the length here\r",
+									"pm.environment.set(\"random_rating\", randomString);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code should be 400\", function () {\r",
+									"    pm.response.to.have.status(400); // Expecting a 400 Bad Request\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message should be 'Rating filter must be a number between 0 and 5'\", function () {\r",
+									"    const responseJson = pm.response.json(); // Parse response JSON\r",
+									"    pm.expect(responseJson.error).to.eql('Rating filter must be a number between 0 and 5'); // Check if error message matches\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?rating={{random_rating}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "rating",
+									"value": "{{random_rating}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"// 1. Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// 2. Message check\r",
+									"pm.test(\"Response message is correct\", function () {\r",
+									"    pm.expect(response.message).to.eql(\"Movies fetched successfully\");\r",
+									"});\r",
+									"\r",
+									"// 3. _links check\r",
+									"pm.test(\"_links structure is correct\", function () {\r",
+									"    pm.expect(response).to.have.property(\"_links\");\r",
+									"});\r",
+									"\r",
+									"// 4. Movies array check\r",
+									"pm.test(\"'movies' is a non-empty array\", function () {\r",
+									"    pm.expect(response.movies).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// 5. Validate first movie object (adjust if you want to check more)\r",
+									"const firstMovie = response.movies[0];\r",
+									"\r",
+									"pm.test(\"First movie has 'movie_id' as a string\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"movie_id\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"First movie has 'release_year' as a number\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"release_year\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"First movie has 'title' as a string\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const fullTitles = [\r",
+									"    'Inception',\r",
+									"    'Titanic',\r",
+									"    'Avatar',\r",
+									"    'The Matrix',\r",
+									"    'Interstellar',\r",
+									"    'Jurassic Park',\r",
+									"    'The Godfather',\r",
+									"    'Pulp Fiction',\r",
+									"    'Fight Club',\r",
+									"    'Forrest Gump',\r",
+									"    'The Dark Knight',\r",
+									"    'Gladiator',\r",
+									"    'The Shawshank Redemption',\r",
+									"    'The Lord of the Rings',\r",
+									"    'The Social Network',\r",
+									"    'The Avengers',\r",
+									"    'Black Panther',\r",
+									"    'Iron Man',\r",
+									"    'Doctor Strange',\r",
+									"    'Guardians of the Galaxy',\r",
+									"    'Star Wars',\r",
+									"    'A New Hope',\r",
+									"    'Empire Strikes Back',\r",
+									"    'Return of the Jedi',\r",
+									"    'The Force Awakens',\r",
+									"    'Rogue One',\r",
+									"    'The Lion King',\r",
+									"    'Aladdin',\r",
+									"    'Frozen',\r",
+									"    'Moana',\r",
+									"    'Coco',\r",
+									"    'Finding Nemo',\r",
+									"    'Toy Story',\r",
+									"    'Up',\r",
+									"    'Inside Out',\r",
+									"    'WALL-E',\r",
+									"    'Shrek',\r",
+									"    'How to Train Your Dragon',\r",
+									"    'Kung Fu Panda',\r",
+									"    'The Incredibles',\r",
+									"    'Spider-Man',\r",
+									"    'No Way Home',\r",
+									"    'Far From Home',\r",
+									"    'Homecoming',\r",
+									"    'The Batman',\r",
+									"    'The Flash',\r",
+									"    'Wonder Woman',\r",
+									"    'Aquaman',\r",
+									"    'The Hunger Games',\r",
+									"    'Catching Fire',\r",
+									"    'The Maze Runner',\r",
+									"    'Divergent',\r",
+									"    'Twilight',\r",
+									"    'The Fault in Our Stars'\r",
+									"];\r",
+									"\r",
+									"function getPartialTitle(title) {\r",
+									"    const minLength = 2;\r",
+									"    if (title.length <= minLength) return title;\r",
+									"\r",
+									"    const start = Math.floor(Math.random() * (title.length - minLength));\r",
+									"    const end = Math.min(title.length, start + Math.floor(Math.random() * (title.length - start) + minLength));\r",
+									"    \r",
+									"    return title.slice(start, end);\r",
+									"}\r",
+									"\r",
+									"const chosenTitle = fullTitles[Math.floor(Math.random() * fullTitles.length)];\r",
+									"const partialTitle = getPartialTitle(chosenTitle);\r",
+									"\r",
+									"pm.environment.set(\"random_partial_title\", partialTitle);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?title={{random_partial_title}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "{{random_partial_title}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by description",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const descriptions = [\r",
+									"    'love',\r",
+									"    'betrayal',\r",
+									"    'redemption',\r",
+									"    'revenge',\r",
+									"    'adventure',\r",
+									"    'friendship',\r",
+									"    'family',\r",
+									"    'courage',\r",
+									"    'freedom',\r",
+									"    'destiny',\r",
+									"    'hope',\r",
+									"    'tragedy',\r",
+									"    'sacrifice',\r",
+									"    'survival',\r",
+									"    'mystery',\r",
+									"    'power',\r",
+									"    'greed',\r",
+									"    'justice',\r",
+									"    'faith',\r",
+									"    'loyalty',\r",
+									"    'war',\r",
+									"    'peace',\r",
+									"    'dreams',\r",
+									"    'ambition',\r",
+									"    'loss',\r",
+									"    'truth',\r",
+									"    'identity',\r",
+									"    'madness',\r",
+									"    'escape',\r",
+									"    'fate',\r",
+									"    'obsession',\r",
+									"    'fear',\r",
+									"    'glory',\r",
+									"    'pain',\r",
+									"    'deception',\r",
+									"    'honor',\r",
+									"    'romance',\r",
+									"    'darkness',\r",
+									"    'chaos',\r",
+									"    'betrayal',\r",
+									"    'rebellion',\r",
+									"    'innocence',\r",
+									"    'passion',\r",
+									"    'conflict',\r",
+									"    'wisdom',\r",
+									"    'legacy',\r",
+									"    'despair',\r",
+									"    'temptation',\r",
+									"    'violence',\r",
+									"    'resistance'\r",
+									"];\r",
+									"\r",
+									"// Get a random word from the list\r",
+									"const randomDesc = descriptions[Math.floor(Math.random() * descriptions.length)];\r",
+									"\r",
+									"// Grab a partial substring (e.g. \"vent\" from \"adventure\")\r",
+									"function getPartial(word) {\r",
+									"    const min = 2;\r",
+									"    const max = word.length;\r",
+									"    if (max <= min) return word;\r",
+									"\r",
+									"    const start = Math.floor(Math.random() * (max - min));\r",
+									"    const end = start + Math.floor(Math.random() * (max - start) + min);\r",
+									"\r",
+									"    return word.slice(start, end);\r",
+									"}\r",
+									"\r",
+									"const partialDescription = getPartial(randomDesc);\r",
+									"\r",
+									"pm.environment.set(\"random_description\", partialDescription);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"// 1. Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// 2. Message check\r",
+									"pm.test(\"Response message is correct\", function () {\r",
+									"    pm.expect(response.message).to.eql(\"Movies fetched successfully\");\r",
+									"});\r",
+									"\r",
+									"// 3. _links check\r",
+									"pm.test(\"_links are present in the response\", function () {\r",
+									"\r",
+									"    pm.expect(response).to.have.property(\"_links\");\r",
+									"});\r",
+									"\r",
+									"// 4. Movies array check\r",
+									"pm.test(\"'movies' is a non-empty array\", function () {\r",
+									"    pm.expect(response.movies).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  5. Validate first movie object (adjust if you want to check more)\r",
+									"const firstMovie = response.movies[0];\r",
+									"\r",
+									"pm.test(\"First movie has 'movie_id' as a string\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"movie_id\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"First movie has 'release_year' as a number\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"release_year\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"First movie has 'title' as a string\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?description={{random_description}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "description",
+									"value": "{{random_description}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by genre",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const genres = [\r",
+									"    'Action',\r",
+									"    'Adventure',\r",
+									"    'Animation',\r",
+									"    'Comedy',\r",
+									"    'Crime',\r",
+									"    'Documentary',\r",
+									"    'Drama',\r",
+									"    'Family',\r",
+									"    'Fantasy',\r",
+									"    'History',\r",
+									"    'Horror',\r",
+									"    'Mystery',\r",
+									"    'Romance',\r",
+									"    'Science Fiction',\r",
+									"    'Thriller'\r",
+									"];\r",
+									"\r",
+									"// Pick one at random\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"\r",
+									"pm.environment.set(\"random_genre\", randomGenre);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"// 1. Status code check\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// 2. Message check\r",
+									"pm.test(\"Response message is correct\", function () {\r",
+									"    pm.expect(response.message).to.eql(\"Movies fetched successfully\");\r",
+									"});\r",
+									"\r",
+									"// 3. _links check\r",
+									"pm.test(\"_links are present in the response\", function () {\r",
+									"\r",
+									"    pm.expect(response).to.have.property(\"_links\");\r",
+									"});\r",
+									"\r",
+									"// 4. Movies array check\r",
+									"pm.test(\"'movies' is a non-empty array\", function () {\r",
+									"    pm.expect(response.movies).to.be.an(\"array\").that.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"//  5. Validate first movie object (adjust if you want to check more)\r",
+									"const firstMovie = response.movies[0];\r",
+									"\r",
+									"pm.test(\"First movie has 'movie_id' as a string\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"movie_id\").that.is.a(\"string\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"First movie has 'release_year' as a number\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"release_year\").that.is.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"First movie has 'title' as a string\", function () {\r",
+									"    pm.expect(firstMovie).to.have.property(\"title\").that.is.a(\"string\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?genre={{random_genre}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "{{random_genre}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by invalid genre",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const genres = [\r",
+									"    13,\r",
+									"    'sdhj()_?',\r",
+									"    '825948',\r",
+									"    'email@email.com',\r",
+									"    null,\r",
+									"    undefined,\r",
+									"    '☹'\r",
+									"];\r",
+									"\r",
+									"// Pick one at random\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"\r",
+									"pm.environment.set(\"random_genre\", randomGenre);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is 'Movie not found'\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.error).to.eql(\"Movie not found\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?genre={{random_genre}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "{{random_genre}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by genre & description",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const genres = [\r",
+									"    'Action',\r",
+									"    'Adventure',\r",
+									"    'Animation',\r",
+									"    'Biography',\r",
+									"    'Comedy',\r",
+									"    'Crime',\r",
+									"    'Documentary',\r",
+									"    'Drama',\r",
+									"    'Family',\r",
+									"    'Fantasy',\r",
+									"    'History',\r",
+									"    'Horror',\r",
+									"    'Mystery',\r",
+									"    'Romance',\r",
+									"    'Science Fiction',\r",
+									"    'Thriller'\r",
+									"];\r",
+									"\r",
+									"const descriptions = [\r",
+									"    'love',\r",
+									"    'betrayal',\r",
+									"    'redemption',\r",
+									"    'revenge',\r",
+									"    'adventure',\r",
+									"    'friendship',\r",
+									"    'family',\r",
+									"    'courage',\r",
+									"    'freedom',\r",
+									"    'destiny',\r",
+									"    'hope',\r",
+									"    'tragedy',\r",
+									"    'sacrifice',\r",
+									"    'survival',\r",
+									"    'mystery',\r",
+									"    'power',\r",
+									"    'greed',\r",
+									"    'justice',\r",
+									"    'faith',\r",
+									"    'loyalty',\r",
+									"    'war',\r",
+									"    'peace',\r",
+									"    'dreams',\r",
+									"    'ambition',\r",
+									"    'loss',\r",
+									"    'truth',\r",
+									"    'identity',\r",
+									"    'madness',\r",
+									"    'escape',\r",
+									"    'fate',\r",
+									"    'obsession',\r",
+									"    'fear',\r",
+									"    'glory',\r",
+									"    'pain',\r",
+									"    'deception',\r",
+									"    'honor',\r",
+									"    'romance',\r",
+									"    'darkness',\r",
+									"    'chaos',\r",
+									"    'rebellion',\r",
+									"    'innocence',\r",
+									"    'passion',\r",
+									"    'conflict',\r",
+									"    'wisdom',\r",
+									"    'legacy',\r",
+									"    'despair',\r",
+									"    'temptation',\r",
+									"    'violence',\r",
+									"    'resistance'\r",
+									"];\r",
+									"\r",
+									"// --- Pick a random genre ---\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"pm.environment.set(\"random_genre\", randomGenre);\r",
+									"\r",
+									"// --- Pick a random description + partial match ---\r",
+									"const randomDesc = descriptions[Math.floor(Math.random() * descriptions.length)];\r",
+									"\r",
+									"function getPartial(word) {\r",
+									"    const min = 2;\r",
+									"    const max = word.length;\r",
+									"    if (max <= min) return word;\r",
+									"\r",
+									"    const start = Math.floor(Math.random() * (max - min));\r",
+									"    const end = start + Math.floor(Math.random() * (max - start) + min);\r",
+									"\r",
+									"    return word.slice(start, end);\r",
+									"}\r",
+									"\r",
+									"const partialDescription = getPartial(randomDesc);\r",
+									"pm.environment.set(\"random_description\", partialDescription);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code based on movie availability\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    // First, check for 404 if no movies are found\r",
+									"    if (responseJson.error && responseJson.error === \"Movie not found\") {\r",
+									"        pm.response.to.have.status(404);\r",
+									"        pm.expect(responseJson).to.have.property('error').that.equals(\"Movie not found\");\r",
+									"    } else {\r",
+									"        // If movies are found, expect status 200\r",
+									"        pm.response.to.have.status(200);\r",
+									"        \r",
+									"        // Additional checks when movies are found\r",
+									"        pm.expect(responseJson.message).to.eql(\"Movies fetched successfully\");\r",
+									"        pm.expect(responseJson.movies).to.be.an('array').that.is.not.empty;\r",
+									"        \r",
+									"        // Check for the first movie's properties\r",
+									"        pm.expect(responseJson.movies[0]).to.have.property('id').that.is.a('string');\r",
+									"        pm.expect(responseJson.movies[0]).to.have.property('title').that.is.a('string');\r",
+									"        pm.expect(responseJson.movies[0]).to.have.property('release_year').that.is.a('number');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?genre={{random_genre}}&description={{random_description}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "{{random_genre}}"
+								},
+								{
+									"key": "description",
+									"value": "{{random_description}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by genre & title",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const genres = [\r",
+									"    'Action',\r",
+									"    'Adventure',\r",
+									"    'Animation',\r",
+									"    'Biography',\r",
+									"    'Comedy',\r",
+									"    'Crime',\r",
+									"    'Documentary',\r",
+									"    'Drama',\r",
+									"    'Family',\r",
+									"    'Fantasy',\r",
+									"    'History',\r",
+									"    'Horror',\r",
+									"    'Mystery',\r",
+									"    'Romance',\r",
+									"    'Science Fiction',\r",
+									"    'Thriller'\r",
+									"];\r",
+									"\r",
+									"const titles = [\r",
+									"    'Inception',\r",
+									"    'Titanic',\r",
+									"    'Avatar',\r",
+									"    'The Matrix',\r",
+									"    'Interstellar',\r",
+									"    'Jurassic Park',\r",
+									"    'The Godfather',\r",
+									"    'Pulp Fiction',\r",
+									"    'Fight Club',\r",
+									"    'Forrest Gump',\r",
+									"    'The Dark Knight',\r",
+									"    'Gladiator',\r",
+									"    'The Shawshank Redemption',\r",
+									"    'The Social Network',\r",
+									"    'The Avengers',\r",
+									"    'Black Panther',\r",
+									"    'Doctor Strange',\r",
+									"    'Guardians of the Galaxy',\r",
+									"    'Star Wars',\r",
+									"    'The Lion King',\r",
+									"    'Aladdin',\r",
+									"    'Frozen',\r",
+									"    'Moana',\r",
+									"    'Coco',\r",
+									"    'Finding Nemo',\r",
+									"    'Toy Story',\r",
+									"    'Up',\r",
+									"    'WALL-E',\r",
+									"    'Shrek',\r",
+									"    'The Incredibles',\r",
+									"    'Spider-Man',\r",
+									"    'Homecoming',\r",
+									"    'The Batman',\r",
+									"    'The Hunger Games',\r",
+									"    'The Maze Runner',\r",
+									"    'Divergent',\r",
+									"    'Twilight'\r",
+									"];\r",
+									"\r",
+									"// --- Random genre ---\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"pm.environment.set(\"random_genre\", randomGenre);\r",
+									"\r",
+									"// --- Random title partial ---\r",
+									"const randomTitle = titles[Math.floor(Math.random() * titles.length)];\r",
+									"\r",
+									"function getPartial(word) {\r",
+									"    const min = 2;\r",
+									"    const max = word.length;\r",
+									"    if (max <= min) return word;\r",
+									"\r",
+									"    const start = Math.floor(Math.random() * (max - min));\r",
+									"    const end = start + Math.floor(Math.random() * (max - start) + min);\r",
+									"    return word.slice(start, end);\r",
+									"}\r",
+									"\r",
+									"const partialTitle = getPartial(randomTitle);\r",
+									"pm.environment.set(\"random_title\", partialTitle);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code based on movie availability\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // If the response contains an error message or an empty movies array\r",
+									"    if (responseJson.error && responseJson.error === \"Movie not found\") {\r",
+									"        // If the movie is not found, expect a 404 status\r",
+									"        pm.response.to.have.status(404);\r",
+									"        pm.expect(responseJson.error).to.eql(\"Movie not found\");\r",
+									"    } else {\r",
+									"        // If movie is found, expect a 200 status code\r",
+									"        pm.response.to.have.status(200);\r",
+									"\r",
+									"        // Validate the structure of the response when movies are found\r",
+									"        pm.expect(responseJson).to.have.property(\"_links\");\r",
+									"        pm.expect(responseJson._links).to.have.property('first').that.is.a('string');\r",
+									"        pm.expect(responseJson._links).to.have.property('last').that.is.a('string');\r",
+									"        pm.expect(responseJson._links).to.have.property('next').that.equals(null);\r",
+									"        pm.expect(responseJson._links).to.have.property('previous').that.equals(null);\r",
+									"\r",
+									"        pm.expect(responseJson.message).to.eql(\"Movies fetched successfully\");\r",
+									"\r",
+									"        // Check if movies array is not empty when there is a valid movie\r",
+									"        pm.expect(responseJson.movies).to.be.an('array').that.is.not.empty;\r",
+									"        \r",
+									"        const movie = responseJson.movies[0];\r",
+									"        pm.expect(movie).to.have.property('id').that.is.a('string');\r",
+									"        pm.expect(movie).to.have.property('movie_id').that.is.a('string');\r",
+									"        pm.expect(movie).to.have.property('release_year').that.is.a('number');\r",
+									"        pm.expect(movie).to.have.property('title').that.is.a('string');\r",
+									"        \r",
+									"        // Check if total is a number and greater than or equal to 0\r",
+									"        pm.expect(responseJson.total).to.be.a('number').that.is.greaterThan(-1);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?genre={{random_genre}}&title={{random_title}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "genre",
+									"value": "{{random_genre}}"
+								},
+								{
+									"key": "title",
+									"value": "{{random_title}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by year",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const startYear = 1900;\r",
+									"const endYear = new Date().getFullYear();\r",
+									"\r",
+									"const randomYear = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;\r",
+									"\r",
+									"pm.environment.set(\"random_year\", randomYear);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code and movie details\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Case 1: Movie is not found (404 response)\r",
+									"    if (responseJson.error && responseJson.error === \"Movie not found\") {\r",
+									"        // Expect a 404 status code\r",
+									"        pm.response.to.have.status(404);\r",
+									"        \r",
+									"        // Expect the error message to be \"Movie not found\"\r",
+									"        pm.expect(responseJson).to.have.property('error').that.equals(\"Movie not found\");\r",
+									"    } \r",
+									"    // Case 2: Movie is found (200 response)\r",
+									"    else {\r",
+									"        // Expect a 200 status code\r",
+									"        pm.response.to.have.status(200);\r",
+									"\r",
+									"        // Check the \"message\" property in the response\r",
+									"        pm.expect(responseJson).to.have.property('message').that.equals(\"Movies fetched successfully\");\r",
+									"\r",
+									"        // Ensure the \"movies\" array exists and is not empty\r",
+									"        pm.expect(responseJson.movies).to.be.an('array').that.is.not.empty;\r",
+									"\r",
+									"        // Check the first movie's title (you can add more checks as needed)\r",
+									"        pm.expect(responseJson.movies[0]).to.have.property('title').that.is.a('string');\r",
+									"\r",
+									"        // Check if there are total movies as expected\r",
+									"        pm.expect(responseJson).to.have.property('total').that.is.a('number').and.equals(responseJson.movies.length);\r",
+									"    } \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?year={{random_year}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "{{random_year}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by invalid year",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const startYear = 1100;\r",
+									"const endYear = 1899;\r",
+									"\r",
+									"const randomYear = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;\r",
+									"\r",
+									"pm.environment.set(\"random_year\", randomYear);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400 (Bad Request)\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is 'Year filter must be between 1900 and the current year'\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property('error');\r",
+									"    pm.expect(jsonData.error).to.eql('Year filter must be between 1900 and the current year');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?year={{random_year}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "{{random_year}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movie by id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const validMovieIds = [\r",
+									"    '67eecae5b15c754fa5a7425f',\r",
+									"    '67eecae5b15c754fa5a74262',\r",
+									"    '67eecae5b15c754fa5a74265',\r",
+									"    '67eecae5b15c754fa5a74269',\r",
+									"    '67eecae5b15c754fa5a7426c',\r",
+									"    '67eecae6b15c754fa5a74273',\r",
+									"    '67eecae6b15c754fa5a74277',\r",
+									"    '67eecae6b15c754fa5a7427e',\r",
+									"    '67eecae6b15c754fa5a74282',\r",
+									"    '67eecae7b15c754fa5a74287',\r",
+									"    '67eecae7b15c754fa5a7428b',\r",
+									"    '67eecae7b15c754fa5a74290',\r",
+									"    '67eecae9b15c754fa5a742b8',\r",
+									"    '67eecae9b15c754fa5a742bc',\r",
+									"    '67eecae9b15c754fa5a742c0',\r",
+									"    '67eecae9b15c754fa5a742c2',\r",
+									"    '67eecae8b15c754fa5a742af',\r",
+									"    '67eecae8b15c754fa5a742ab'\r",
+									"];\r",
+									"\r",
+									"// Randomly select an ObjectId from the list\r",
+									"const randomMovieId = validMovieIds[Math.floor(Math.random() * validMovieIds.length)];\r",
+									"\r",
+									"// Set the selected movie ID as an environment variable\r",
+									"pm.environment.set(\"random_movie_id\", randomMovieId);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response structure is correct\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    // If an error exists (e.g., \"Movie not found\"), skip the check for _links and movie details\r",
+									"    if (jsonData.error && jsonData.error === \"Movie not found\") {\r",
+									"        pm.expect(jsonData).to.have.property('error').that.equals(\"Movie not found\");\r",
+									"    } else {\r",
+									"        // Check that _links exists\r",
+									"        pm.expect(jsonData).to.have.property('_links');\r",
+									"\r",
+									"        // Check inside _links\r",
+									"        const links = jsonData._links;\r",
+									"        pm.expect(links).to.have.property('actors').that.is.a('string'); // can be null\r",
+									"        pm.expect(links).to.have.property('delete').that.is.a('string');\r",
+									"        \r",
+									"        // Now check inside movie\r",
+									"        const movie = jsonData.movie;\r",
+									"        pm.expect(movie).to.have.property('description').that.is.a('string');\r",
+									"        pm.expect(movie).to.have.property('genre').that.is.an('array');\r",
+									"        pm.expect(movie).to.have.property('id').that.is.a('string');\r",
+									"        pm.expect(movie).to.have.property('release_year').that.is.a('number');\r",
+									"        pm.expect(movie).to.have.property('title').that.is.a('string');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "movie_id",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/movies/{{random_movie_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies",
+								"{{random_movie_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movie by invalid id",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const invalidMovieIds = [\r",
+									"    '123',\r",
+									"    123,\r",
+									"    'a934gjn_?',\r",
+									"    'email@email.com',\r",
+									"    'hello',\r",
+									"    null,\r",
+									"    undefined,\r",
+									"    '☹'\r",
+									"];\r",
+									"\r",
+									"// Randomly select an ObjectId from the list\r",
+									"const randomMovieId = invalidMovieIds[Math.floor(Math.random() * invalidMovieIds.length)];\r",
+									"\r",
+									"// Set the selected movie ID as an environment variable\r",
+									"pm.environment.set(\"random_movie_id\", randomMovieId);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check 400 status for invalid movie ID format\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check if the response contains the expected error message for invalid movie ID format\r",
+									"    if (responseJson.error && responseJson.error === \"Invalid movie ID format\") {\r",
+									"        // Expect a 400 status code\r",
+									"        pm.response.to.have.status(400);\r",
+									"\r",
+									"        // Expect the error message to be \"Invalid movie ID format\"\r",
+									"        pm.expect(responseJson).to.have.property('error').that.equals(\"Invalid movie ID format\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "movie_id",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/movies/{{random_movie_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies",
+								"{{random_movie_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by actor",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// List of 50 random actor names (full and partial)\r",
+									"const actorNames = [\r",
+									"    'Leonardo DiCaprio', 'Scarlett Johansson', 'Will Smith', 'Brad Pitt', 'Natalie Portman',\r",
+									"    'Angelina Jolie', 'Ryan Reynolds', 'Emma Watson', 'Chris Hemsworth', 'Robert Downey Jr.',\r",
+									"    'Meryl Streep', 'Johnny Depp', 'Tom Hanks', 'Jennifer Lawrence', 'Mark Ruffalo',\r",
+									"    'Julia Roberts', 'Matthew McConaughey', 'Ben Affleck', 'Anne Hathaway', 'Chris Evans',\r",
+									"    'Charlize Theron', 'Hugh Jackman', 'Reese Witherspoon', 'Will Ferrell', 'Zoe Saldana',\r",
+									"    'Keanu Reeves', 'Tom Cruise', 'Dwayne Johnson', 'Emma Stone', 'Jason Momoa',\r",
+									"    'Bradley Cooper', 'Al Pacino', 'Nicole Kidman', 'Samuel L. Jackson', 'Matthew McConaughey',\r",
+									"    'Jodie Foster', 'Cameron Diaz', 'Paul Rudd', 'Chris Pratt', 'Denzel Washington',\r",
+									"    'Jessica Chastain', 'Robert Pattinson', 'Jennifer Aniston', 'Zach Galifianakis', 'Sophie Turner',\r",
+									"    'Tommy Lee Jones', 'Idris Elba', 'Seth Rogen', 'Maggie Smith', 'Drew Barrymore',\r",
+									"\r",
+									"    // Partial actor names (for randomization)\r",
+									"    'Leo', 'Scarlett', 'Will', 'Brad', 'Nat', 'Angelina', 'Ryan', 'Emma', 'Chris H', 'Robert D',\r",
+									"    'Meryl', 'Johnny', 'Tom', 'Jen', 'Mark', 'Julia', 'Matthew', 'Ben', 'Anne', 'Chris E',\r",
+									"    'Charlize', 'Hugh', 'Reese', 'Will F', 'Zoe', 'Keanu', 'Tom C', 'Dwayne', 'Emma S',\r",
+									"    'Jason', 'Bradley', 'Al', 'Nicole', 'Sam', 'Matthew', 'Jodie', 'Cameron', 'Paul', 'Chris P',\r",
+									"    'Denzel', 'Jessica', 'Robert P', 'Jennifer A', 'Zach', 'Sophie', 'Tommy', 'Idris', 'Seth',\r",
+									"    'Maggie', 'Drew'\r",
+									"    ];\r",
+									"\r",
+									"    // Pick a random actor name from the list\r",
+									"    const randomActor = actorNames[Math.floor(Math.random() * actorNames.length)];\r",
+									"\r",
+									"    // Set the random actor name as an environment variable\r",
+									"    pm.environment.set(\"random_actor\", randomActor);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Check if response status is 500\r",
+									"pm.test(\"Check if response status is 500\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"\r",
+									"    // If the response is a 500 (Internal Server Error), skip further checks\r",
+									"    if (pm.response.code === 500) {\r",
+									"        pm.expect(pm.response.code).to.equal(500);\r",
+									"        pm.expect(jsonData).to.have.property('error').that.equals(\"An unexpected error occurred while processing the request\");\r",
+									"    } else {\r",
+									"        // If the response is not a 500 error, proceed with checking the response structure\r",
+									"\r",
+									"        // Check that _links exists\r",
+									"        pm.test(\"Check that _links exists\", function () {\r",
+									"            const jsonData = pm.response.json();\r",
+									"            pm.expect(jsonData).to.have.property('_links');\r",
+									"        });\r",
+									"\r",
+									"        // Check inside _links\r",
+									"        pm.test(\"Check _links properties\", function () {\r",
+									"            const jsonData = pm.response.json();\r",
+									"            const links = jsonData._links;\r",
+									"\r",
+									"            // Iterate through 'first', 'last', 'next', and 'previous' to check their properties\r",
+									"            ['first', 'last', 'next', 'previous'].forEach(function (key) {\r",
+									"                pm.expect(links).to.have.property(key);\r",
+									"\r",
+									"                if (links[key] !== null) {\r",
+									"                    pm.expect(links[key]).to.be.a('string');\r",
+									"                } else {\r",
+									"                    pm.expect(links[key]).to.be.null;\r",
+									"                }\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        // Check that message exists and is correct\r",
+									"        pm.test(\"Check message exists and is correct\", function () {\r",
+									"            const jsonData = pm.response.json();\r",
+									"            pm.expect(jsonData).to.have.property('message').that.is.a('string');\r",
+									"            pm.expect(jsonData.message).to.eql('Movies fetched successfully');\r",
+									"        });\r",
+									"\r",
+									"        // Check that movies exists and is an array\r",
+									"        pm.test(\"Check that movies exists and is an array\", function () {\r",
+									"            const jsonData = pm.response.json();\r",
+									"            pm.expect(jsonData).to.have.property('movies').that.is.an('array');\r",
+									"        });\r",
+									"\r",
+									"        // Check the first movie's properties\r",
+									"        pm.test(\"Check first movie properties\", function () {\r",
+									"            const jsonData = pm.response.json();\r",
+									"            if (jsonData.movies.length > 0) {\r",
+									"                const movie = jsonData.movies[0];\r",
+									"\r",
+									"                pm.expect(movie).to.have.property('description').that.is.a('string');\r",
+									"                pm.expect(movie).to.have.property('genre').that.is.an('array');\r",
+									"                pm.expect(movie).to.have.property('id').that.is.a('string');\r",
+									"                pm.expect(movie).to.have.property('release_year').that.is.a('number');\r",
+									"                pm.expect(movie).to.have.property('title').that.is.a('string');\r",
+									"            }\r",
+									"        });\r",
+									"\r",
+									"        // Check release year is valid\r",
+									"        pm.test(\"Check release year is valid\", function () {\r",
+									"            const jsonData = pm.response.json();\r",
+									"            if (jsonData.movies.length > 0) {\r",
+									"                const movie = jsonData.movies[0];\r",
+									"                pm.expect(movie.release_year).to.be.above(1900).and.below(new Date().getFullYear()); // Check valid year\r",
+									"            }\r",
+									"        });\r",
+									"\r",
+									"        // Check there is at least one movie in the response\r",
+									"        pm.test(\"Check number of movies is correct\", function () {\r",
+									"            const jsonData = pm.response.json();\r",
+									"            pm.expect(jsonData.movies.length).to.be.above(0); // Ensure at least one movie exists\r",
+									"        });\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "movie_id",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/movies?actor={{random_actor}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "actor",
+									"value": "{{random_actor}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies by invalid actor",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// List of invalid actor names\r",
+									"const actorNames = [\r",
+									"        123456789,\r",
+									"        ':?*dfke(7)',\r",
+									"        null,\r",
+									"        undefined,\r",
+									"        '☹'\r",
+									"    ];\r",
+									"\r",
+									"    // Pick a random actor name from the list\r",
+									"    const randomActor = actorNames[Math.floor(Math.random() * actorNames.length)];\r",
+									"\r",
+									"    // Set the random actor name as an environment variable\r",
+									"    pm.environment.set(\"random_actor\", randomActor);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check 500 status for unexpected error\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check if the response contains the expected error message for an unexpected error\r",
+									"    if (responseJson.error && responseJson.error === \"An unexpected error occurred while processing the request\") {\r",
+									"        // Expect a 500 status code\r",
+									"        pm.response.to.have.status(500);\r",
+									"\r",
+									"        // Expect the error message to be \"An unexpected error occurred while processing the request\"\r",
+									"        pm.expect(responseJson).to.have.property('error').that.equals(\"An unexpected error occurred while processing the request\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "movie_id",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/movies?actor={{random_actor}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "actor",
+									"value": "{{random_actor}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create movie",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Random titles (50 options)\r",
+									"const titles = [\r",
+									"    'The Dark Adventures', 'Lost in the Void', 'Journey Beyond Stars', 'The Final Countdown', \r",
+									"    'Moonlight Escape', 'Echoes of the Past', 'Unseen Forces', 'The Edge of Tomorrow', \r",
+									"    'The Forgotten Realm', 'Chasing Shadows', 'Whispers in the Night', 'Beneath the Surface', \r",
+									"    'The Time Travelers', 'Mysterious Horizons', 'Shattered Reality', 'Fallen Kingdom', \r",
+									"    'Crimson Dawn', 'Eternal Night', 'Rise of the Fallen', 'The Secret Keeper', \r",
+									"    'Beyond the Horizon', 'Frozen Memories', 'The Infinite Loop', 'Under the Stars', \r",
+									"    'A Glimpse of Hope', 'Hidden Truths', 'The Lost City', 'A Dangerous Game', \r",
+									"    'Afterlife Chronicles', 'The Last Stand', 'The Awakening', 'Waves of Destiny', \r",
+									"    'Revenge of the Brave', 'Into the Abyss', 'The Final Hour', 'Lost Legends', \r",
+									"    'Endless Nightmares', 'The Silent Observer', 'The Labyrinth', 'The Missing Link', \r",
+									"    'The Eternal Flame', 'Breaking Point', 'The Unseen Path', 'Falling Skies', \r",
+									"    'Uncharted Waters', 'Unforgotten Memories', 'The Lone Survivor', 'Beyond the Shadows', \r",
+									"    'The Phantom War', 'Resurrection Quest', 'The Edge of Reason', 'The Last Hope'\r",
+									"];\r",
+									"\r",
+									"// Random genres (50 options)\r",
+									"const genres = [\r",
+									"    { \"id\": 1, \"name\": \"horror\" }, { \"id\": 2, \"name\": \"comedy\" }, { \"id\": 3, \"name\": \"drama\" },\r",
+									"    { \"id\": 4, \"name\": \"thriller\" }, { \"id\": 5, \"name\": \"action\" }, { \"id\": 6, \"name\": \"romance\" },\r",
+									"    { \"id\": 7, \"name\": \"science fiction\" }, { \"id\": 8, \"name\": \"fantasy\" }, { \"id\": 9, \"name\": \"animation\" },\r",
+									"    { \"id\": 10, \"name\": \"mystery\" }, { \"id\": 11, \"name\": \"adventure\" }, { \"id\": 12, \"name\": \"crime\" },\r",
+									"    { \"id\": 13, \"name\": \"documentary\" }, { \"id\": 14, \"name\": \"biography\" }, { \"id\": 15, \"name\": \"musical\" },\r",
+									"    { \"id\": 16, \"name\": \"history\" }, { \"id\": 17, \"name\": \"family\" }, { \"id\": 18, \"name\": \"war\" },\r",
+									"    { \"id\": 19, \"name\": \"sports\" }, { \"id\": 20, \"name\": \"superhero\" }, { \"id\": 21, \"name\": \"post-apocalyptic\" },\r",
+									"    { \"id\": 22, \"name\": \"psychological\" }, { \"id\": 23, \"name\": \"slasher\" }, { \"id\": 24, \"name\": \"zombie\" },\r",
+									"    { \"id\": 25, \"name\": \"cyberpunk\" }, { \"id\": 26, \"name\": \"steampunk\" }, { \"id\": 27, \"name\": \"supernatural\" },\r",
+									"    { \"id\": 28, \"name\": \"action-comedy\" }, { \"id\": 29, \"name\": \"crime-thriller\" }, { \"id\": 30, \"name\": \"coming-of-age\" },\r",
+									"    { \"id\": 31, \"name\": \"drama-comedy\" }, { \"id\": 32, \"name\": \"romantic-comedy\" }, { \"id\": 33, \"name\": \"biopic\" },\r",
+									"    { \"id\": 34, \"name\": \"adventure-comedy\" }, { \"id\": 35, \"name\": \"spy\" }, { \"id\": 36, \"name\": \"space opera\" },\r",
+									"    { \"id\": 37, \"name\": \"time travel\" }, { \"id\": 38, \"name\": \"stealth\" }, { \"id\": 39, \"name\": \"mind-bending\" },\r",
+									"    { \"id\": 40, \"name\": \"mystery-thriller\" }, { \"id\": 41, \"name\": \"dystopian\" }, { \"id\": 42, \"name\": \"apocalyptic\" },\r",
+									"    { \"id\": 43, \"name\": \"heist\" }, { \"id\": 44, \"name\": \"paranormal\" }, { \"id\": 45, \"name\": \"alien\" },\r",
+									"    { \"id\": 46, \"name\": \"magic\" }, { \"id\": 47, \"name\": \"survival\" }, { \"id\": 48, \"name\": \"biological\" },\r",
+									"    { \"id\": 49, \"name\": \"epic\" }, { \"id\": 50, \"name\": \"disaster\" }\r",
+									"];\r",
+									"\r",
+									"// Random overviews (50 options)\r",
+									"const overviews = [\r",
+									"    'A thrilling journey of survival and discovery.', 'An emotional tale of love and loss.',\r",
+									"    'A comedic adventure full of unexpected twists.', 'A dark story about the boundaries between reality and illusion.',\r",
+									"    'An action-packed battle against an unstoppable force.', 'A journey through space and time with dangerous consequences.',\r",
+									"    'A heart-wrenching tale about friendship and sacrifice.', 'A gripping story about a detective solving a perplexing mystery.',\r",
+									"    'A team of heroes must unite to stop a global catastrophe.', 'A young boy discovers his destiny to save the world.',\r",
+									"    'A forbidden romance between two unlikely souls.', 'A young woman’s quest to unlock her family’s dark secret.',\r",
+									"    'A gripping drama about the fragility of the human spirit.', 'A story of betrayal and redemption across the ages.',\r",
+									"    'A group of survivors must fight against monstrous forces to stay alive.', 'A love story that transcends space and time.',\r",
+									"    'An expedition into the unknown turns into a fight for survival.', 'A mysterious figure seeks to unravel the secrets of an ancient civilization.',\r",
+									"    'A thrilling cat-and-mouse chase through the streets of a dangerous city.', 'A young detective’s first big case becomes a fight for justice.',\r",
+									"    'A futuristic world where artificial intelligence starts to question its purpose.', 'A young couple must overcome insurmountable odds to stay together.',\r",
+									"    'A lost treasure is hidden in the heart of an uncharted jungle.', 'A man must face his past to reclaim his future.', 'A complex political conspiracy that threatens the world’s future.',\r",
+									"    'A robot with emotions learns what it means to be human.', 'A young woman battles inner demons to find herself.', 'A comedy about the ups and downs of modern life.',\r",
+									"    'A young boy’s adventure in a magical world.', 'An old man’s quest for peace and redemption.', 'A family learns to accept their differences.',\r",
+									"    'A detective uncovers a conspiracy that shakes the city to its core.', 'An ancient prophecy threatens to come true unless a hero rises.',\r",
+									"    'An astronaut’s perilous journey to save humanity from destruction.', 'A mysterious alien artifact leads to unexpected consequences.',\r",
+									"    'A soldier’s journey through war and the harsh realities of life on the frontlines.', 'A teenager’s summer of self-discovery and change.',\r",
+									"    'A tale of how one person’s choices affect the fate of an entire nation.', 'A couple must decide between their love and their responsibilities.',\r",
+									"    'A group of strangers must survive when trapped in an apocalyptic scenario.', 'A scientist’s experiment goes wrong and causes a dangerous mutation.',\r",
+									"    'A man discovers his true heritage and his role in an ancient war.', 'A couple’s marriage is put to the test when a long-lost love returns.',\r",
+									"    'A young girl navigates the challenges of adolescence while uncovering a dark family secret.', 'A troubled man seeks peace by confronting his past.'\r",
+									"];\r",
+									"\r",
+									"// Random years between 1900 and 2025\r",
+									"const randomYear = Math.floor(Math.random() * (2025 - 1900 + 1)) + 1900;\r",
+									"\r",
+									"// Random title\r",
+									"const randomTitle = titles[Math.floor(Math.random() * titles.length)];\r",
+									"\r",
+									"// Random genre (one random genre)\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"\r",
+									"// Random overview\r",
+									"const randomOverview = overviews[Math.floor(Math.random() * overviews.length)];\r",
+									"\r",
+									"// Set variables in Postman environment\r",
+									"pm.environment.set(\"random_title\", randomTitle);\r",
+									"pm.environment.set(\"random_year\", randomYear);\r",
+									"pm.environment.set(\"random_genre\", JSON.stringify(randomGenre));\r",
+									"pm.environment.set(\"random_overview\", randomOverview);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\r\n    \"title\": \"{{random_title}}\",\r\n    \"release_date\": \"{{random_year}}\",\r\n    \"genres\": [{{random_genre}}],\r\n    \"overview\": \"{{random_overview}}\"\r\n   }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/movies",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies with custom pagination",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Randomly generate the `page` number between 1 and 10 (adjust as needed)\r",
+									"const pageNumber = Math.floor(Math.random() * 10) + 1;\r",
+									"\r",
+									"// Randomly generate the `per_page` number between 1 and 100 (adjust as needed)\r",
+									"const perPageNumber = Math.floor(Math.random() * 100) + 1;\r",
+									"\r",
+									"// Log the values for debugging purposes\r",
+									"console.log(`Random Page Number: ${pageNumber}`);\r",
+									"console.log(`Random Per Page Number: ${perPageNumber}`);\r",
+									"\r",
+									"// Set the `page` and `per_page` as environment variables\r",
+									"pm.environment.set(\"random_page\", pageNumber);\r",
+									"pm.environment.set(\"random_per_page\", perPageNumber);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check 200 status and custom pagination\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check for the expected 200 status code\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    // Check that the _links property is present\r",
+									"    pm.expect(responseJson).to.have.property('_links');\r",
+									"\r",
+									"    // Check that the \"message\" property has the expected value\r",
+									"    pm.expect(responseJson).to.have.property('message').that.equals(\"Movies fetched successfully\");\r",
+									"\r",
+									"    // Check if the 'movies' array exists and contains at least one movie\r",
+									"    pm.expect(responseJson.movies).to.be.an('array').that.is.not.empty;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?page={{random_page}}&per_page={{random_per_page}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{random_page}}"
+								},
+								{
+									"key": "per_page",
+									"value": "{{random_per_page}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch movies with invalid pagination",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Helper to randomly pick an item from an array\r",
+									"function pickRandom(arr) {\r",
+									"    return arr[Math.floor(Math.random() * arr.length)];\r",
+									"}\r",
+									"\r",
+									"// Define possible invalid values\r",
+									"const invalidPageOptions = [-1, 0, 999999, \"abc\", \"\", \"!\", null, undefined];\r",
+									"const invalidPerPageOptions = [-5, 0, 1000, \"ten\", \"💥\", \"\", null, undefined];\r",
+									"\r",
+									"// Pick random invalid values\r",
+									"const invalidPage = pickRandom(invalidPageOptions);\r",
+									"const invalidPerPage = pickRandom(invalidPerPageOptions);\r",
+									"\r",
+									"// Log the values\r",
+									"console.log(`Invalid Page: ${invalidPage}`);\r",
+									"console.log(`Invalid Per Page: ${invalidPerPage}`);\r",
+									"\r",
+									"// Set them as environment variables\r",
+									"pm.environment.set(\"random_page\", invalidPage);\r",
+									"pm.environment.set(\"random_per_page\", invalidPerPage);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check 400 status and invalid pagination error\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check for the expected 400 status code (Bad Request)\r",
+									"    pm.response.to.have.status(400);\r",
+									"\r",
+									"    // Check that the response contains the expected error message\r",
+									"    pm.expect(responseJson).to.have.property('error').that.equals(\"Invalid pagination parameters\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies?page={{random_page}}&per_page={{random_per_page}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{random_page}}"
+								},
+								{
+									"key": "per_page",
+									"value": "{{random_per_page}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create movie missing token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Random titles (50 options)\r",
+									"const titles = [\r",
+									"    'The Dark Adventures', 'Lost in the Void', 'Journey Beyond Stars', 'The Final Countdown', \r",
+									"    'Moonlight Escape', 'Echoes of the Past', 'Unseen Forces', 'The Edge of Tomorrow', \r",
+									"    'The Forgotten Realm', 'Chasing Shadows', 'Whispers in the Night', 'Beneath the Surface', \r",
+									"    'The Time Travelers', 'Mysterious Horizons', 'Shattered Reality', 'Fallen Kingdom', \r",
+									"    'Crimson Dawn', 'Eternal Night', 'Rise of the Fallen', 'The Secret Keeper', \r",
+									"    'Beyond the Horizon', 'Frozen Memories', 'The Infinite Loop', 'Under the Stars', \r",
+									"    'A Glimpse of Hope', 'Hidden Truths', 'The Lost City', 'A Dangerous Game', \r",
+									"    'Afterlife Chronicles', 'The Last Stand', 'The Awakening', 'Waves of Destiny', \r",
+									"    'Revenge of the Brave', 'Into the Abyss', 'The Final Hour', 'Lost Legends', \r",
+									"    'Endless Nightmares', 'The Silent Observer', 'The Labyrinth', 'The Missing Link', \r",
+									"    'The Eternal Flame', 'Breaking Point', 'The Unseen Path', 'Falling Skies', \r",
+									"    'Uncharted Waters', 'Unforgotten Memories', 'The Lone Survivor', 'Beyond the Shadows', \r",
+									"    'The Phantom War', 'Resurrection Quest', 'The Edge of Reason', 'The Last Hope'\r",
+									"];\r",
+									"\r",
+									"// Random genres (50 options)\r",
+									"const genres = [\r",
+									"    { \"id\": 1, \"name\": \"horror\" }, { \"id\": 2, \"name\": \"comedy\" }, { \"id\": 3, \"name\": \"drama\" },\r",
+									"    { \"id\": 4, \"name\": \"thriller\" }, { \"id\": 5, \"name\": \"action\" }, { \"id\": 6, \"name\": \"romance\" },\r",
+									"    { \"id\": 7, \"name\": \"science fiction\" }, { \"id\": 8, \"name\": \"fantasy\" }, { \"id\": 9, \"name\": \"animation\" },\r",
+									"    { \"id\": 10, \"name\": \"mystery\" }, { \"id\": 11, \"name\": \"adventure\" }, { \"id\": 12, \"name\": \"crime\" },\r",
+									"    { \"id\": 13, \"name\": \"documentary\" }, { \"id\": 14, \"name\": \"biography\" }, { \"id\": 15, \"name\": \"musical\" },\r",
+									"    { \"id\": 16, \"name\": \"history\" }, { \"id\": 17, \"name\": \"family\" }, { \"id\": 18, \"name\": \"war\" },\r",
+									"    { \"id\": 19, \"name\": \"sports\" }, { \"id\": 20, \"name\": \"superhero\" }, { \"id\": 21, \"name\": \"post-apocalyptic\" },\r",
+									"    { \"id\": 22, \"name\": \"psychological\" }, { \"id\": 23, \"name\": \"slasher\" }, { \"id\": 24, \"name\": \"zombie\" },\r",
+									"    { \"id\": 25, \"name\": \"cyberpunk\" }, { \"id\": 26, \"name\": \"steampunk\" }, { \"id\": 27, \"name\": \"supernatural\" },\r",
+									"    { \"id\": 28, \"name\": \"action-comedy\" }, { \"id\": 29, \"name\": \"crime-thriller\" }, { \"id\": 30, \"name\": \"coming-of-age\" },\r",
+									"    { \"id\": 31, \"name\": \"drama-comedy\" }, { \"id\": 32, \"name\": \"romantic-comedy\" }, { \"id\": 33, \"name\": \"biopic\" },\r",
+									"    { \"id\": 34, \"name\": \"adventure-comedy\" }, { \"id\": 35, \"name\": \"spy\" }, { \"id\": 36, \"name\": \"space opera\" },\r",
+									"    { \"id\": 37, \"name\": \"time travel\" }, { \"id\": 38, \"name\": \"stealth\" }, { \"id\": 39, \"name\": \"mind-bending\" },\r",
+									"    { \"id\": 40, \"name\": \"mystery-thriller\" }, { \"id\": 41, \"name\": \"dystopian\" }, { \"id\": 42, \"name\": \"apocalyptic\" },\r",
+									"    { \"id\": 43, \"name\": \"heist\" }, { \"id\": 44, \"name\": \"paranormal\" }, { \"id\": 45, \"name\": \"alien\" },\r",
+									"    { \"id\": 46, \"name\": \"magic\" }, { \"id\": 47, \"name\": \"survival\" }, { \"id\": 48, \"name\": \"biological\" },\r",
+									"    { \"id\": 49, \"name\": \"epic\" }, { \"id\": 50, \"name\": \"disaster\" }\r",
+									"];\r",
+									"\r",
+									"// Random overviews (50 options)\r",
+									"const overviews = [\r",
+									"    'A thrilling journey of survival and discovery.', 'An emotional tale of love and loss.',\r",
+									"    'A comedic adventure full of unexpected twists.', 'A dark story about the boundaries between reality and illusion.',\r",
+									"    'An action-packed battle against an unstoppable force.', 'A journey through space and time with dangerous consequences.',\r",
+									"    'A heart-wrenching tale about friendship and sacrifice.', 'A gripping story about a detective solving a perplexing mystery.',\r",
+									"    'A team of heroes must unite to stop a global catastrophe.', 'A young boy discovers his destiny to save the world.',\r",
+									"    'A forbidden romance between two unlikely souls.', 'A young woman’s quest to unlock her family’s dark secret.',\r",
+									"    'A gripping drama about the fragility of the human spirit.', 'A story of betrayal and redemption across the ages.',\r",
+									"    'A group of survivors must fight against monstrous forces to stay alive.', 'A love story that transcends space and time.',\r",
+									"    'An expedition into the unknown turns into a fight for survival.', 'A mysterious figure seeks to unravel the secrets of an ancient civilization.',\r",
+									"    'A thrilling cat-and-mouse chase through the streets of a dangerous city.', 'A young detective’s first big case becomes a fight for justice.',\r",
+									"    'A futuristic world where artificial intelligence starts to question its purpose.', 'A young couple must overcome insurmountable odds to stay together.',\r",
+									"    'A lost treasure is hidden in the heart of an uncharted jungle.', 'A man must face his past to reclaim his future.', 'A complex political conspiracy that threatens the world’s future.',\r",
+									"    'A robot with emotions learns what it means to be human.', 'A young woman battles inner demons to find herself.', 'A comedy about the ups and downs of modern life.',\r",
+									"    'A young boy’s adventure in a magical world.', 'An old man’s quest for peace and redemption.', 'A family learns to accept their differences.',\r",
+									"    'A detective uncovers a conspiracy that shakes the city to its core.', 'An ancient prophecy threatens to come true unless a hero rises.',\r",
+									"    'An astronaut’s perilous journey to save humanity from destruction.', 'A mysterious alien artifact leads to unexpected consequences.',\r",
+									"    'A soldier’s journey through war and the harsh realities of life on the frontlines.', 'A teenager’s summer of self-discovery and change.',\r",
+									"    'A tale of how one person’s choices affect the fate of an entire nation.', 'A couple must decide between their love and their responsibilities.',\r",
+									"    'A group of strangers must survive when trapped in an apocalyptic scenario.', 'A scientist’s experiment goes wrong and causes a dangerous mutation.',\r",
+									"    'A man discovers his true heritage and his role in an ancient war.', 'A couple’s marriage is put to the test when a long-lost love returns.',\r",
+									"    'A young girl navigates the challenges of adolescence while uncovering a dark family secret.', 'A troubled man seeks peace by confronting his past.'\r",
+									"];\r",
+									"\r",
+									"// Random years between 1900 and 2025\r",
+									"const randomYear = Math.floor(Math.random() * (2025 - 1900 + 1)) + 1900;\r",
+									"\r",
+									"// Random title\r",
+									"const randomTitle = titles[Math.floor(Math.random() * titles.length)];\r",
+									"\r",
+									"// Random genre (one random genre)\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"\r",
+									"// Random overview\r",
+									"const randomOverview = overviews[Math.floor(Math.random() * overviews.length)];\r",
+									"\r",
+									"// Set variables in Postman environment\r",
+									"pm.environment.set(\"random_title\", randomTitle);\r",
+									"pm.environment.set(\"random_year\", randomYear);\r",
+									"pm.environment.set(\"random_genre\", JSON.stringify(randomGenre));\r",
+									"pm.environment.set(\"random_overview\", randomOverview);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"{{random_title}}\",\r\n    \"release_date\": \"{{random_year}}\",\r\n    \"genres\": [{{random_genre}}],\r\n    \"overview\": \"{{random_overview}}\"\r\n   }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/movies",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete movie missing token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies/:movie_id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies",
+								":movie_id"
+							],
+							"variable": [
+								{
+									"key": "movie_id",
+									"value": "67eecae8b15c754fa5a742ab"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete movie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code and response message for movie deletion\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Case 1: Movie not found (404 response)\r",
+									"    if (pm.response.status === 404) {\r",
+									"        // Expect a 404 status code\r",
+									"        pm.response.to.have.status(404);\r",
+									"\r",
+									"        // Check if the error message is \"Movie not found\"\r",
+									"        pm.expect(responseJson).to.have.property('error').that.equals(\"Movie not found\");\r",
+									"    }\r",
+									"    // Case 2: Movie deleted successfully (200 response)\r",
+									"    else if (pm.response.status === 200) {\r",
+									"        // Expect a 200 status code\r",
+									"        pm.response.to.have.status(200);\r",
+									"\r",
+									"        // Check if the response message is \"Movie deleted successfully\"\r",
+									"        pm.expect(responseJson).to.have.property('message').that.equals(\"Movie deleted successfully\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/movies/:movie_id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies",
+								":movie_id"
+							],
+							"variable": [
+								{
+									"key": "movie_id",
+									"value": "680645209419d2051a399c72"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update movie missing token",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Random titles (50 options)\r",
+									"const titles = [\r",
+									"    'The Dark Adventures', 'Lost in the Void', 'Journey Beyond Stars', 'The Final Countdown', \r",
+									"    'Moonlight Escape', 'Echoes of the Past', 'Unseen Forces', 'The Edge of Tomorrow', \r",
+									"    'The Forgotten Realm', 'Chasing Shadows', 'Whispers in the Night', 'Beneath the Surface', \r",
+									"    'The Time Travelers', 'Mysterious Horizons', 'Shattered Reality', 'Fallen Kingdom', \r",
+									"    'Crimson Dawn', 'Eternal Night', 'Rise of the Fallen', 'The Secret Keeper', \r",
+									"    'Beyond the Horizon', 'Frozen Memories', 'The Infinite Loop', 'Under the Stars', \r",
+									"    'A Glimpse of Hope', 'Hidden Truths', 'The Lost City', 'A Dangerous Game', \r",
+									"    'Afterlife Chronicles', 'The Last Stand', 'The Awakening', 'Waves of Destiny', \r",
+									"    'Revenge of the Brave', 'Into the Abyss', 'The Final Hour', 'Lost Legends', \r",
+									"    'Endless Nightmares', 'The Silent Observer', 'The Labyrinth', 'The Missing Link', \r",
+									"    'The Eternal Flame', 'Breaking Point', 'The Unseen Path', 'Falling Skies', \r",
+									"    'Uncharted Waters', 'Unforgotten Memories', 'The Lone Survivor', 'Beyond the Shadows', \r",
+									"    'The Phantom War', 'Resurrection Quest', 'The Edge of Reason', 'The Last Hope'\r",
+									"];\r",
+									"\r",
+									"// Random genres (50 options)\r",
+									"const genres = [\r",
+									"    { \"id\": 1, \"name\": \"horror\" }, { \"id\": 2, \"name\": \"comedy\" }, { \"id\": 3, \"name\": \"drama\" },\r",
+									"    { \"id\": 4, \"name\": \"thriller\" }, { \"id\": 5, \"name\": \"action\" }, { \"id\": 6, \"name\": \"romance\" },\r",
+									"    { \"id\": 7, \"name\": \"science fiction\" }, { \"id\": 8, \"name\": \"fantasy\" }, { \"id\": 9, \"name\": \"animation\" },\r",
+									"    { \"id\": 10, \"name\": \"mystery\" }, { \"id\": 11, \"name\": \"adventure\" }, { \"id\": 12, \"name\": \"crime\" },\r",
+									"    { \"id\": 13, \"name\": \"documentary\" }, { \"id\": 14, \"name\": \"biography\" }, { \"id\": 15, \"name\": \"musical\" },\r",
+									"    { \"id\": 16, \"name\": \"history\" }, { \"id\": 17, \"name\": \"family\" }, { \"id\": 18, \"name\": \"war\" },\r",
+									"    { \"id\": 19, \"name\": \"sports\" }, { \"id\": 20, \"name\": \"superhero\" }, { \"id\": 21, \"name\": \"post-apocalyptic\" },\r",
+									"    { \"id\": 22, \"name\": \"psychological\" }, { \"id\": 23, \"name\": \"slasher\" }, { \"id\": 24, \"name\": \"zombie\" },\r",
+									"    { \"id\": 25, \"name\": \"cyberpunk\" }, { \"id\": 26, \"name\": \"steampunk\" }, { \"id\": 27, \"name\": \"supernatural\" },\r",
+									"    { \"id\": 28, \"name\": \"action-comedy\" }, { \"id\": 29, \"name\": \"crime-thriller\" }, { \"id\": 30, \"name\": \"coming-of-age\" },\r",
+									"    { \"id\": 31, \"name\": \"drama-comedy\" }, { \"id\": 32, \"name\": \"romantic-comedy\" }, { \"id\": 33, \"name\": \"biopic\" },\r",
+									"    { \"id\": 34, \"name\": \"adventure-comedy\" }, { \"id\": 35, \"name\": \"spy\" }, { \"id\": 36, \"name\": \"space opera\" },\r",
+									"    { \"id\": 37, \"name\": \"time travel\" }, { \"id\": 38, \"name\": \"stealth\" }, { \"id\": 39, \"name\": \"mind-bending\" },\r",
+									"    { \"id\": 40, \"name\": \"mystery-thriller\" }, { \"id\": 41, \"name\": \"dystopian\" }, { \"id\": 42, \"name\": \"apocalyptic\" },\r",
+									"    { \"id\": 43, \"name\": \"heist\" }, { \"id\": 44, \"name\": \"paranormal\" }, { \"id\": 45, \"name\": \"alien\" },\r",
+									"    { \"id\": 46, \"name\": \"magic\" }, { \"id\": 47, \"name\": \"survival\" }, { \"id\": 48, \"name\": \"biological\" },\r",
+									"    { \"id\": 49, \"name\": \"epic\" }, { \"id\": 50, \"name\": \"disaster\" }\r",
+									"];\r",
+									"\r",
+									"// Random overviews (50 options)\r",
+									"const overviews = [\r",
+									"    'A thrilling journey of survival and discovery.', 'An emotional tale of love and loss.',\r",
+									"    'A comedic adventure full of unexpected twists.', 'A dark story about the boundaries between reality and illusion.',\r",
+									"    'An action-packed battle against an unstoppable force.', 'A journey through space and time with dangerous consequences.',\r",
+									"    'A heart-wrenching tale about friendship and sacrifice.', 'A gripping story about a detective solving a perplexing mystery.',\r",
+									"    'A team of heroes must unite to stop a global catastrophe.', 'A young boy discovers his destiny to save the world.',\r",
+									"    'A forbidden romance between two unlikely souls.', 'A young woman’s quest to unlock her family’s dark secret.',\r",
+									"    'A gripping drama about the fragility of the human spirit.', 'A story of betrayal and redemption across the ages.',\r",
+									"    'A group of survivors must fight against monstrous forces to stay alive.', 'A love story that transcends space and time.',\r",
+									"    'An expedition into the unknown turns into a fight for survival.', 'A mysterious figure seeks to unravel the secrets of an ancient civilization.',\r",
+									"    'A thrilling cat-and-mouse chase through the streets of a dangerous city.', 'A young detective’s first big case becomes a fight for justice.',\r",
+									"    'A futuristic world where artificial intelligence starts to question its purpose.', 'A young couple must overcome insurmountable odds to stay together.',\r",
+									"    'A lost treasure is hidden in the heart of an uncharted jungle.', 'A man must face his past to reclaim his future.', 'A complex political conspiracy that threatens the world’s future.',\r",
+									"    'A robot with emotions learns what it means to be human.', 'A young woman battles inner demons to find herself.', 'A comedy about the ups and downs of modern life.',\r",
+									"    'A young boy’s adventure in a magical world.', 'An old man’s quest for peace and redemption.', 'A family learns to accept their differences.',\r",
+									"    'A detective uncovers a conspiracy that shakes the city to its core.', 'An ancient prophecy threatens to come true unless a hero rises.',\r",
+									"    'An astronaut’s perilous journey to save humanity from destruction.', 'A mysterious alien artifact leads to unexpected consequences.',\r",
+									"    'A soldier’s journey through war and the harsh realities of life on the frontlines.', 'A teenager’s summer of self-discovery and change.',\r",
+									"    'A tale of how one person’s choices affect the fate of an entire nation.', 'A couple must decide between their love and their responsibilities.',\r",
+									"    'A group of strangers must survive when trapped in an apocalyptic scenario.', 'A scientist’s experiment goes wrong and causes a dangerous mutation.',\r",
+									"    'A man discovers his true heritage and his role in an ancient war.', 'A couple’s marriage is put to the test when a long-lost love returns.',\r",
+									"    'A young girl navigates the challenges of adolescence while uncovering a dark family secret.', 'A troubled man seeks peace by confronting his past.'\r",
+									"];\r",
+									"\r",
+									"// Random years between 1900 and 2025\r",
+									"const randomYear = Math.floor(Math.random() * (2025 - 1900 + 1)) + 1900;\r",
+									"\r",
+									"// Random title\r",
+									"const randomTitle = titles[Math.floor(Math.random() * titles.length)];\r",
+									"\r",
+									"// Random genre (one random genre)\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"\r",
+									"// Random overview\r",
+									"const randomOverview = overviews[Math.floor(Math.random() * overviews.length)];\r",
+									"\r",
+									"// Set variables in Postman environment\r",
+									"pm.environment.set(\"random_title\", randomTitle);\r",
+									"pm.environment.set(\"random_year\", randomYear);\r",
+									"pm.environment.set(\"random_genre\", JSON.stringify(randomGenre));\r",
+									"pm.environment.set(\"random_overview\", randomOverview);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"{{random_title}}\",\r\n    \"release_date\": \"{{random_year}}\",\r\n    \"genres\": [{{random_genre}}],\r\n    \"overview\": \"{{random_overview}}\"\r\n   }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/movies/:movie_id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies",
+								":movie_id"
+							],
+							"variable": [
+								{
+									"key": "movie_id",
+									"value": "67eecae8b15c754fa5a742ae"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update movie",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Random titles (50 options)\r",
+									"const titles = [\r",
+									"    'The Dark Adventures', 'Lost in the Void', 'Journey Beyond Stars', 'The Final Countdown', \r",
+									"    'Moonlight Escape', 'Echoes of the Past', 'Unseen Forces', 'The Edge of Tomorrow', \r",
+									"    'The Forgotten Realm', 'Chasing Shadows', 'Whispers in the Night', 'Beneath the Surface', \r",
+									"    'The Time Travelers', 'Mysterious Horizons', 'Shattered Reality', 'Fallen Kingdom', \r",
+									"    'Crimson Dawn', 'Eternal Night', 'Rise of the Fallen', 'The Secret Keeper', \r",
+									"    'Beyond the Horizon', 'Frozen Memories', 'The Infinite Loop', 'Under the Stars', \r",
+									"    'A Glimpse of Hope', 'Hidden Truths', 'The Lost City', 'A Dangerous Game', \r",
+									"    'Afterlife Chronicles', 'The Last Stand', 'The Awakening', 'Waves of Destiny', \r",
+									"    'Revenge of the Brave', 'Into the Abyss', 'The Final Hour', 'Lost Legends', \r",
+									"    'Endless Nightmares', 'The Silent Observer', 'The Labyrinth', 'The Missing Link', \r",
+									"    'The Eternal Flame', 'Breaking Point', 'The Unseen Path', 'Falling Skies', \r",
+									"    'Uncharted Waters', 'Unforgotten Memories', 'The Lone Survivor', 'Beyond the Shadows', \r",
+									"    'The Phantom War', 'Resurrection Quest', 'The Edge of Reason', 'The Last Hope'\r",
+									"];\r",
+									"\r",
+									"// Random genres (50 options)\r",
+									"const genres = [\r",
+									"    { \"id\": 1, \"name\": \"horror\" }, { \"id\": 2, \"name\": \"comedy\" }, { \"id\": 3, \"name\": \"drama\" },\r",
+									"    { \"id\": 4, \"name\": \"thriller\" }, { \"id\": 5, \"name\": \"action\" }, { \"id\": 6, \"name\": \"romance\" },\r",
+									"    { \"id\": 7, \"name\": \"science fiction\" }, { \"id\": 8, \"name\": \"fantasy\" }, { \"id\": 9, \"name\": \"animation\" },\r",
+									"    { \"id\": 10, \"name\": \"mystery\" }, { \"id\": 11, \"name\": \"adventure\" }, { \"id\": 12, \"name\": \"crime\" },\r",
+									"    { \"id\": 13, \"name\": \"documentary\" }, { \"id\": 14, \"name\": \"biography\" }, { \"id\": 15, \"name\": \"musical\" },\r",
+									"    { \"id\": 16, \"name\": \"history\" }, { \"id\": 17, \"name\": \"family\" }, { \"id\": 18, \"name\": \"war\" },\r",
+									"    { \"id\": 19, \"name\": \"sports\" }, { \"id\": 20, \"name\": \"superhero\" }, { \"id\": 21, \"name\": \"post-apocalyptic\" },\r",
+									"    { \"id\": 22, \"name\": \"psychological\" }, { \"id\": 23, \"name\": \"slasher\" }, { \"id\": 24, \"name\": \"zombie\" },\r",
+									"    { \"id\": 25, \"name\": \"cyberpunk\" }, { \"id\": 26, \"name\": \"steampunk\" }, { \"id\": 27, \"name\": \"supernatural\" },\r",
+									"    { \"id\": 28, \"name\": \"action-comedy\" }, { \"id\": 29, \"name\": \"crime-thriller\" }, { \"id\": 30, \"name\": \"coming-of-age\" },\r",
+									"    { \"id\": 31, \"name\": \"drama-comedy\" }, { \"id\": 32, \"name\": \"romantic-comedy\" }, { \"id\": 33, \"name\": \"biopic\" },\r",
+									"    { \"id\": 34, \"name\": \"adventure-comedy\" }, { \"id\": 35, \"name\": \"spy\" }, { \"id\": 36, \"name\": \"space opera\" },\r",
+									"    { \"id\": 37, \"name\": \"time travel\" }, { \"id\": 38, \"name\": \"stealth\" }, { \"id\": 39, \"name\": \"mind-bending\" },\r",
+									"    { \"id\": 40, \"name\": \"mystery-thriller\" }, { \"id\": 41, \"name\": \"dystopian\" }, { \"id\": 42, \"name\": \"apocalyptic\" },\r",
+									"    { \"id\": 43, \"name\": \"heist\" }, { \"id\": 44, \"name\": \"paranormal\" }, { \"id\": 45, \"name\": \"alien\" },\r",
+									"    { \"id\": 46, \"name\": \"magic\" }, { \"id\": 47, \"name\": \"survival\" }, { \"id\": 48, \"name\": \"biological\" },\r",
+									"    { \"id\": 49, \"name\": \"epic\" }, { \"id\": 50, \"name\": \"disaster\" }\r",
+									"];\r",
+									"\r",
+									"// Random overviews (50 options)\r",
+									"const overviews = [\r",
+									"    'A thrilling journey of survival and discovery.', 'An emotional tale of love and loss.',\r",
+									"    'A comedic adventure full of unexpected twists.', 'A dark story about the boundaries between reality and illusion.',\r",
+									"    'An action-packed battle against an unstoppable force.', 'A journey through space and time with dangerous consequences.',\r",
+									"    'A heart-wrenching tale about friendship and sacrifice.', 'A gripping story about a detective solving a perplexing mystery.',\r",
+									"    'A team of heroes must unite to stop a global catastrophe.', 'A young boy discovers his destiny to save the world.',\r",
+									"    'A forbidden romance between two unlikely souls.', 'A young woman’s quest to unlock her family’s dark secret.',\r",
+									"    'A gripping drama about the fragility of the human spirit.', 'A story of betrayal and redemption across the ages.',\r",
+									"    'A group of survivors must fight against monstrous forces to stay alive.', 'A love story that transcends space and time.',\r",
+									"    'An expedition into the unknown turns into a fight for survival.', 'A mysterious figure seeks to unravel the secrets of an ancient civilization.',\r",
+									"    'A thrilling cat-and-mouse chase through the streets of a dangerous city.', 'A young detective’s first big case becomes a fight for justice.',\r",
+									"    'A futuristic world where artificial intelligence starts to question its purpose.', 'A young couple must overcome insurmountable odds to stay together.',\r",
+									"    'A lost treasure is hidden in the heart of an uncharted jungle.', 'A man must face his past to reclaim his future.', 'A complex political conspiracy that threatens the world’s future.',\r",
+									"    'A robot with emotions learns what it means to be human.', 'A young woman battles inner demons to find herself.', 'A comedy about the ups and downs of modern life.',\r",
+									"    'A young boy’s adventure in a magical world.', 'An old man’s quest for peace and redemption.', 'A family learns to accept their differences.',\r",
+									"    'A detective uncovers a conspiracy that shakes the city to its core.', 'An ancient prophecy threatens to come true unless a hero rises.',\r",
+									"    'An astronaut’s perilous journey to save humanity from destruction.', 'A mysterious alien artifact leads to unexpected consequences.',\r",
+									"    'A soldier’s journey through war and the harsh realities of life on the frontlines.', 'A teenager’s summer of self-discovery and change.',\r",
+									"    'A tale of how one person’s choices affect the fate of an entire nation.', 'A couple must decide between their love and their responsibilities.',\r",
+									"    'A group of strangers must survive when trapped in an apocalyptic scenario.', 'A scientist’s experiment goes wrong and causes a dangerous mutation.',\r",
+									"    'A man discovers his true heritage and his role in an ancient war.', 'A couple’s marriage is put to the test when a long-lost love returns.',\r",
+									"    'A young girl navigates the challenges of adolescence while uncovering a dark family secret.', 'A troubled man seeks peace by confronting his past.'\r",
+									"];\r",
+									"\r",
+									"// Random years between 1900 and 2025\r",
+									"const randomYear = Math.floor(Math.random() * (2025 - 1900 + 1)) + 1900;\r",
+									"\r",
+									"// Random title\r",
+									"const randomTitle = titles[Math.floor(Math.random() * titles.length)];\r",
+									"\r",
+									"// Random genre (one random genre)\r",
+									"const randomGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"\r",
+									"// Random overview\r",
+									"const randomOverview = overviews[Math.floor(Math.random() * overviews.length)];\r",
+									"\r",
+									"// Set variables in Postman environment\r",
+									"pm.environment.set(\"random_title\", randomTitle);\r",
+									"pm.environment.set(\"random_year\", randomYear);\r",
+									"pm.environment.set(\"random_genre\", JSON.stringify(randomGenre));\r",
+									"pm.environment.set(\"random_overview\", randomOverview);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"{{random_title}}\",\r\n    \"release_date\": \"{{random_year}}\",\r\n    \"genres\": [{{random_genre}}],\r\n    \"overview\": \"{{random_overview}}\"\r\n   }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/movies/:movie_id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"movies",
+								":movie_id"
+							],
+							"variable": [
+								{
+									"key": "movie_id",
+									"value": "67eecae8b15c754fa5a742ae"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Credit",
+			"item": [
+				{
+					"name": "Fetch all actors w.o. filters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check pagination links, response message, and actors data\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // 1. Check if the response status is 200\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    // 2. Check if the '_links' object exists and contains the expected properties\r",
+									"    pm.expect(responseJson).to.have.property('_links');\r",
+									" \r",
+									"    // 4. Validate that 'actors' is an array and contains actor data\r",
+									"    pm.expect(responseJson).to.have.property('actors').that.is.an('array');\r",
+									"    pm.expect(responseJson.actors.length).to.be.above(0);  // Ensure the array is not empty\r",
+									"\r",
+									"    // 5. Validate the structure of each actor in the 'actors' array\r",
+									"    responseJson.actors.forEach(actor => {\r",
+									"        // Check that each actor has the expected properties\r",
+									"        pm.expect(actor).to.have.property('id').that.is.a('number');\r",
+									"        pm.expect(actor).to.have.property('movies_played').that.is.an('array').that.is.not.empty;\r",
+									"        pm.expect(actor).to.have.property('name').that.is.a('string').and.not.empty;\r",
+									"\r",
+									"        // Validate each movie in the 'movies_played' array\r",
+									"        actor.movies_played.forEach(movie => {\r",
+									"            pm.expect(movie).to.be.a('string').and.not.empty;\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/credits/actors",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"credits",
+								"actors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch actors by name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// List of 50 random actor names (full and partial)\r",
+									"const actorNames = [\r",
+									"    'Leonardo DiCaprio', 'Scarlett Johansson', 'Will Smith', 'Brad Pitt', 'Natalie Portman',\r",
+									"    'Angelina Jolie', 'Ryan Reynolds', 'Emma Watson', 'Chris Hemsworth', 'Robert Downey Jr.',\r",
+									"    'Meryl Streep', 'Johnny Depp', 'Tom Hanks', 'Jennifer Lawrence', 'Mark Ruffalo',\r",
+									"    'Julia Roberts', 'Matthew McConaughey', 'Ben Affleck', 'Anne Hathaway', 'Chris Evans',\r",
+									"    'Charlize Theron', 'Hugh Jackman', 'Reese Witherspoon', 'Will Ferrell', 'Zoe Saldana',\r",
+									"    'Keanu Reeves', 'Tom Cruise', 'Dwayne Johnson', 'Emma Stone', 'Jason Momoa',\r",
+									"    'Bradley Cooper', 'Al Pacino', 'Nicole Kidman', 'Samuel L. Jackson', 'Matthew McConaughey',\r",
+									"    'Jodie Foster', 'Cameron Diaz', 'Paul Rudd', 'Chris Pratt', 'Denzel Washington',\r",
+									"    'Jessica Chastain', 'Robert Pattinson', 'Jennifer Aniston', 'Zach Galifianakis', 'Sophie Turner',\r",
+									"    'Tommy Lee Jones', 'Idris Elba', 'Seth Rogen', 'Maggie Smith', 'Drew Barrymore',\r",
+									"\r",
+									"    // Partial actor names (for randomization)\r",
+									"    'Leo', 'Scarlett', 'Will', 'Brad', 'Nat', 'Angelina', 'Ryan', 'Emma', 'Chris H', 'Robert D',\r",
+									"    'Meryl', 'Johnny', 'Tom', 'Jen', 'Mark', 'Julia', 'Matthew', 'Ben', 'Anne', 'Chris E',\r",
+									"    'Charlize', 'Hugh', 'Reese', 'Will F', 'Zoe', 'Keanu', 'Tom C', 'Dwayne', 'Emma S',\r",
+									"    'Jason', 'Bradley', 'Al', 'Nicole', 'Sam', 'Matthew', 'Jodie', 'Cameron', 'Paul', 'Chris P',\r",
+									"    'Denzel', 'Jessica', 'Robert P', 'Jennifer A', 'Zach', 'Sophie', 'Tommy', 'Idris', 'Seth',\r",
+									"    'Maggie', 'Drew'\r",
+									"];\r",
+									"\r",
+									"// Pick a random actor name from the list\r",
+									"const randomActor = actorNames[Math.floor(Math.random() * actorNames.length)];\r",
+									"\r",
+									"// Set the random actor name as an environment variable\r",
+									"pm.environment.set(\"random_actor\", randomActor);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Validate actor credits response or 500 error\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    if (pm.response.code === 500) {\r",
+									"        // Case: Actor not found\r",
+									"        pm.expect(pm.response.code).to.eql(500);\r",
+									"        pm.expect(responseJson).to.have.property(\"error\", \"An unexpected error occurred while processing the request\");\r",
+									"\r",
+									"    } else if (pm.response.code === 200) {\r",
+									"        // Case: Actors fetched successfully\r",
+									"        pm.expect(pm.response.code).to.eql(200);\r",
+									"\r",
+									"        // Check _links\r",
+									"        pm.expect(responseJson).to.have.property('_links');\r",
+									"        const links = responseJson._links;\r",
+									"        pm.expect(links).to.have.property('first').that.is.a('string');\r",
+									"        pm.expect(links).to.have.property('last').that.is.a('string');\r",
+									"        pm.expect(links).to.have.property('next').that.satisfy(v => v === null || typeof v === 'string');\r",
+									"        pm.expect(links).to.have.property('previous').that.satisfy(v => v === null || typeof v === 'string');\r",
+									"\r",
+									"        // Check actors array\r",
+									"        pm.expect(responseJson).to.have.property('actors').that.is.an('array').and.not.empty;\r",
+									"\r",
+									"        responseJson.actors.forEach(actor => {\r",
+									"            pm.expect(actor).to.have.property('id').that.is.a('number');\r",
+									"            pm.expect(actor).to.have.property('name').that.is.a('string').and.not.empty;\r",
+									"            pm.expect(actor).to.have.property('movies_played').that.is.an('array').and.not.empty;\r",
+									"\r",
+									"            actor.movies_played.forEach(movie => {\r",
+									"                pm.expect(movie).to.be.a('string').and.not.empty;\r",
+									"            });\r",
+									"        });\r",
+									"    } else {\r",
+									"        pm.expect.fail(`Unexpected status code: ${pm.response.code}`);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/credits/actors?actor={{random_actor}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"credits",
+								"actors"
+							],
+							"query": [
+								{
+									"key": "actor",
+									"value": "{{random_actor}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch actors by invalid name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// List of invalid actor names\r",
+									"const actorNames = [\r",
+									"        123456789,\r",
+									"        ':?*dfke(7)',\r",
+									"        null,\r",
+									"        undefined,\r",
+									"        '☹'\r",
+									"    ];\r",
+									"\r",
+									"    // Pick a random actor name from the list\r",
+									"    const randomActor = actorNames[Math.floor(Math.random() * actorNames.length)];\r",
+									"\r",
+									"    // Set the random actor name as an environment variable\r",
+									"    pm.environment.set(\"random_actor\", randomActor);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Validate unexpected error response\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check if the response status code is 500 (or another code based on your API)\r",
+									"    pm.expect(pm.response.code).to.eql(500); // Use pm.response.code to get the actual status code\r",
+									"\r",
+									"    // Validate that the response contains the expected error message\r",
+									"    pm.expect(responseJson).to.have.property(\"error\", \"An unexpected error occurred while processing the request\");\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/credits/actors?actor={{random_actor}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"credits",
+								"actors"
+							],
+							"query": [
+								{
+									"key": "actor",
+									"value": "{{random_actor}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch actors by movie",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const validMovieIds = [\r",
+									"    '67eecae5b15c754fa5a7425f',\r",
+									"    '67eecae5b15c754fa5a74262',\r",
+									"    '67eecae5b15c754fa5a74265',\r",
+									"    '67eecae5b15c754fa5a74269',\r",
+									"    '67eecae5b15c754fa5a7426c',\r",
+									"    '67eecae6b15c754fa5a74273',\r",
+									"    '67eecae6b15c754fa5a74277',\r",
+									"    '67eecae6b15c754fa5a7427e',\r",
+									"    '67eecae6b15c754fa5a74282',\r",
+									"    '67eecae7b15c754fa5a74287',\r",
+									"    '67eecae7b15c754fa5a7428b',\r",
+									"    '67eecae7b15c754fa5a74290',\r",
+									"    '67eecae9b15c754fa5a742b8',\r",
+									"    '67eecae9b15c754fa5a742bc',\r",
+									"    '67eecae9b15c754fa5a742c0',\r",
+									"    '67eecae9b15c754fa5a742c2',\r",
+									"    '67eecae8b15c754fa5a742af',\r",
+									"    '67eecae8b15c754fa5a742ab'\r",
+									"];\r",
+									"\r",
+									"// Randomly select an ObjectId from the list\r",
+									"const randomMovieId = validMovieIds[Math.floor(Math.random() * validMovieIds.length)];\r",
+									"\r",
+									"// Set the selected movie ID as an environment variable\r",
+									"pm.environment.set(\"random_movie_id\", randomMovieId);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code and movie details based on actor credits availability\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Case 1: If the movie is not found (404 response)\r",
+									"    if (responseJson.error && responseJson.error === \"Movie not found while resolving actor credits\") {\r",
+									"        // If movie not found, expect a 404 status code\r",
+									"        pm.response.to.have.status(404);\r",
+									"        \r",
+									"        // Ensure the error message is correct\r",
+									"        pm.expect(responseJson).to.have.property('error').that.equals(\"Movie not found while resolving actor credits\");\r",
+									"\r",
+									"    } else {\r",
+									"        // Case 2: If movie is found, expect a 200 status code\r",
+									"        pm.response.to.have.status(200);\r",
+									"        \r",
+									"        // Validate _links object in the response\r",
+									"        pm.expect(responseJson._links).to.have.property(\"delete\").that.is.a(\"string\");\r",
+									"        pm.expect(responseJson._links).to.have.property(\"self\").that.is.a(\"string\");\r",
+									"        pm.expect(responseJson._links).to.have.property(\"update\").that.is.a(\"string\");\r",
+									"        \r",
+									"        // Validate actors array\r",
+									"        pm.expect(responseJson.actors).to.be.an(\"array\").that.is.not.empty;\r",
+									"\r",
+									"        // Check the first actor in the actors array\r",
+									"        const actor = responseJson.actors[0];\r",
+									"        pm.expect(actor).to.have.property(\"cast_id\").that.is.a(\"number\");\r",
+									"        pm.expect(actor).to.have.property(\"character\").that.is.a(\"string\");\r",
+									"        pm.expect(actor).to.have.property(\"credit_id\").that.is.a(\"string\");\r",
+									"        pm.expect(actor).to.have.property(\"gender\").that.is.oneOf([1, 2]); // 1 for female, 2 for male\r",
+									"        pm.expect(actor).to.have.property(\"id\").that.is.a(\"number\");\r",
+									"        pm.expect(actor).to.have.property(\"name\").that.is.a(\"string\");\r",
+									"        pm.expect(actor).to.have.property(\"order\").that.is.a(\"number\");\r",
+									"        pm.expect(actor).to.have.property(\"profile_path\").that.is.a(\"string\").and.includes(\"/\"); // Check for relative URL format\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/credits/actors/{{random_movie_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"credits",
+								"actors",
+								"{{random_movie_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Rating",
+			"item": [
+				{
+					"name": "Fetch all ratings w.o. filters",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code and ratings response\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check for 200 status code\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    // Check that the '_links' section exists in the response\r",
+									"    pm.expect(responseJson).to.have.property(\"_links\");\r",
+									"\r",
+									"    // Validate the message field in the response\r",
+									"    pm.expect(responseJson).to.have.property(\"message\").that.equals(\"Ratings fetched successfully\");\r",
+									"\r",
+									"    // Validate the ratings array\r",
+									"    pm.expect(responseJson.ratings).to.be.an(\"array\").that.is.not.empty; // Ensure ratings array is not empty\r",
+									"\r",
+									"    // Check the structure of the first rating object\r",
+									"    const rating = responseJson.ratings[0];\r",
+									"    pm.expect(rating).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"    pm.expect(rating).to.have.property(\"movie\").that.is.a(\"string\");\r",
+									"    pm.expect(rating).to.have.property(\"text\").that.is.a(\"string\").and.matches(/^\\d+(\\.\\d+)?\\/5$/); // Rating should match \"X/5\" format\r",
+									"\r",
+									"    // Validate that 'text' follows the expected \"X/5\" format\r",
+									"    pm.expect(rating.text).to.match(/^\\d+(\\.\\d+)?\\/5$/);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/ratings",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch ratings by movie",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const validMovieIds = [\r",
+									"    '67eecae9b15c754fa5a742b7',\r",
+									"    '67eecae9b15c754fa5a742b6',\r",
+									"    '67eecae8b15c754fa5a742ac'\r",
+									"];\r",
+									"\r",
+									"// Randomly select an ObjectId from the list\r",
+									"const randomMovieId = validMovieIds[Math.floor(Math.random() * validMovieIds.length)];\r",
+									"\r",
+									"// Set the selected movie ID as an environment variable\r",
+									"pm.environment.set(\"random_movie_id\", randomMovieId);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code and ratings response based on availability\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    // Case 1: If the response contains an error (No ratings found), expect a 404\r",
+									"    if (responseJson.error && responseJson.error === \"No ratings found\") {\r",
+									"        pm.response.to.have.status(404);\r",
+									"        pm.expect(responseJson).to.have.property(\"error\").that.equals(\"No ratings found\");\r",
+									"    } \r",
+									"    // Case 2: If ratings are available, expect a 200 status and validate the response structure\r",
+									"    else {\r",
+									"        pm.response.to.have.status(200);\r",
+									"\r",
+									"        // Check that '_links' section is present\r",
+									"        pm.expect(responseJson).to.have.property(\"_links\");\r",
+									"\r",
+									"        // Check that 'ratings' section is present and is an array\r",
+									"        pm.expect(responseJson).to.have.property(\"ratings\").that.is.an(\"array\");\r",
+									"\r",
+									"        // Validate that at least one rating exists\r",
+									"        if (responseJson.ratings.length > 0) {\r",
+									"            const rating = responseJson.ratings[0];\r",
+									"\r",
+									"            // Validate that each rating object contains the necessary properties\r",
+									"            pm.expect(rating).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"            pm.expect(rating).to.have.property(\"movie_title\").that.is.a(\"string\");\r",
+									"            pm.expect(rating).to.have.property(\"rating\").that.is.a(\"number\");\r",
+									"            pm.expect(rating).to.have.property(\"user_id\").that.is.a(\"string\");\r",
+									"        }\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/ratings/{{random_movie_id}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"ratings",
+								"{{random_movie_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch ratings with custom pagination",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Randomly generate the `page` number between 1 and 10 (adjust as needed)\r",
+									"const pageNumber = Math.floor(Math.random() * 10) + 1;\r",
+									"\r",
+									"// Randomly generate the `per_page` number between 1 and 100 (adjust as needed)\r",
+									"const perPageNumber = Math.floor(Math.random() * 100) + 1;\r",
+									"\r",
+									"// Log the values for debugging purposes\r",
+									"console.log(`Random Page Number: ${pageNumber}`);\r",
+									"console.log(`Random Per Page Number: ${perPageNumber}`);\r",
+									"\r",
+									"// Set the `page` and `per_page` as environment variables\r",
+									"pm.environment.set(\"random_page\", pageNumber);\r",
+									"pm.environment.set(\"random_per_page\", perPageNumber);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check status code and ratings response\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check for 200 status code\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    // Check that the '_links' section exists in the response\r",
+									"    pm.expect(responseJson).to.have.property(\"_links\");\r",
+									"\r",
+									"    // Validate the message field in the response\r",
+									"    pm.expect(responseJson).to.have.property(\"message\").that.equals(\"Ratings fetched successfully\");\r",
+									"\r",
+									"    // Validate the ratings array\r",
+									"    pm.expect(responseJson.ratings).to.be.an(\"array\").that.is.not.empty; // Ensure ratings array is not empty\r",
+									"\r",
+									"    // Check the structure of the first rating object\r",
+									"    const rating = responseJson.ratings[0];\r",
+									"    pm.expect(rating).to.have.property(\"id\").that.is.a(\"string\");\r",
+									"    pm.expect(rating).to.have.property(\"movie\").that.is.a(\"string\");\r",
+									"    pm.expect(rating).to.have.property(\"text\").that.is.a(\"string\").and.matches(/^\\d+(\\.\\d+)?\\/5$/); // Rating should match \"X/5\" format\r",
+									"\r",
+									"    // Validate that 'text' follows the expected \"X/5\" format\r",
+									"    pm.expect(rating.text).to.match(/^\\d+(\\.\\d+)?\\/5$/);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/ratings?page={{random_page}}&per_page={{random_per_page}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"ratings"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{random_page}}"
+								},
+								{
+									"key": "per_page",
+									"value": "{{random_per_page}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Fetch ratings with invalid pagination",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Helper to randomly pick an item from an array\r",
+									"function pickRandom(arr) {\r",
+									"    return arr[Math.floor(Math.random() * arr.length)];\r",
+									"}\r",
+									"\r",
+									"// Define possible invalid values\r",
+									"const invalidPageOptions = [-1, 0, 999999, \"abc\", \"\", \"!\", null, undefined];\r",
+									"const invalidPerPageOptions = [-5, 0, 1000, \"ten\", \"💥\", \"\", null, undefined];\r",
+									"\r",
+									"// Pick random invalid values\r",
+									"const invalidPage = pickRandom(invalidPageOptions);\r",
+									"const invalidPerPage = pickRandom(invalidPerPageOptions);\r",
+									"\r",
+									"// Log the values\r",
+									"console.log(`Invalid Page: ${invalidPage}`);\r",
+									"console.log(`Invalid Per Page: ${invalidPerPage}`);\r",
+									"\r",
+									"// Set them as environment variables\r",
+									"pm.environment.set(\"random_page\", invalidPage);\r",
+									"pm.environment.set(\"random_per_page\", invalidPerPage);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check if the error message 'Invalid pagination parameters' is returned with a 400 status\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    \r",
+									"    // Check for 400 status code\r",
+									"    pm.response.to.have.status(400);\r",
+									"    \r",
+									"    // Check if the error message is 'Invalid pagination parameters'\r",
+									"    pm.expect(responseJson).to.have.property('error').that.equals('Invalid pagination parameters');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/ratings?page={{random_page}}&per_page={{random_per_page}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"ratings"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "{{random_page}}"
+								},
+								{
+									"key": "per_page",
+									"value": "{{random_per_page}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Login user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Check if status code is 200\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test 2: Check if _links.delete is a valid URL\r",
+									"pm.test(\"_links.delete is a valid URL\", function () {\r",
+									"    const responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody._links).to.have.property(\"delete\").that.is.a(\"string\").and.matches(/^http/);\r",
+									"});\r",
+									"\r",
+									"// Test 3: Check if access_token is a non-empty string\r",
+									"pm.test(\"access_token is a non-empty string\", function () {\r",
+									"    const responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody).to.have.property(\"access_token\").that.is.a(\"string\").and.is.not.empty;\r",
+									"});\r",
+									"\r",
+									"// Test 4: Check if message is 'User logged in successfully'\r",
+									"pm.test(\"message is 'User logged in successfully'\", function () {\r",
+									"    const responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody).to.have.property(\"message\", \"User logged in successfully\");\r",
+									"});\r",
+									"\r",
+									"// Test 5: Check if refresh_token is a non-empty string\r",
+									"pm.test(\"refresh_token is a non-empty string\", function () {\r",
+									"    const responseBody = pm.response.json();\r",
+									"    pm.expect(responseBody).to.have.property(\"refresh_token\").that.is.a(\"string\").and.is.not.empty;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"testingpassword123\",\r\n  \"username\": \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user invalid credentials",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getRandomString(length = 8, charset = 'alphanumeric') {\r",
+									"    const sets = {\r",
+									"        alpha: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',\r",
+									"        numeric: '0123456789',\r",
+									"        alphanumeric: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',\r",
+									"        special: '!@#$%^&*()_+~`|}{[]:;?><,./-=',\r",
+									"    };\r",
+									"\r",
+									"    const chars = sets[charset] || sets.alphanumeric;\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars.charAt(Math.floor(Math.random() * chars.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"// Generate random fake credentials\r",
+									"const fakeUsername = `user_${getRandomString(5)}`;\r",
+									"const fakePassword = getRandomString(10, 'alphanumeric');\r",
+									"\r",
+									"// Set in environment or global variables (based on your preference)\r",
+									"pm.environment.set(\"invalid_username\", fakeUsername);\r",
+									"pm.environment.set(\"invalid_password\", fakePassword);\r",
+									"\r",
+									"console.log(`Generated Invalid Login -> Username: ${fakeUsername}, Password: ${fakePassword}`);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check for 400 Bad Request status\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check for 'Invalid credentials' error message\", function () {\r",
+									"    pm.response.to.have.jsonBody(\"error\", \"Invalid credentials\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"{{invalid_password}}\",\r\n  \"username\": \"{{invalid_username}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register new user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate random string helper\r",
+									"function randomString(length) {\r",
+									"    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars[Math.floor(Math.random() * chars.length)];\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"const firstName = `TestFN${randomString(5)}`;\r",
+									"const lastName = `TestLN${randomString(5)}`;\r",
+									"const username = `user_${randomString(6)}`;\r",
+									"const email = `${username}@example.com`;\r",
+									"const password = `Pass${randomString(6)}!`;\r",
+									"\r",
+									"// Set variables to be used in the request body\r",
+									"pm.environment.set(\"first_name\", firstName);\r",
+									"pm.environment.set(\"last_name\", lastName);\r",
+									"pm.environment.set(\"username\", username);\r",
+									"pm.environment.set(\"email\", email);\r",
+									"pm.environment.set(\"password\", password);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 201\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(201);\r",
+									"});\r",
+									"\r",
+									"// Test to check for the presence of _links and message in the response\r",
+									"pm.test(\"Response has the required fields _links and message\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.have.property('_links');\r",
+									"    pm.expect(responseData).to.have.property('message');\r",
+									"});\r",
+									"\r",
+									"// Test to validate the schema of the response JSON\r",
+									"pm.test(\"Validate the schema of the response JSON\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"    \r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData._links).to.be.an('object');\r",
+									"    pm.expect(responseData._links.delete).to.exist.and.to.be.a('string');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+									"});\r",
+									"\r",
+									"// Test for the presence and format of the 'delete' link in the response\r",
+									"pm.test(\"Presence and format of the 'delete' link in the response\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData._links).to.exist.and.to.be.an('object');\r",
+									"  pm.expect(responseData._links.delete).to.exist.and.to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"username\": \"{{username}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register user missing password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate random string helper\r",
+									"function randomString(length) {\r",
+									"    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars[Math.floor(Math.random() * chars.length)];\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"const firstName = `TestFN${randomString(5)}`;\r",
+									"const lastName = `TestLN${randomString(5)}`;\r",
+									"const username = `user_${randomString(6)}`;\r",
+									"const email = `${username}@example.com`;\r",
+									"const password = `Pass${randomString(6)}!`;\r",
+									"\r",
+									"// Set variables to be used in the request body\r",
+									"pm.environment.set(\"first_name\", firstName);\r",
+									"pm.environment.set(\"last_name\", lastName);\r",
+									"pm.environment.set(\"username\", username);\r",
+									"pm.environment.set(\"email\", email);\r",
+									"pm.environment.set(\"password\", password);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(500);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"username\": \"{{username}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register user missing username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Function to generate a random string helper\r",
+									"function randomString(length) {\r",
+									"    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars[Math.floor(Math.random() * chars.length)];\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"// Generate fields\r",
+									"const firstName = `TestFN${randomString(5)}`;\r",
+									"const lastName = `TestLN${randomString(5)}`;\r",
+									"const email = `${randomString(5)}@example.com`;  // Valid email format\r",
+									"const password = `Pass${randomString(6)}!`;\r",
+									"\r",
+									"// Set Postman environment variables\r",
+									"pm.environment.set(\"first_name\", firstName);\r",
+									"pm.environment.set(\"last_name\", lastName);\r",
+									"pm.environment.set(\"email\", email);\r",
+									"pm.environment.set(\"password\", password);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(500);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"user_name\": {{user_name}},\r\n  \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register user missing lastname",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate random string helper\r",
+									"function randomString(length) {\r",
+									"    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars[Math.floor(Math.random() * chars.length)];\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"const firstName = `TestFN${randomString(5)}`;\r",
+									"const lastName = `TestLN${randomString(5)}`;\r",
+									"const username = `user_${randomString(6)}`;\r",
+									"const email = `${username}@example.com`;\r",
+									"const password = `Pass${randomString(6)}!`;\r",
+									"\r",
+									"// Set variables to be used in the request body\r",
+									"pm.environment.set(\"first_name\", firstName);\r",
+									"pm.environment.set(\"last_name\", lastName);\r",
+									"pm.environment.set(\"username\", username);\r",
+									"pm.environment.set(\"email\", email);\r",
+									"pm.environment.set(\"password\", password);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(500);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"username\": \"{{username}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register user missing firstname",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate random string helper\r",
+									"function randomString(length) {\r",
+									"    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars[Math.floor(Math.random() * chars.length)];\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"const firstName = `TestFN${randomString(5)}`;\r",
+									"const lastName = `TestLN${randomString(5)}`;\r",
+									"const username = `user_${randomString(6)}`;\r",
+									"const email = `${username}@example.com`;\r",
+									"const password = `Pass${randomString(6)}!`;\r",
+									"\r",
+									"// Set variables to be used in the request body\r",
+									"pm.environment.set(\"first_name\", firstName);\r",
+									"pm.environment.set(\"last_name\", lastName);\r",
+									"pm.environment.set(\"username\", username);\r",
+									"pm.environment.set(\"email\", email);\r",
+									"pm.environment.set(\"password\", password);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(500);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"last_name\": \"{{last_name}\",\r\n  \"password\": \"{{password}}\",\r\n  \"username\": \"{{username}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register user missing email",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate random string helper\r",
+									"function randomString(length) {\r",
+									"    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';\r",
+									"    let result = '';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += chars[Math.floor(Math.random() * chars.length)];\r",
+									"    }\r",
+									"    return result;\r",
+									"}\r",
+									"\r",
+									"const firstName = `TestFN${randomString(5)}`;\r",
+									"const lastName = `TestLN${randomString(5)}`;\r",
+									"const username = `user_${randomString(6)}`;\r",
+									"const email = `${username}@example.com`;\r",
+									"const password = `Pass${randomString(6)}!`;\r",
+									"\r",
+									"// Set variables to be used in the request body\r",
+									"pm.environment.set(\"first_name\", firstName);\r",
+									"pm.environment.set(\"last_name\", lastName);\r",
+									"pm.environment.set(\"username\", username);\r",
+									"pm.environment.set(\"email\", email);\r",
+									"pm.environment.set(\"password\", password);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(500);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"first_name\": \"{{first_name}}\",\r\n  \"last_name\": \"{{last_name}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"username\": \"{{username}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify 200 status and correct response body\", function () {\r",
+									"    // Check for a 200 status code\r",
+									"    pm.response.to.have.status(200);\r",
+									"    \r",
+									"    // Check if the response contains the correct access token\r",
+									"    pm.response.to.have.jsonBody('access_token');\r",
+									"    \r",
+									"    // Check if the response contains the correct message\r",
+									"    pm.response.to.have.jsonBody('message', 'Token refreshed successfully');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refreshToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/users/refresh",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token missing refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{baseURL}}/users/refresh",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify 200 status and 'User deleted successfully' message or 500 status\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"\r",
+									"    // Check for a 200 status code and that the message is \"User deleted successfully\"\r",
+									"    if (pm.response.code === 200) {\r",
+									"        pm.response.to.have.status(200);\r",
+									"        pm.expect(responseJson).to.have.property('message').that.equals(\"User deleted successfully\");\r",
+									"    } else if (pm.response.code === 500) {\r",
+									"        // Check for a 500 status code\r",
+									"        pm.response.to.have.status(500);\r",
+									"    } else {\r",
+									"        // In case the response status is neither 200 nor 500\r",
+									"        pm.fail(`Unexpected response status: ${pm.response.code}`);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/users/:user_id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "680648639419d2051a399c7d"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user missing token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401 Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/users/:user_id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": "67fd6d948c28021fd748ad47"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API Health Check",
+			"item": [
+				{
+					"name": "Health check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rest-api-design-a17625cba941.herokuapp.com/health",
+							"protocol": "https",
+							"host": [
+								"rest-api-design-a17625cba941",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "https://rest-api-design-a17625cba941.herokuapp.com/api/v1/",
+			"type": "default"
+		},
+		{
+			"key": "accessToken",
+			"value": "---",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "---",
+			"type": "string"
+		}
+	]
+}

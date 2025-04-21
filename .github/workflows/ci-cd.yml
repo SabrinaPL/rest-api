@@ -85,7 +85,9 @@ jobs:
           node-version: '16'
         
       - name: Install Newman
-        run: npm install -g newman
+        run: curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+          npm install -g newman
         
       - name: Wait for API to be Ready
         run: |
@@ -101,10 +103,15 @@ jobs:
         
       - name: Run Postman Tests
         run: |
-          newman run tests/postman/postman_collection.json \
+          newman run tests/postman/RESTful\ MOVIE\ API.postman_collection.json \
             --environment tests/postman/postman_environment.json \
             --reporters cli,json \
             --reporter-json-export newman-report.json
+      - name: Upload Newman Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: newman-report
+          path: newman-report.json
 
   deploy:
     runs-on: ubuntu-latest

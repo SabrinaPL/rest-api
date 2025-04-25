@@ -20,8 +20,6 @@ REST API
 
 ## Description
 
-! This API is a work in progress and is not yet fully functional. The API is designed to provide a comprehensive movie database, but some features may not be fully implemented or may require further testing !
-
 This RESTful Movies API provides access to a movie database, allowing users to retrieve and manage movie, actor, and ratings information. The main features include:
 
     Movies Management: Fetch all movies, retrieve a specific movie by ID, and delete movies by ID (with JWT authentication).
@@ -101,14 +99,8 @@ Docker
     Select the imported collection from the left sidebar.
 
     Step 5:
-    Navigate to the "User" test folder and execute the "Refresh Token" request to obtain a valid JWT token. This token will be used for authentication in subsequent requests.
-
-    Step 6:
-    Navigate to the collection variables (click on RESTful MOVIE API in the left sidebar) and update the "access_token" variable with the JWT token obtained in the previous step.
-
-    Step 7:
     Navigate to Runs and click on "Run" to execute the collection.
 
 ### CI/CD Pipeline
 
-    The CI/CD pipeline is set up to automatically deploy the application to Heroku whenever changes are pushed to the main branch. The pipeline includes steps for building and deploying the application.
+    The CI/CD pipeline is set up to automatically deploy the application to Heroku whenever changes are pushed to the main branch. The pipeline includes steps for building, testing and deploying the application.

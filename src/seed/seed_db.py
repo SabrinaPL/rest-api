@@ -15,22 +15,22 @@ def is_db_seeded():
 
 # Seed the database with extracted movie data
 def seed_database(data_service, logger):
-    if is_db_seeded():
-        logger.info("✅ Database already seeded, skipping seeding process.")
-        return
-    else:
-        logger.info("🚀 Seeding the database...")
+    # if is_db_seeded():
+    #     logger.info("✅ Database already seeded, skipping seeding process.")
+    #     return
+    # else:
+    logger.info("🚀 Seeding the database...")
 
     ratings_small, movies_metadata, credits_data = extract_csv()
 
     try:
       # Save extracted movie data to the database
       logger.info("🚀 Seeding movies...")
-      data_service.save_movies(movies_metadata)
+      # data_service.save_movies(movies_metadata)
       logger.info("🚀 Seeding ratings...")
-      data_service.save_ratings(ratings_small)
+      # data_service.save_ratings(ratings_small)
       logger.info("🚀 Seeding credits...")
-      data_service.save_credits(credits_data)
+      # data_service.save_credits(credits_data)
       logger.info("🚀 Seeding gender data...")
       data_service.save_gender_data(movies_metadata, credits_data)
 

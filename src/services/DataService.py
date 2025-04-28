@@ -1,9 +1,11 @@
 import pandas as pandas
 import ast as ast
 import uuid
+import math
 from models.MovieModel import MovieMetaData
 from models.RatingsModel import Rating
 from models.CreditsModel import Credit, Cast, Crew
+from models.GenderDataModel import GenderVisualizationData
 
 # Service to save extracted movie data to the database
 class DataService:
@@ -134,7 +136,7 @@ class DataService:
             # Validate credit ID
             id = credit.get('id')
             
-            print(f"Processing credit with ID: {id}")
+            self.logger.info(f"Processing credit with ID: {id}")
             
             if not id:
                 self.logger.warning(f"Skipping credit data without ID: {credit}")
@@ -166,11 +168,82 @@ class DataService:
         movie_lookup = {}
         
         for movie in movies_metadata:
-            # Extract movie Id, title, production countries, production companies
+            movie_id = str(movie['id'])
+            if not movie_id:
+                self.logger.warning(f"Skipping movie data without ID: {movie}")
+                continue
+            movie_lookup[movie_id] = {
+                'title': self.safe_string(movie.get('title', '')),
+                # 'production_countries': self.extract_production_countries(movie.get('production_countries')),
+                # 'production_companies': self.extract_string_list(movie.get('production_companies')),
+                # 'genres': self.extract_string_list(movie.get('genres'))
+            }
             
         for credit in credits_data:
+            movie_id = str(credit['id'])
+            
+            # TODO: Log for debugging - remove later
+            self.logger.info(f"Processing credit with movie ID: {movie_id}")
+            
+            if not movie_id or movie_id not in movie_lookup:
+                self.logger.warning(f"Skipping credit data without valid movie ID: {credit}")
+                continue
+            
+            movie_info = movie_lookup[movie_id]
+            movie_title = movie_info['title']
+            # countries = movie_info['production_countries']
+            # companies = movie_info['production_companies']
+            # genres = movie_info['genres']
+            
+            cast_data = self.convert_to_list(credit.get('cast', []))
+            crew_data = self.convert_to_list(credit.get('crew', []))
+                
+            for cast in cast_data:
+                person_id = cast.get('cast_id')
+                name = cast.get('name')
+                gender = cast.get('gender')
+                department = 'Acting'
+                
+                if not person_id or not name or gender is None:
+                    self.logger.warning(f"Skipping cast data without valid person ID, name or gender: {cast}")
+                    continue
+     
+            if person_id and name and gender:
+                gender_data_doc = GenderVisualizationData(
+                    movie_id=movie_id,
+                    title=movie_title,
+                    # countries=countries,
+                    # companies=companies,
+                    # genres=genres,
+                    department=department,
+                    gender=gender,
+                    name=name
+                )
+                gender_data_doc.save()
+                 
             # Extract cast and crew data, connect to movie data, extract department, gender and name
- 
+            for crew in crew_data:
+                person_id = crew.get('id')
+                name = crew.get('name')
+                department = crew.get('department')
+                gender = crew.get('gender')
+                
+                if not person_id or not name or not department:
+                    self.logger.warning(f"Skipping crew data without valid person ID, name or department: {crew}")
+                    continue
+                
+                gender_data_doc = GenderVisualizationData(
+                    movie_id=movie_id,
+                    title=movie_title,
+                    # countries=countries,
+                    # companies=companies,
+                    # genres=genres,
+                    department=department,
+                    gender=gender,
+                    name=name
+                )
+                gender_data_doc.save()
+            
     def convert_to_dict(self, value):
         if isinstance(value, str):
             try:
@@ -205,3 +278,47 @@ class DataService:
             if not MovieMetaData.objects(movie_id=new_id).first():
                 self.logger.info(f"Generated unique ID: {new_id}")
                 return new_id
+            
+    def extract_string_list(self, value):
+        # Debugging input
+        print(f"Extracting string list from value: {value}")
+
+        # Sanitize bad input
+        if value is None or isinstance(value, float) and math.isnan(value):
+            return []
+
+        items = self.convert_to_list(value)
+        result = []
+
+        for item in items:
+            if isinstance(item, dict):
+                # Try to get a human-readable name
+                for key in ['name']:
+                    if key in item:
+                        result.append(str(item[key]))
+                        break
+            elif isinstance(item, (str, int)):
+                result.append(str(item))
+            # skip floats, None, etc.
+
+        return result
+
+    def extract_production_countries(self, value):
+        # Debugging input
+        self.logger.info(f"Extracting production countries from value: {value}")
+    
+        if value is None or isinstance(value, float) and math.isnan(value):
+            return []  # Return empty list if the input is None or NaN
+    
+        countries = self.convert_to_list(value)
+        result = []
+
+        for country in countries:
+            if isinstance(country, dict):
+                country_name = country.get('name')
+                if country_name:
+                    result.append(str(country_name))
+                    
+        self.logger.info(f"Extracted production countries: {result}")
+    
+        return result

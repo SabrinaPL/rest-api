@@ -31,6 +31,8 @@ def seed_database(data_service, logger):
       data_service.save_ratings(ratings_small)
       logger.info("🚀 Seeding credits...")
       data_service.save_credits(credits_data)
+      logger.info("🚀 Seeding gender data...")
+      data_service.save_gender_data(movies_metadata, credits_data)
 
       logger.info('✅ Database seeded successfully')
       

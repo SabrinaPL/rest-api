@@ -160,6 +160,16 @@ class DataService:
                 credit_doc.save()
             except Exception as e:
                 self.logger.error(f"Error saving credit with ID: {id}. Error: {e}")
+                
+    def save_gender_data(self, movies_metadata, credits_data):
+        # Create a movie lookup dictionary for optimization (as suggested by chatGPT)
+        movie_lookup = {}
+        
+        for movie in movies_metadata:
+            # Extract movie Id, title, production countries, production companies
+            
+        for credit in credits_data:
+            # Extract cast and crew data, connect to movie data, extract department, gender and name
  
     def convert_to_dict(self, value):
         if isinstance(value, str):

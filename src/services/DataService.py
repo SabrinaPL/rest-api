@@ -179,16 +179,16 @@ class DataService:
                     self.logger.warning(f"Skipping movie data without ID: {movie}")
                     continue
                 
-                # Preprocess release date to extract the year (as suggested by copilot)
+                # Preprocess release date (as suggested by copilot)
                 release_date = pandas.to_datetime(movie.get('release_date'), errors='coerce')
-                year = release_date if not pandas.isna(release_date) else None
+                release_date = release_date if not pandas.isna(release_date) else None
             
                 movie_lookup[movie_id] = {
                     'title': self.safe_string(movie.get('title', '')),
                     'production_countries': self.extract_string_list(movie.get('production_countries'), 'iso_3166_1'),
                     'production_companies': self.extract_string_list(movie.get('production_companies'), 'name'),
                     'genres': self.extract_string_list(movie.get('genres'), 'name'),
-                    'year': year
+                    'release_date': release_date
                 }
   
             for credit in credits_data:
@@ -205,16 +205,16 @@ class DataService:
                 countries = movie_info['production_countries']
                 companies = movie_info['production_companies']
                 genres = movie_info['genres']
-                year = movie_info['year']
+                release_date = movie_info['release_date']
             
                 # This check is added to ensure that we have valid production countries before proceeding, since production countries are essential for gender data visualization and analysis
                 if not countries:
                     self.logger.warning(f"Missing production countries for movie ID: {movie_id}. Skipping...")
                     continue
-            
+
                 cast_data = self.convert_to_list(credit.get('cast', []))
                 crew_data = self.convert_to_list(credit.get('crew', []))
-                
+ 
                 for cast in cast_data:
                     self.logger.info(f"Processing cast data: {cast}")
 
@@ -225,12 +225,11 @@ class DataService:
                     if gender is None:
                         self.logger.warning(f"Skipping cast data without valid gender: {cast}")
                         continue
-     
-                if gender:
+
                     gender_data_doc = GenderVisualizationData(
                         movie_id=movie_id,
                         title=movie_title,
-                        year=year,
+                        release_date=release_date,
                         countries=countries,
                         companies=companies,
                         genres=genres,
@@ -240,28 +239,30 @@ class DataService:
                     )
                     gender_data_doc.save()
 
-            # Extract cast and crew data, connect to movie data, extract department, gender and name
-            for crew in crew_data:
-                name = crew.get('name')
-                department = crew.get('department')
-                gender = crew.get('gender')
+                for crew in crew_data:
+                    name = crew.get('name')
+                    department = crew.get('department')
+                    gender = crew.get('gender')
                 
-                if not department:
-                    self.logger.warning(f"Skipping crew data without valid department: {crew}")
-                    continue
-                
-                gender_data_doc = GenderVisualizationData(
-                    movie_id=movie_id,
-                    title=movie_title,
-                    year=year,
-                    countries=countries,
-                    companies=companies,
-                    genres=genres,
-                    department=department,
-                    gender=gender,
-                    name=name
-                )
-                gender_data_doc.save()
+                    if not department:
+                        self.logger.warning(f"Skipping crew data without valid department: {crew}")
+                        continue
+                    if gender is None:
+                        self.logger.warning(f"Skipping cast data without valid gender: {crew}")
+                        continue
+     
+                    gender_data_doc = GenderVisualizationData(
+                        movie_id=movie_id,
+                        title=movie_title,
+                        release_date=release_date,
+                        countries=countries,
+                        companies=companies,
+                        genres=genres,
+                        department=department,
+                        gender=gender,
+                        name=name
+                    )
+                    gender_data_doc.save()
         except Exception as e:
             self.logger.error(f"Error processing crew data. Error: {e}")
             raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

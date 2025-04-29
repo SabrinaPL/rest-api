@@ -4,7 +4,7 @@ from .BaseSchema import BaseDocument
 class GenderVisualizationData(BaseDocument):
     movie_id = m_engine.StringField(required=True)
     title = m_engine.StringField(required=False)
-    year = m_engine.DateTimeField()
+    release_date = m_engine.DateTimeField()
     countries = m_engine.ListField(m_engine.StringField(), required=True) # List of production countries
     companies = m_engine.ListField(m_engine.StringField(), required=False) # List of production companies
     genres = m_engine.ListField(m_engine.StringField(), required=False)

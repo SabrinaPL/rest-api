@@ -174,9 +174,9 @@ class DataService:
                 continue
             movie_lookup[movie_id] = {
                 'title': self.safe_string(movie.get('title', '')),
-                # 'production_countries': self.extract_production_countries(movie.get('production_countries')),
-                # 'production_companies': self.extract_string_list(movie.get('production_companies')),
-                # 'genres': self.extract_string_list(movie.get('genres'))
+                'production_countries': self.extract_string_list(movie.get('production_countries'), 'iso_3166_1'),
+                'production_companies': self.extract_string_list(movie.get('production_companies'), 'name'),
+                'genres': self.extract_string_list(movie.get('genres'), 'name')
             }
             
         for credit in credits_data:
@@ -191,9 +191,19 @@ class DataService:
             
             movie_info = movie_lookup[movie_id]
             movie_title = movie_info['title']
-            # countries = movie_info['production_countries']
-            # companies = movie_info['production_companies']
-            # genres = movie_info['genres']
+            countries = movie_info['production_countries']
+            companies = movie_info['production_companies']
+            genres = movie_info['genres']
+            
+            if not countries:
+                self.logger.warning(f"Missing production countries for movie ID: {movie_id}. Skipping...")
+                continue
+            if not companies:
+                self.logger.warning(f"Missing production companies for movie ID: {movie_id}. Skipping...")
+                continue
+            if not genres:
+                self.logger.warning(f"Missing genres for movie ID: {movie_id}. Skipping...")
+                continue
             
             cast_data = self.convert_to_list(credit.get('cast', []))
             crew_data = self.convert_to_list(credit.get('crew', []))
@@ -212,9 +222,9 @@ class DataService:
                 gender_data_doc = GenderVisualizationData(
                     movie_id=movie_id,
                     title=movie_title,
-                    # countries=countries,
-                    # companies=companies,
-                    # genres=genres,
+                    countries=countries,
+                    companies=companies,
+                    genres=genres,
                     department=department,
                     gender=gender,
                     name=name
@@ -235,9 +245,9 @@ class DataService:
                 gender_data_doc = GenderVisualizationData(
                     movie_id=movie_id,
                     title=movie_title,
-                    # countries=countries,
-                    # companies=companies,
-                    # genres=genres,
+                    countries=countries,
+                    companies=companies,
+                    genres=genres,
                     department=department,
                     gender=gender,
                     name=name
@@ -279,46 +289,31 @@ class DataService:
                 self.logger.info(f"Generated unique ID: {new_id}")
                 return new_id
             
-    def extract_string_list(self, value):
-        # Debugging input
-        print(f"Extracting string list from value: {value}")
+    def extract_string_list(self, value, key='name'):
+        """
+        Extracts a list of strings from a given value. The key parameter allows customization of the extraction process.
+        """
+        self.logger.info(f"Extracting string list from value: {value} with key: {key}")
 
         # Sanitize bad input
         if value is None or isinstance(value, float) and math.isnan(value):
             return []
 
-        items = self.convert_to_list(value)
-        result = []
+        try:
+            items = self.convert_to_list(value)
+            result = []
 
-        for item in items:
-            if isinstance(item, dict):
-                # Try to get a human-readable name
-                for key in ['name']:
-                    if key in item:
-                        result.append(str(item[key]))
-                        break
-            elif isinstance(item, (str, int)):
-                result.append(str(item))
-            # skip floats, None, etc.
+            for item in items:
+                if isinstance(item, dict) and key in item:
+                    result.append(str(item[key]))
+                elif isinstance(item, (str, int)):
+                    result.append(str(item))
+                # skip floats, None, etc.
+            
+            self.logger.info(f"Extracted string list: {result}")
 
-        return result
+            return result
+        except Exception as e:
+            self.logger.error(f"Error extracting string list from value: {value}. Error: {e}")
+            return []
 
-    def extract_production_countries(self, value):
-        # Debugging input
-        self.logger.info(f"Extracting production countries from value: {value}")
-    
-        if value is None or isinstance(value, float) and math.isnan(value):
-            return []  # Return empty list if the input is None or NaN
-    
-        countries = self.convert_to_list(value)
-        result = []
-
-        for country in countries:
-            if isinstance(country, dict):
-                country_name = country.get('name')
-                if country_name:
-                    result.append(str(country_name))
-                    
-        self.logger.info(f"Extracted production countries: {result}")
-    
-        return result

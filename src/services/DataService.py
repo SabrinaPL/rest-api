@@ -6,6 +6,8 @@ from models.MovieModel import MovieMetaData
 from models.RatingsModel import Rating
 from models.CreditsModel import Credit, Cast, Crew
 from models.GenderDataModel import GenderVisualizationData
+from utils.custom_status_codes import GENERAL_CUSTOM_STATUS_CODES
+from utils.CustomErrors import CustomError
 
 # Service to save extracted movie data to the database
 class DataService:
@@ -78,7 +80,8 @@ class DataService:
                 movie_doc.save()
             except Exception as e:
                 self.logger.error(f"Error saving movie with ID: {movie_id}. Error: {e}")
-                
+                raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+            
     def save_new_movie(self, movie_data):
         self.logger.info("Saving new movie to the database")
 
@@ -109,7 +112,7 @@ class DataService:
             
         except Exception as e:
             self.logger.error(f"Error saving movie with ID: {movie_data['id']}. Error: {e}")
-            return {"message": "Internal server error"}, 500
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def save_ratings(self, ratings_small):
         for rating in ratings_small[:10000]:  # Limit to 10000 ratings for performance
@@ -130,6 +133,7 @@ class DataService:
                 rating_doc.save()
             except Exception as e:
                 self.logger.error(f"Error saving rating with user ID: {user_id} and movie ID: {movie_id}. Error: {e}")
+                raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def save_credits(self, credits_data):    
         for credit in credits_data[:10000]:  # Limit to 10000 credits for performance
@@ -162,6 +166,7 @@ class DataService:
                 credit_doc.save()
             except Exception as e:
                 self.logger.error(f"Error saving credit with ID: {id}. Error: {e}")
+                raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
                 
     def save_gender_data(self, movies_metadata, credits_data):
         # Create a movie lookup dictionary for optimization (as suggested by chatGPT)
@@ -181,8 +186,7 @@ class DataService:
             
         for credit in credits_data:
             movie_id = str(credit['id'])
-            
-            # TODO: Log for debugging - remove later
+
             self.logger.info(f"Processing credit with movie ID: {movie_id}")
             
             if not movie_id or movie_id not in movie_lookup:
@@ -195,30 +199,26 @@ class DataService:
             companies = movie_info['production_companies']
             genres = movie_info['genres']
             
+            # This check is added to ensure that we have valid production countries before proceeding, since production countries are essential for gender data visualization and analysis
             if not countries:
                 self.logger.warning(f"Missing production countries for movie ID: {movie_id}. Skipping...")
-                continue
-            if not companies:
-                self.logger.warning(f"Missing production companies for movie ID: {movie_id}. Skipping...")
-                continue
-            if not genres:
-                self.logger.warning(f"Missing genres for movie ID: {movie_id}. Skipping...")
                 continue
             
             cast_data = self.convert_to_list(credit.get('cast', []))
             crew_data = self.convert_to_list(credit.get('crew', []))
                 
             for cast in cast_data:
-                person_id = cast.get('cast_id')
+                self.logger.info(f"Processing cast data: {cast}")
+
                 name = cast.get('name')
                 gender = cast.get('gender')
                 department = 'Acting'
                 
-                if not person_id or not name or gender is None:
-                    self.logger.warning(f"Skipping cast data without valid person ID, name or gender: {cast}")
+                if gender is None:
+                    self.logger.warning(f"Skipping cast data without valid gender: {cast}")
                     continue
      
-            if person_id and name and gender:
+            if gender:
                 gender_data_doc = GenderVisualizationData(
                     movie_id=movie_id,
                     title=movie_title,
@@ -230,16 +230,15 @@ class DataService:
                     name=name
                 )
                 gender_data_doc.save()
-                 
+      
             # Extract cast and crew data, connect to movie data, extract department, gender and name
             for crew in crew_data:
-                person_id = crew.get('id')
                 name = crew.get('name')
                 department = crew.get('department')
                 gender = crew.get('gender')
                 
-                if not person_id or not name or not department:
-                    self.logger.warning(f"Skipping crew data without valid person ID, name or department: {crew}")
+                if not department:
+                    self.logger.warning(f"Skipping crew data without valid department: {crew}")
                     continue
                 
                 gender_data_doc = GenderVisualizationData(

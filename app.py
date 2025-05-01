@@ -15,16 +15,19 @@ from config.jwt import setup_jwt
 from config.mongo_uri import setup_mongo_uri
 from services.DataService import DataService
 from services.MovieQueryService import MovieQueryService
+from services.GenderDataQueryService import GenderDataQueryService
 from repositories.DBRepo import DBRepo
 from controllers.api.AccountController import AccountController
 from controllers.api.MovieController import MovieController
 from controllers.api.RatingController import RatingController
 from controllers.api.ActorController import ActorController
 from controllers.api.UserController import UserController
+from controllers.api.GenderDataController import GenderDataController
 from models.UserModel import User
 from models.MovieModel import MovieMetaData
 from models.CreditsModel import Credit
 from models.RatingsModel import Rating
+from models.GenderDataModel import GenderStatistics
 from routes.api.v1.account_router import create_account_blueprint
 from routes.api.v1.movie_router import create_movie_blueprint
 from routes.api.v1.credit_router import create_credit_blueprint
@@ -101,13 +104,16 @@ user_db_repo = DBRepo(User, logger)
 movie_db_repo = DBRepo(MovieMetaData, logger)
 credit_db_repo = DBRepo(Credit, logger)
 rating_db_repo = DBRepo(Rating, logger)
+gender_data_db_repo = DBRepo(GenderStatistics, logger)
 data_service = DataService(logger)
 movie_query_service = MovieQueryService(logger, movie_db_repo, credit_db_repo, rating_db_repo)
+gender_data_query_service = GenderDataQueryService(logger, gender_data_db_repo)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo, generate_hateoas_links)
 movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service, movie_query_service)
 user_controller = UserController(logger, user_db_repo)
 rating_controller = RatingController(logger, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, movie_query_service)
 actor_controller = ActorController(logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service, movie_db_repo)
+gender_data_controller = GenderDataController(logger, gender_data_db_repo, gender_data_query_service)
 
 # Register the main router blueprint
 app.register_blueprint(main_blueprint)

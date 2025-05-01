@@ -1,7 +1,7 @@
 import mongoengine as m_engine
 from .BaseSchema import BaseDocument
 
-class GenderVisualizationData(BaseDocument):
+class GenderStatistics(BaseDocument):
     movie_id = m_engine.StringField(required=True)
     title = m_engine.StringField(required=False)
     release_date = m_engine.DateTimeField()

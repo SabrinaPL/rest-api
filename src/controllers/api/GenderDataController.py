@@ -11,14 +11,14 @@ class GenderDataController:
                  
     def get_gender_data(self):
         """
-        Fetches all gender data from the database.
+        Fetches all gender data from the database with custom or default pagination. Can be filtered by query parameters.
         """
         try:
-        # TODO: Implement pagination and add max per page for optimization. Other options, caching? 
+        # TODO: Add caching? Add filtering by query params other than pagination
         # Get potential query parameters from the request
           query_params = request.args.to_dict()
           self.logger.info(f"Query parameters received: {query_params}")
-      
+
           # Extract and validate pagination parameters
           try:
             page = int(query_params.pop('page', 1))
@@ -35,7 +35,7 @@ class GenderDataController:
 
           if query_params:
             self.logger.info("Query parameters provided, fetching gender statistics data by filter...")
-      
+
             # Validate the query parameters
             # query = self.gender_data_query_service.build_query('movies', query_params)
             self.logger.info("Query built successfully")
@@ -83,11 +83,11 @@ class GenderDataController:
               **pagination_links
             }
           }
-      
+
           return make_response(jsonify(response), 200)
 
         except CustomError as e:
-          self.logger.error(f"Custom error occurred: {e.message}")
+          self.logger.error(f"Custom error occurred: {e}")
           raise e
         except Exception as e:
           self.logger.error(f"Error fetching gender data: {e}")

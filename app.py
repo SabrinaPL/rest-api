@@ -27,7 +27,7 @@ from models.UserModel import User
 from models.MovieModel import MovieMetaData
 from models.CreditsModel import Credit
 from models.RatingsModel import Rating
-from models.GenderDataModel import GenderVisualizationData
+from models.GenderDataModel import GenderStatistics
 from routes.api.v1.account_router import create_account_blueprint
 from routes.api.v1.movie_router import create_movie_blueprint
 from routes.api.v1.credit_router import create_credit_blueprint
@@ -105,8 +105,8 @@ user_db_repo = DBRepo(User, logger)
 movie_db_repo = DBRepo(MovieMetaData, logger)
 credit_db_repo = DBRepo(Credit, logger)
 rating_db_repo = DBRepo(Rating, logger)
-gender_data_db_repo = DBRepo(GenderVisualizationData, logger)
-data_service = DataService(logger)
+gender_data_db_repo = DBRepo(GenderStatistics, logger)
+data_service = DataService(logger, gender_data_db_repo)
 movie_query_service = MovieQueryService(logger, movie_db_repo, credit_db_repo, rating_db_repo)
 gender_data_query_service = GenderDataQueryService(logger, gender_data_db_repo)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo, generate_hateoas_links)

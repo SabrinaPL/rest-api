@@ -114,3 +114,17 @@ class DBRepo:
         except Exception as e:
             self.logger.error(f"Error finding document by query {query}: {e}")
             raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+        
+    def create_indexes(self, fields, **kwargs):
+        """
+        Create indexes on the specified fields.
+        :param fields: List of fields to index.
+        :param kwargs: Additional options for index creation.
+        """
+        try:
+            collection = self.model._get_collection()
+            collection.create_index(fields, **kwargs)
+            self.logger.info(f"Indexes created on fields: {fields}")
+        except Exception as e:
+            self.logger.error(f"Error creating indexes on fields {fields}: {e}")
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

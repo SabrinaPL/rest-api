@@ -5,14 +5,15 @@ import math
 from models.MovieModel import MovieMetaData
 from models.RatingsModel import Rating
 from models.CreditsModel import Credit, Cast, Crew
-from models.GenderDataModel import GenderVisualizationData
+from models.GenderDataModel import GenderStatistics
 from utils.custom_status_codes import GENERAL_CUSTOM_STATUS_CODES
 from utils.CustomErrors import CustomError
 
 # Service to save extracted movie data to the database
 class DataService:
-    def __init__(self, logger):
+    def __init__(self, logger, gender_data_db_repo):
         self.logger = logger
+        self.gender_data_db_repo = gender_data_db_repo
     
     def save_movies(self, movies_metadata):
         for movie in movies_metadata[:10000]:  # Limit to 10000 movies for performance
@@ -173,22 +174,23 @@ class DataService:
         movie_lookup = {}
         
         try:
-            for movie in movies_metadata:
+            for movie in movies_metadata[:100]:
                 movie_id = str(movie['id'])
                 if not movie_id:
                     self.logger.warning(f"Skipping movie data without ID: {movie}")
                     continue
-                
+
                 # Preprocess release date (as suggested by copilot)
                 release_date = pandas.to_datetime(movie.get('release_date'), errors='coerce')
                 release_date = release_date if not pandas.isna(release_date) else None
+                release_year = release_date.year if release_date else None
             
                 movie_lookup[movie_id] = {
                     'title': self.safe_string(movie.get('title', '')),
                     'production_countries': self.extract_string_list(movie.get('production_countries'), 'iso_3166_1'),
                     'production_companies': self.extract_string_list(movie.get('production_companies'), 'name'),
                     'genres': self.extract_string_list(movie.get('genres'), 'name'),
-                    'release_date': release_date
+                    'year': release_year
                 }
   
             for credit in credits_data:
@@ -205,7 +207,7 @@ class DataService:
                 countries = movie_info['production_countries']
                 companies = movie_info['production_companies']
                 genres = movie_info['genres']
-                release_date = movie_info['release_date']
+                year = movie_info['year']
             
                 # This check is added to ensure that we have valid production countries before proceeding, since production countries are essential for gender data visualization and analysis
                 if not countries:
@@ -226,10 +228,10 @@ class DataService:
                         self.logger.warning(f"Skipping cast data without valid gender: {cast}")
                         continue
 
-                    gender_data_doc = GenderVisualizationData(
+                    gender_data_doc = GenderStatistics(
                         movie_id=movie_id,
                         title=movie_title,
-                        release_date=release_date,
+                        year=year,
                         countries=countries,
                         companies=companies,
                         genres=genres,
@@ -251,10 +253,10 @@ class DataService:
                         self.logger.warning(f"Skipping cast data without valid gender: {crew}")
                         continue
      
-                    gender_data_doc = GenderVisualizationData(
+                    gender_data_doc = GenderStatistics(
                         movie_id=movie_id,
                         title=movie_title,
-                        release_date=release_date,
+                        year=year,
                         countries=countries,
                         companies=companies,
                         genres=genres,
@@ -265,6 +267,25 @@ class DataService:
                     gender_data_doc.save()
         except Exception as e:
             self.logger.error(f"Error processing crew data. Error: {e}")
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+        
+    def create_indexes(self):
+        """
+        Create indexes for database collections to improve query performance.
+        """
+        try:
+            # Index for map visualization (gender distribution by countries)
+            self.gender_data_db_repo.create_indexes([("countries", 1), ("gender", 1)])
+            
+            # Index for distribution by department, movie genres, production companies and year (independent of countries)
+            self.gender_data_db_repo.create_indexes([("department", 1), ("gender", 1)])
+            self.gender_data_db_repo.create_indexes([("genres", 1), ("gender", 1)])
+            self.gender_data_db_repo.create_indexes([("companies", 1), ("gender", 1)])
+            self.gender_data_db_repo.create_indexes([("year", 1), ("gender", 1)])
+            
+            self.logger.info("✅ Compound indexes created successfully!")
+        except Exception as e:
+            self.logger.error(f"❌ Error creating indexes: {e}")
             raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
     def convert_to_dict(self, value):
@@ -329,4 +350,5 @@ class DataService:
         except Exception as e:
             self.logger.error(f"Error extracting string list from value: {value}. Error: {e}")
             return []
+
 

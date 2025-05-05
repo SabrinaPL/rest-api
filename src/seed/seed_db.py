@@ -8,7 +8,7 @@ def is_db_seeded():
         db["movie_meta_data"].count_documents({}) > 0 and
         db["rating"].count_documents({}) > 0 and
         db["credit"].count_documents({}) > 0 and
-        db["gender_visualization_data"].count_documents({}) > 0
+        db["gender_statistics"].count_documents({}) > 0
     ):
         return True
     else:
@@ -34,8 +34,12 @@ def seed_database(data_service, logger):
       data_service.save_credits(credits_data)
       logger.info("🚀 Seeding gender data...")
       data_service.save_gender_data(movies_metadata, credits_data)
+      
+      # Create indexes
+      logger.info("🚀 Creating indexes...")
+      data_service.create_indexes()
 
-      logger.info('✅ Database seeded successfully')
+      logger.info('✅ Database seeded and indexes created successfully!')
 
     except Exception as e:
       logger.error(f"❌ Error seeding database: {e}")

@@ -49,6 +49,7 @@ class GenerateHateoasLinks:
       # Validate inputs (as suggested by copilot)
       page = int(page)
       per_page = int(per_page)
+      
       total_pages = (total + per_page - 1) // per_page  # Calculate total pages
 
       next_page = page + 1 if page < total_pages else None

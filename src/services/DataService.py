@@ -174,7 +174,7 @@ class DataService:
         movie_lookup = {}
         
         try:
-            for movie in movies_metadata[:100]:
+            for movie in movies_metadata:
                 movie_id = str(movie['id'])
                 if not movie_id:
                     self.logger.warning(f"Skipping movie data without ID: {movie}")

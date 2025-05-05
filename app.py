@@ -114,7 +114,7 @@ movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating
 user_controller = UserController(logger, user_db_repo)
 rating_controller = RatingController(logger, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, movie_query_service)
 actor_controller = ActorController(logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service, movie_db_repo)
-gender_data_controller = GenderDataController(logger, gender_data_db_repo, gender_data_query_service)
+gender_data_controller = GenderDataController(logger, gender_data_db_repo, gender_data_query_service, generate_hateoas_links)
 
 # Register the main router blueprint
 app.register_blueprint(main_blueprint)

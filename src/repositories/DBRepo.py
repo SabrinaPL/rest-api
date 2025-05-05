@@ -115,6 +115,22 @@ class DBRepo:
             self.logger.error(f"Error finding document by query {query}: {e}")
             raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
         
+    def find_by_query_with_pagination(self, query, page=1, per_page=100):
+        """
+        Find documents by a specific query with pagination.
+        :param query: The query to execute.
+        :param page: The page number (default is 1).
+        :param per_page: The number of documents per page (default is 100).
+        """
+        try:
+            # Calculate the number of documents to skip (as suggested by copilot)
+            skip_count = (page - 1) * per_page
+
+            return self.model.objects(**query).skip(skip_count).limit(per_page)
+        except Exception as e:
+            self.logger.error(f"Error finding documents by query {query} with pagination: {e}")
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+        
     def create_indexes(self, fields, **kwargs):
         """
         Create indexes on the specified fields.

@@ -27,11 +27,12 @@ from models.UserModel import User
 from models.MovieModel import MovieMetaData
 from models.CreditsModel import Credit
 from models.RatingsModel import Rating
-from models.GenderDataModel import GenderStatistics
+from models.GenderDataModel import GenderVisualizationData
 from routes.api.v1.account_router import create_account_blueprint
 from routes.api.v1.movie_router import create_movie_blueprint
 from routes.api.v1.credit_router import create_credit_blueprint
 from routes.api.v1.rating_router import create_rating_blueprint
+from routes.api.v1.gender_data_router import create_gender_statistics_blueprint
 from routes.api.v1.health import health_blueprint
 from utils.JsonWebToken import JsonWebToken
 from services.GenerateHateoasLinks import GenerateHateoasLinks
@@ -104,7 +105,7 @@ user_db_repo = DBRepo(User, logger)
 movie_db_repo = DBRepo(MovieMetaData, logger)
 credit_db_repo = DBRepo(Credit, logger)
 rating_db_repo = DBRepo(Rating, logger)
-gender_data_db_repo = DBRepo(GenderStatistics, logger)
+gender_data_db_repo = DBRepo(GenderVisualizationData, logger)
 data_service = DataService(logger)
 movie_query_service = MovieQueryService(logger, movie_db_repo, credit_db_repo, rating_db_repo)
 gender_data_query_service = GenderDataQueryService(logger, gender_data_db_repo)
@@ -127,6 +128,8 @@ credit_blueprint = create_credit_blueprint(actor_controller)
 app.register_blueprint(credit_blueprint, url_prefix='/api/v1')
 rating_blueprint = create_rating_blueprint(rating_controller)
 app.register_blueprint(rating_blueprint, url_prefix='/api/v1')
+gender_statistics_blueprint = create_gender_statistics_blueprint(gender_data_controller)
+app.register_blueprint(gender_statistics_blueprint, url_prefix='/api/v1')
 
 # Health check route
 app.register_blueprint(health_blueprint)

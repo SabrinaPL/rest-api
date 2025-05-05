@@ -56,6 +56,20 @@ MOVIE_CUSTOM_STATUS_CODES = {
   }
 }
 
+GENDER_DATA_CUSTOM_STATUS_CODES = {
+  400: {
+    "invalid_pagination": "Invalid pagination parameters",
+    "invalid_query": "Invalid query parameters",
+    "invalid_id": "Invalid movie ID format"
+  },
+  404: {
+    "gender_data_not_found": "No gender statistics data found",
+  },
+  500: {
+    "internal_error": "An unexpected error occurred while processing the request",
+  }
+}
+
 RATING_CUSTOM_STATUS_CODES = {
   400: {
     "invalid_pagination": "Invalid pagination parameters",

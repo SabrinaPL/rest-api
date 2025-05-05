@@ -5,7 +5,7 @@ import math
 from models.MovieModel import MovieMetaData
 from models.RatingsModel import Rating
 from models.CreditsModel import Credit, Cast, Crew
-from models.GenderDataModel import GenderStatistics
+from models.GenderDataModel import GenderVisualizationData
 from utils.custom_status_codes import GENERAL_CUSTOM_STATUS_CODES
 from utils.CustomErrors import CustomError
 
@@ -226,7 +226,7 @@ class DataService:
                         self.logger.warning(f"Skipping cast data without valid gender: {cast}")
                         continue
 
-                    gender_data_doc = GenderStatistics(
+                    gender_data_doc = GenderVisualizationData(
                         movie_id=movie_id,
                         title=movie_title,
                         release_date=release_date,
@@ -251,7 +251,7 @@ class DataService:
                         self.logger.warning(f"Skipping cast data without valid gender: {crew}")
                         continue
      
-                    gender_data_doc = GenderStatistics(
+                    gender_data_doc = GenderVisualizationData(
                         movie_id=movie_id,
                         title=movie_title,
                         release_date=release_date,

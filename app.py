@@ -16,6 +16,7 @@ from config.mongo_uri import setup_mongo_uri
 from services.DataService import DataService
 from services.MovieQueryService import MovieQueryService
 from services.GenderDataQueryService import GenderDataQueryService
+from services.AggregationPipelineService import AggregationPipelineService
 from repositories.DBRepo import DBRepo
 from controllers.api.AccountController import AccountController
 from controllers.api.MovieController import MovieController
@@ -108,7 +109,8 @@ rating_db_repo = DBRepo(Rating, logger)
 gender_data_db_repo = DBRepo(GenderStatistics, logger)
 data_service = DataService(logger, gender_data_db_repo)
 movie_query_service = MovieQueryService(logger, movie_db_repo, credit_db_repo, rating_db_repo)
-gender_data_query_service = GenderDataQueryService(logger, gender_data_db_repo)
+aggregation_pipeline_service = AggregationPipelineService(logger)
+gender_data_query_service = GenderDataQueryService(logger, gender_data_db_repo, aggregation_pipeline_service)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo, generate_hateoas_links)
 movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service, movie_query_service)
 user_controller = UserController(logger, user_db_repo)

@@ -1,11 +1,9 @@
-class GenderDataAggregations:
-    def __init__(self, logger, gender_data_db_repo):
+class AggregationPipelineService:
+    def __init__(self, logger):
         self.logger = logger
-        self.gender_data_db_repo = gender_data_db_repo
-    
     def gender_distribution_by_country(self):
         """
-        Aggregate gender data by country.
+        Construct aggregation pipeline for gender data by country.
         """
         self.logger.info("Aggregating gender data by country...")
         
@@ -15,7 +13,7 @@ class GenderDataAggregations:
           
           # Group by country and gender to count occurrences
           {
-            "$group:" {
+            "$group": {
               "_id": 
                 { 
                  "country": "$countries", 
@@ -25,12 +23,43 @@ class GenderDataAggregations:
             }
           },
           
+          # Regroup by country to get total counts
+          {
+            "$group": {
+              "_id": "$_id.country",
+              "total_count": { "$sum": "$count" },
+              "breakdown": {
+                "$push": {
+                  "gender": "$_id.gender",
+                  "count": "$count"
+                }
+              }
+            }
+          },
           
+          # Unwind the breakdown array to calculate percentages (as suggested by chatGPT)
+          { "$unwind": "$breakdown" },
+          
+          {
+            "$project": {
+              "country": "$_id",
+              "gender": "$breakdown.gender",
+              "count": "$breakdown.count",
+              "percentage": {
+                "$multiply": [
+                  { "$divide": ["$breakdown.count", "$total_count"] },
+                  100
+                ]
+              }
+            }
+          }
         ]
+        
+        return pipeline
         
     def gender_distribution_by_company(self):
         """
-        Aggregate gender data by company.
+        Construct aggregation pipeline for gender data by company.
         """
         self.logger.info("Aggregating gender data by company...")
         
@@ -40,7 +69,7 @@ class GenderDataAggregations:
         
     def gender_distribution_by_genre(self):
         """
-        Aggregate gender data by movie genre.
+        Construct aggregation pipeline for gender data by movie genre.
         """
         self.logger.info("Aggregating gender data by genre...")
         
@@ -50,7 +79,7 @@ class GenderDataAggregations:
         
     def gender_distribution_by_department(self):
         """
-        Aggregate gender data by department.
+        Construct aggregation pipeline for gender data by department.
         """
         self.logger.info("Aggregating gender data by department...")
         
@@ -60,7 +89,7 @@ class GenderDataAggregations:
         
     def gender_distribution_by_year(self):
         """
-        Aggregate gender data by year.
+        Construct aggregation pipeline for gender data by year.
         """
         self.logger.info("Aggregating gender data by year...")
         

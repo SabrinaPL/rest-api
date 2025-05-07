@@ -3,10 +3,10 @@ from utils.CustomErrors import CustomError
 from utils.custom_status_codes import GENDER_DATA_CUSTOM_STATUS_CODES
 
 class GenderDataController:
-    def __init__(self, logger, gender_data_db_repo, gender_data_query_service, generate_hateoas_links):
+    def __init__(self, logger, gender_data_db_repo, gender_statistics_service, generate_hateoas_links):
       self.logger = logger
       self.gender_data_db_repo = gender_data_db_repo
-      self.gender_data_query_service = gender_data_query_service
+      self.get_gender_statistics_service = gender_statistics_service
       self.generate_hateoas_links = generate_hateoas_links
                  
     def get_gender_data(self):
@@ -14,36 +14,22 @@ class GenderDataController:
         Fetches all gender data from the database with custom or default pagination. Can be filtered by query parameters.
         """
         try:
-        # TODO: Add caching? Add filtering by query params other than pagination
         # Get potential query parameters from the request
           query_params = request.args.to_dict()
           self.logger.info(f"Query parameters received: {query_params}")
 
           # Extract and validate pagination parameters
-          try:
-            page = int(query_params.pop('page', 1))
-            per_page = int(query_params.pop('per_page', 100))
+          page = int(query_params.pop('page', 1))
+          per_page = int(query_params.pop('per_page', 100))
 
-            if page < 1 or per_page < 1:
-              raise ValueError("Page and per_page must be greater than 0")
-            if per_page > 100:
-              self.logger.warning("per_page exceeds maximum limit of 100, setting to 100")
-              per_page = 100
-          except ValueError:
-            self.logger.error("Invalid pagination parameters")
+          if page < 1 or per_page < 1:
             raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[400]["invalid_pagination"], 400)
+          if per_page > 100:
+            self.logger.warning("per_page exceeds maximum limit of 100, setting to 100")
+            per_page = 100
 
-          if query_params:
-            self.logger.info("Query parameters provided, fetching gender statistics data by filter...")
-
-            # Validate the query parameters
-            # query = self.gender_data_query_service.build_query('movies', query_params)
-            self.logger.info("Query built successfully")
-          else: 
-            self.logger.info("Query parameters not provided, fetching all gender statistics...")
-            query = {}
-            
           # Fetch total records for pagination
+          query = {}  
           total_records = self.gender_data_db_repo.find_by_query(query).count()
           self.logger.info(f"Total records found: {total_records}")
         
@@ -92,3 +78,22 @@ class GenderDataController:
         except Exception as e:
           self.logger.error(f"Error fetching gender data: {e}")
           raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+
+    def get_gender_statistics_by_country(self, country):
+      """
+      Get gender statistics data by specific country.
+      """
+      try:
+        self.logger.info(f"Fetching gender statistics data for country: {country}")
+        
+        return self.get_gender_statistics_service.get_gender_statistics_by_country(country)
+        
+      except Exception as e:
+        self.logger.error(f"Error fetching data by country: {e}")
+        raise e
+      
+      
+      # TODO: implement specific endpoints for loading map (and retrieving country data) and for retrieving data based on a specific country (when country is selected on the interactive map chart in the frontend)
+        
+        
+      

@@ -144,6 +144,15 @@ class DBRepo:
         except Exception as e:
             self.logger.error(f"Error creating indexes on fields {fields}: {e}")
             raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
-        
-    # TODO: Create function for data aggregation
-    # def aggregate(self, pipeline):
+
+    def execute_aggregation_pipeline(self, pipeline):
+        """
+        Execute an aggregation pipeline on the collection.
+        :param pipeline: The aggregation pipeline to execute.
+        :return: The result of the aggregation.
+        """
+        try:
+            return self.model._get_collection().aggregate(pipeline)
+        except Exception as e:
+            self.logger.error(f"Error executing aggregation pipeline: {e}")
+            raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

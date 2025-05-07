@@ -1,13 +1,14 @@
 class AggregationPipelineService:
     def __init__(self, logger):
         self.logger = logger
+
     def gender_distribution_by_country(self):
         """
         Construct aggregation pipeline for gender data by country.
         """
-        self.logger.info("Aggregating gender data by country...")
-        
-        pipeline = [
+        self.logger.info("Retriving aggregation pipeline for gender data by production country...")
+
+        return [
           # Unwind the countries array to get individual country documents
           { "$unwind": "$countries" },
           
@@ -54,16 +55,14 @@ class AggregationPipelineService:
             }
           }
         ]
-        
-        return pipeline
-        
+ 
     def gender_distribution_by_company(self):
         """
         Construct aggregation pipeline for gender data by company.
         """
-        self.logger.info("Aggregating gender data by company...")
+        self.logger.info("Retrieving aggregetion pipeline for gender data by company...")
         
-        pipeline = [
+        return [
           
         ]
         
@@ -71,28 +70,28 @@ class AggregationPipelineService:
         """
         Construct aggregation pipeline for gender data by movie genre.
         """
-        self.logger.info("Aggregating gender data by genre...")
+        self.logger.info("Retrieving aggregation pipeline for gender data by genre...")
         
-        pipeline = [
+        return [
           
         ]
-        
+    
     def gender_distribution_by_department(self):
         """
         Construct aggregation pipeline for gender data by department.
         """
-        self.logger.info("Aggregating gender data by department...")
+        self.logger.info("Retrieving aggregation pipeline for gender data by department...")
         
-        pipeline = [
+        return [
           
         ]
-        
+    
     def gender_distribution_by_year(self):
         """
         Construct aggregation pipeline for gender data by year.
         """
-        self.logger.info("Aggregating gender data by year...")
+        self.logger.info("Retrieving aggregation pipeline for gender data by year...")
         
-        pipeline = [
+        return [
           
         ]

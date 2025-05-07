@@ -15,7 +15,7 @@ from config.jwt import setup_jwt
 from config.mongo_uri import setup_mongo_uri
 from services.DataService import DataService
 from services.MovieQueryService import MovieQueryService
-from services.GenderDataQueryService import GenderDataQueryService
+from services.GenderStatisticsService import GenderStatisticsService
 from services.AggregationPipelineService import AggregationPipelineService
 from repositories.DBRepo import DBRepo
 from controllers.api.AccountController import AccountController
@@ -110,13 +110,13 @@ gender_data_db_repo = DBRepo(GenderStatistics, logger)
 data_service = DataService(logger, gender_data_db_repo)
 movie_query_service = MovieQueryService(logger, movie_db_repo, credit_db_repo, rating_db_repo)
 aggregation_pipeline_service = AggregationPipelineService(logger)
-gender_data_query_service = GenderDataQueryService(logger, gender_data_db_repo, aggregation_pipeline_service)
+gender_statistics_service = GenderStatisticsService(logger, gender_data_db_repo, aggregation_pipeline_service)
 account_controller = AccountController(logger, json_web_token, User, user_db_repo, generate_hateoas_links)
 movie_controller = MovieController(logger, movie_db_repo, credit_db_repo, rating_db_repo, generate_hateoas_links, json_convert, data_service, movie_query_service)
 user_controller = UserController(logger, user_db_repo)
 rating_controller = RatingController(logger, rating_db_repo, movie_db_repo, json_convert, generate_hateoas_links, movie_query_service)
 actor_controller = ActorController(logger, credit_db_repo, json_convert, generate_hateoas_links, movie_query_service, movie_db_repo)
-gender_data_controller = GenderDataController(logger, gender_data_db_repo, gender_data_query_service, generate_hateoas_links)
+gender_data_controller = GenderDataController(logger, gender_data_db_repo, gender_statistics_service, generate_hateoas_links)
 
 # Register the main router blueprint
 app.register_blueprint(main_blueprint)

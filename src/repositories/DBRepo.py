@@ -144,3 +144,6 @@ class DBRepo:
         except Exception as e:
             self.logger.error(f"Error creating indexes on fields {fields}: {e}")
             raise CustomError(GENERAL_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+        
+    # TODO: Create function for data aggregation
+    # def aggregate(self, pipeline):

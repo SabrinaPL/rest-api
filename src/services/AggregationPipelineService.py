@@ -252,7 +252,7 @@ class AggregationPipelineService:
             match_stage["department"] = department
 
         return [
-          match_stage,
+          { "$match": match_stage },
           
           # Group by department and gender to count occurrences
           {
@@ -284,9 +284,8 @@ class AggregationPipelineService:
           {
             "$project": {
               "department": "$_id", 
-              "breakdown": 1,
               "total_count": 1,
-              "breakdown_with_percentage": {
+              "breakdown": {
                 "$map": {
                   "input": "$breakdown",
                   "as": "item",
@@ -323,7 +322,7 @@ class AggregationPipelineService:
             match_stage["year"] = year
         
         return [
-          match_stage,
+          { "$match": match_stage },
           
           # Group by year and gender to count occurrences
           {
@@ -354,10 +353,9 @@ class AggregationPipelineService:
           },
           {
             "$project": {
-              "department": "$_id", 
-              "breakdown": 1,
+              "year": "$_id", 
               "total_count": 1,
-              "breakdown_with_percentage": {
+              "breakdown": {
                 "$map": {
                   "input": "$breakdown",
                   "as": "item",

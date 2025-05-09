@@ -125,6 +125,76 @@ class GenderDataController:
       except Exception as e:
         self.logger.error(f"Error fetching data by production company: {e}")
         raise e
+      
+    def get_gender_statistics_by_genre(self):
+      """
+      Get gender statistics data by specific movie genre.
+      """
+      try:
+        # Get potential query parameters from the request
+        query_params = request.args.to_dict()
+        self.logger.info(f"Query parameters received: {query_params}")
+        genre = query_params.get('genre')
+        
+        if not query_params or genre is None:
+          self.logger.info("No movie genre provided, fetching gender statistics data for all movie genres")
+          
+          return self.gender_statistics_service.get_gender_statistics_by_genre()
+        
+        self.logger.info(f"Fetching gender statistics data for movie genre: {genre}")
+        
+        return self.gender_statistics_service.get_gender_statistics_by_genre(genre)
+      
+      except Exception as e:
+        self.logger.error(f"Error fetching data by movie genre: {e}")
+        raise e
+      
+    def get_gender_statistics_by_department(self):
+      """
+      Get gender statistics data by specific department.
+      """
+      try:
+        # Get potential query parameters from the request
+        query_params = request.args.to_dict()
+        self.logger.info(f"Query parameters received: {query_params}")
+        department = query_params.get('department')
+        
+        if not query_params or department is None:
+          self.logger.info("No department provided, fetching gender statistics data for all departments")
+          
+          return self.gender_statistics_service.get_gender_statistics_by_department()
+        
+        self.logger.info(f"Fetching gender statistics data for department: {department}")
+        
+        return self.gender_statistics_service.get_gender_statistics_by_department(department)
+      
+      except Exception as e:
+        self.logger.error(f"Error fetching data by department: {e}")
+        raise e
+      
+    def get_gender_statistics_by_year(self):
+      """
+      Get gender statistics data by specific production year.
+      """
+      try:
+        # Get potential query parameters from the request
+        query_params = request.args.to_dict()
+        self.logger.info(f"Query parameters received: {query_params}")
+        year = query_params.get('year')
+        
+        if not query_params or year is None:
+          self.logger.info("No production year provided, fetching gender statistics data for all production years")
+          
+          return self.gender_statistics_service.get_gender_statistics_by_year()
+        
+        self.logger.info(f"Fetching gender statistics data for production year: {year}")
+        
+        return self.gender_statistics_service.get_gender_statistics_by_year(year)
+      
+      except Exception as e:
+        self.logger.error(f"Error fetching data by production year: {e}")
+        raise e
+                          
         
         
       

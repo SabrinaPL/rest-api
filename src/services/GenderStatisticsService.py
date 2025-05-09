@@ -4,7 +4,7 @@ class GenderStatisticsService:
       self.gender_data_db_repo = gender_data_db_repo
       self.aggregation_pipeline_service = aggregation_pipeline_service
 
-    def get_gender_statistics_by_country(self):
+    def get_gender_statistics_by_country(self, country=None):
         """
         Retrieve gender statistics data by country.
         """
@@ -12,7 +12,7 @@ class GenderStatisticsService:
 
         try:
           # Call the aggregation pipeline service to get the pipeline
-          pipeline = self.aggregation_pipeline_service.gender_distribution_by_country()
+          pipeline = self.aggregation_pipeline_service.gender_distribution_by_country(country)
         
           # Execute the aggregation pipeline using the db repo
           cursor = self.gender_data_db_repo.execute_aggregation_pipeline(pipeline)

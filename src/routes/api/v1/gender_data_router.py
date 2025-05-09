@@ -12,4 +12,10 @@ def create_gender_statistics_blueprint(controller):
     def get_gender_data():
       return controller.get_gender_data()
     
+    # Get gender statistics by country
+    @gender_statistics_blueprint.route('/gender-statistics/country', methods=['GET'])
+    def get_gender_statistics_by_country():
+      return controller.get_gender_statistics_by_country()
+    
     return gender_statistics_blueprint
+  

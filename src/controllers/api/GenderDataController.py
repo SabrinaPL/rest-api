@@ -6,7 +6,7 @@ class GenderDataController:
     def __init__(self, logger, gender_data_db_repo, gender_statistics_service, generate_hateoas_links):
       self.logger = logger
       self.gender_data_db_repo = gender_data_db_repo
-      self.get_gender_statistics_service = gender_statistics_service
+      self.gender_statistics_service = gender_statistics_service
       self.generate_hateoas_links = generate_hateoas_links
                  
     def get_gender_data(self):
@@ -79,16 +79,27 @@ class GenderDataController:
           self.logger.error(f"Error fetching gender data: {e}")
           raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
 
-    def get_gender_statistics_by_country(self, country):
+    def get_gender_statistics_by_country(self):
       """
       Get gender statistics data by specific country.
       """
       try:
+        # Get potential query parameters from the request
+        query_params = request.args.to_dict()
+        self.logger.info(f"Query parameters received: {query_params}")
+        country = query_params.get('country')
+      
+        if not query_params or country is None:
+          self.logger.info("No country provided, fetching all gender statistics data for movie production countries")
+          
+          return self.gender_statistics_service.get_gender_statistics_by_country()
+        
         self.logger.info(f"Fetching gender statistics data for country: {country}")
         
-        return self.get_gender_statistics_service.get_gender_statistics_by_country(country)
+        return self.gender_statistics_service.get_gender_statistics_by_country(country)
         
       except Exception as e:
+        # TODO: add custom error handling for specific cases!
         self.logger.error(f"Error fetching data by country: {e}")
         raise e
       

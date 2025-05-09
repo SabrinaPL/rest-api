@@ -31,7 +31,7 @@ def create_gender_statistics_blueprint(controller):
     @gender_statistics_blueprint.route('/gender-statistics/department', methods=['GET'])
     def get_gender_statistics_by_department():
       return controller.get_gender_statistics_by_department()
-    
+
     # Get gender statistics by year
     @gender_statistics_blueprint.route('/gender-statistics/year', methods=['GET'])
     def get_gender_statistics_by_year():

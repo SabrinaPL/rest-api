@@ -12,10 +12,30 @@ def create_gender_statistics_blueprint(controller):
     def get_gender_data():
       return controller.get_gender_data()
     
-    # Get gender statistics by country
+    # Get gender statistics by production country
     @gender_statistics_blueprint.route('/gender-statistics/country', methods=['GET'])
     def get_gender_statistics_by_country():
       return controller.get_gender_statistics_by_country()
+    
+    # Get gender statistics by production company
+    @gender_statistics_blueprint.route('/gender-statistics/company', methods=['GET'])
+    def get_gender_statistics_by_company():
+      return controller.get_gender_statistics_by_company()
+    
+    # Get gender statistics by movie genre
+    @gender_statistics_blueprint.route('/gender-statistics/genre', methods=['GET'])
+    def get_gender_statistics_by_genre():
+      return controller.get_gender_statistics_by_genre()
+    
+    # Get gender statistics by department
+    @gender_statistics_blueprint.route('/gender-statistics/department', methods=['GET'])
+    def get_gender_statistics_by_department():
+      return controller.get_gender_statistics_by_department()
+    
+    # Get gender statistics by year
+    @gender_statistics_blueprint.route('/gender-statistics/year', methods=['GET'])
+    def get_gender_statistics_by_year():
+      return controller.get_gender_statistics_by_year()
     
     return gender_statistics_blueprint
   

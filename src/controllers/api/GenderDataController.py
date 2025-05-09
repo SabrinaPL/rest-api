@@ -103,8 +103,28 @@ class GenderDataController:
         self.logger.error(f"Error fetching data by country: {e}")
         raise e
       
+    def get_gender_statistics_by_company(self):
+      """
+      Get gender statistics data by specific production company.
+      """
+      try:
+        # Get potential query parameters from the request
+        query_params = request.args.to_dict()
+        self.logger.info(f"Query parameters received: {query_params}")
+        company = query_params.get('company')
+        
+        if not query_params or company is None:
+          self.logger.info("No production company provided, fetching all gender statistics data for movie production companies")
+            
+          return self.gender_statistics_service.get_gender_statistics_by_company()
+        
+        self.logger.info(f"Fetching gender statistics data for production company: {company}")
+        
+        return self.gender_statistics_service.get_gender_statistics_by_company(company)
       
-      # TODO: implement specific endpoints for loading map (and retrieving country data) and for retrieving data based on a specific country (when country is selected on the interactive map chart in the frontend)
+      except Exception as e:
+        self.logger.error(f"Error fetching data by production company: {e}")
+        raise e
         
         
       

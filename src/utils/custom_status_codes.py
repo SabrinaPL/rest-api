@@ -60,7 +60,6 @@ GENDER_DATA_CUSTOM_STATUS_CODES = {
   400: {
     "invalid_pagination": "Invalid pagination parameters",
     "invalid_query": "Invalid query parameters",
-    "invalid_id": "Invalid movie ID format"
   },
   404: {
     "no_gender_data_found": "No gender statistics data found",

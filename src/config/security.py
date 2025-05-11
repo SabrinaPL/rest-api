@@ -1,5 +1,6 @@
 from flask_talisman import Talisman
 from flask_limiter import Limiter
+from flask_cors import CORS
 from flask_limiter.util import get_remote_address
 
 def configure_talisman(app):
@@ -28,6 +29,20 @@ def configure_talisman(app):
         }
     )
     return talisman
+
+def configure_cors(app):
+    """
+    Configures CORS for the app.
+    Allows specific origins for development and production.
+    """
+    CORS(app, resources={
+        r"/api/*": {
+            "origins": [
+                "http://localhost:5173",  # Development
+                "https://movie-visualizer.netlify.app"  # Production
+            ]
+        }
+    })  
 
 def configure_rate_limiting(app):
     """

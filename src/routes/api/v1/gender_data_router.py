@@ -57,6 +57,35 @@ def create_gender_statistics_blueprint(controller):
       responses:
         200:
           description: Gender distribution statistics by production country fetched successfully.
+          schema:
+            type: object
+            properties:
+              country:
+                type: string
+                description: The country code for the production country.
+                example: US
+              count:
+                type: integer
+                description: The number of people (cast or crew) involved in movie production from that production country.
+                example: 275
+              percentage:
+                type: number
+                format: float
+                description: The percentage of male, female and undefined that have worked in movie productions produced in that country.
+                example: 30.37777
+              gender:
+                type: number
+                description: The gender of the person (cast or crew) in the movie production. 1 = female, 2 = male, 0 = undefined.
+                example: 2 
+        500:
+          description: An unexpected error occurred while processing the request.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message.
+                example: "An unexpected error occurred while processing the request."
       """
       return controller.get_gender_statistics_by_country()
     
@@ -81,6 +110,35 @@ def create_gender_statistics_blueprint(controller):
       responses:
         200:
           description: Gender distribution statistics by production company fetched successfully.
+          schema:
+            type: object
+            properties:
+              company:
+                type: string
+                description: The production company.
+                example: Pixar Animation Studios
+              count:
+                type: integer
+                description: The number of people (cast or crew) involved in movie production from that production company.
+                example: 205
+              percentage:
+                type: number
+                format: float
+                description: The percentage of male, female and undefined that have worked in movie productions produced in that country.
+                example: 50.37777
+              gender:
+                type: number
+                description: The gender of the person (cast or crew) in the movie production. 1 = female, 2 = male, 0 = undefined.
+                example: 2 
+        500:
+          description: An unexpected error occurred while processing the request.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message.
+                example: "An unexpected error occurred while processing the request."
       """
       return controller.get_gender_statistics_by_company()
     
@@ -105,6 +163,35 @@ def create_gender_statistics_blueprint(controller):
       responses:
         200:
           description: Gender distribution statistics by movie genre fetched successfully.
+          schema:
+            type: object
+            properties:
+              genre:
+                type: string
+                description: The movie genre.
+                example: Romance
+              count:
+                type: integer
+                description: The number of people (cast or crew) involved in movie production from that movie genre.
+                example: 401
+              percentage:
+                type: number
+                format: float
+                description: The percentage of male, female and undefined that have worked in movie productions produced in that country.
+                example: 20.4222
+              gender:
+                type: number
+                description: The gender of the person (cast or crew) in the movie production. 1 = female, 2 = male, 0 = undefined.
+                example: 1
+        500:
+          description: An unexpected error occurred while processing the request.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message.
+                example: "An unexpected error occurred while processing the request."
       """
       return controller.get_gender_statistics_by_genre()
     
@@ -128,7 +215,36 @@ def create_gender_statistics_blueprint(controller):
             type: integer
       responses:
         200:
-          description: Gender distribution statistics by department fetched successfully.
+          description: Gender distribution statistics by department (e.g. Directing, Acting).
+          schema:
+            type: object
+            properties:
+              department:
+                type: string
+                description: The department.
+                example: Directing
+              count:
+                type: integer
+                description: The number of people (cast or crew) involved in movie production from that department.
+                example: 175
+              percentage:
+                type: number
+                format: float
+                description: The percentage of male, female and undefined from that department.
+                example: 10.37777
+              gender:
+                type: number
+                description: The gender of the person (cast or crew) in the movie production. 1 = female, 2 = male, 0 = undefined.
+                example: 1 
+        500:
+          description: An unexpected error occurred while processing the request.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message.
+                example: "An unexpected error occurred while processing the request."
       """
       return controller.get_gender_statistics_by_department()
 
@@ -152,7 +268,36 @@ def create_gender_statistics_blueprint(controller):
             type: integer
       responses:
         200:
-          description: Gender distribution statistics by production country fetched successfully.
+          description: Gender distribution statistics by movie production year fetched successfully.
+          schema:
+            type: object
+            properties:
+              year:
+                type: number
+                description: The movie production year.
+                example: 1995
+              count:
+                type: integer
+                description: The number of people (cast or crew) involved in movie production from that production year.
+                example: 560
+              percentage:
+                type: number
+                format: float
+                description: The percentage of male, female and undefined that have worked in movie productions produced that year.
+                example: 20.37777
+              gender:
+                type: number
+                description: The gender of the person (cast or crew) in the movie production. 1 = female, 2 = male, 0 = undefined.
+                example: 1
+        500:
+          description: An unexpected error occurred while processing the request.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Error message.
+                example: "An unexpected error occurred while processing the request."
       """
       return controller.get_gender_statistics_by_year()
     

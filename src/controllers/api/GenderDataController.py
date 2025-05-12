@@ -97,11 +97,13 @@ class GenderDataController:
         self.logger.info(f"Fetching gender statistics data for country: {country}")
         
         return self.gender_statistics_service.get_gender_statistics_by_country(country)
-        
+      
+      except CustomError as e:
+        self.logger.error(f"Custom error occurred: {e}")
+        raise e 
       except Exception as e:
-        # TODO: add custom error handling for specific cases!
         self.logger.error(f"Error fetching data by country: {e}")
-        raise e
+        raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
       
     def get_gender_statistics_by_company(self):
       """
@@ -122,9 +124,12 @@ class GenderDataController:
         
         return self.gender_statistics_service.get_gender_statistics_by_company(company)
       
+      except CustomError as e:
+        self.logger.error(f"Custom error occurred: {e}")
+        raise e
       except Exception as e:
         self.logger.error(f"Error fetching data by production company: {e}")
-        raise e
+        raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
       
     def get_gender_statistics_by_genre(self):
       """
@@ -145,9 +150,12 @@ class GenderDataController:
         
         return self.gender_statistics_service.get_gender_statistics_by_genre(genre)
       
+      except CustomError as e:
+        self.logger.error(f"Custom error occurred: {e}")
+        raise e
       except Exception as e:
         self.logger.error(f"Error fetching data by movie genre: {e}")
-        raise e
+        raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
       
     def get_gender_statistics_by_department(self):
       """
@@ -170,7 +178,7 @@ class GenderDataController:
       
       except Exception as e:
         self.logger.error(f"Error fetching data by department: {e}")
-        raise e
+        raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
       
     def get_gender_statistics_by_year(self):
       """
@@ -191,10 +199,12 @@ class GenderDataController:
         
         return self.gender_statistics_service.get_gender_statistics_by_year(year)
       
+      except CustomError as e:
+        self.logger.error(f"Custom error occurred: {e}")
+        raise e
       except Exception as e:
         self.logger.error(f"Error fetching data by production year: {e}")
-        raise e
-                          
+        raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
         
         
       

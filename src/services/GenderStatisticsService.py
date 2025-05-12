@@ -1,3 +1,6 @@
+from utils.CustomErrors import CustomError
+from utils.custom_status_codes import GENDER_DATA_CUSTOM_STATUS_CODES
+
 class GenderStatisticsService:
     def __init__(self, logger, gender_data_db_repo, aggregation_pipeline_service):
       self.logger = logger
@@ -17,7 +20,7 @@ class GenderStatisticsService:
           return self.execute_aggregation_pipeline(pipeline)
         except Exception as e:
           self.logger.error(f"Error retrieving data by country: {e}")
-          raise e
+          raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
    
     def get_gender_statistics_by_company(self, company=None):
         """
@@ -31,8 +34,8 @@ class GenderStatisticsService:
           return self.execute_aggregation_pipeline(pipeline)
         except Exception as e:
           self.logger.error(f"Error retrieving data by production company: {e}")
-          raise e
-        
+          raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+   
     def get_gender_statistics_by_genre(self, genre=None):
         """
         Retrieve gender statistics data by movie genre.
@@ -45,8 +48,8 @@ class GenderStatisticsService:
           return self.execute_aggregation_pipeline(pipeline)
         except Exception as e:
           self.logger.error(f"Error retrieving data by genre: {e}")
-          raise e
-        
+          raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+   
     def get_gender_statistics_by_department(self, department=None):
         """
         Retrieve gender statistics data by department.
@@ -59,8 +62,8 @@ class GenderStatisticsService:
           return self.execute_aggregation_pipeline(pipeline)
         except Exception as e:
           self.logger.error(f"Error retrieving data by department: {e}")
-          raise e
-        
+          raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+   
     def get_gender_statistics_by_year(self, year=None):
         """
         Retrieve gender statistics data by year.
@@ -73,8 +76,8 @@ class GenderStatisticsService:
           return self.execute_aggregation_pipeline(pipeline)
         except Exception as e:
           self.logger.error(f"Error retrieving data by year: {e}")
-          raise e
-
+          raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+   
     def execute_aggregation_pipeline(self, pipeline):
         """
         Execute the aggregation pipeline using the database repository.
@@ -91,4 +94,5 @@ class GenderStatisticsService:
           return result
         except Exception as e:
           self.logger.error(f"Error executing aggregation pipeline: {e}")
-          raise e
+          raise CustomError(GENDER_DATA_CUSTOM_STATUS_CODES[500]["internal_error"], 500)
+   

@@ -37,9 +37,9 @@ class MovieQueryService:
       
       for field, value in query_params.items():
         if field == 'actor':
-          # Validate that actor is a valid string
-          if not isinstance(value, str):
-            self.logger.error(f"Invalid actor: {type(value)}")
+          # Validate that actor is a valid string and not numeric
+          if not isinstance(value, str) or value.isdigit():
+            self.logger.error(f"Invalid actor name: {value}")
             raise CustomError(QUERY_CUSTOM_STATUS_CODES[400]["invalid_actor_value"], 400)
 
           # Search the credit db collection for the actor

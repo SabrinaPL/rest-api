@@ -43,7 +43,7 @@ class ActorController:
         self.logger.info("Query parameters not provided, fetching all actors...")
         query = {}
 
-      credits = self.credit_db_repo.find_by_query(query)
+      credits = self.credit_db_repo.find_by_query_with_pagination(query, page=page, per_page=per_page)
 
       if not credits:
         self.logger.info("No credits found")

@@ -42,7 +42,7 @@ class RatingController:
       self.logger.info(f"Fetching ratings with query: {query}")
       
       try:
-        ratings = self.rating_db_repo.find_by_query(query)
+        ratings = self.rating_db_repo.find_by_query_with_pagination(query, page=page, per_page=per_page)
       except Exception as e:
         self.logger.error(f"Error fetching ratings: {e}")
         raise CustomError(RATING_CUSTOM_STATUS_CODES[500]["internal_error"], 500)

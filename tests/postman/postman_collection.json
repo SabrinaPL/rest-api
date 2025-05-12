@@ -968,7 +968,7 @@
 								"exec": [
 									"// List of invalid actor names\r",
 									"const actorNames = [\r",
-									"        123456789,\r",
+									"        123456789_,\r",
 									"        ':?*dfke(7)',\r",
 									"        null,\r",
 									"        undefined,\r",

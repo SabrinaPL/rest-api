@@ -20,7 +20,7 @@ REST API
 
 ## Description
 
-This RESTful Movies API provides access to a movie database, allowing users to retrieve and manage movie, actor, and ratings information. The main features include:
+This RESTful Movies API provides access to a movie database, allowing users to retrieve and manage movie, actor, and ratings information. The API also provides aggregated and computed data that can be used for data analysis and to visualize gender distribution based on movie production country, production company, movie genre, department and production year. The main features include:
 
     Movies Management: Fetch all movies, retrieve a specific movie by ID, and delete movies by ID (with JWT authentication).
 
@@ -29,6 +29,8 @@ This RESTful Movies API provides access to a movie database, allowing users to r
     HATEOAS Links: Each response includes relevant navigation links for related resources, like movies, ratings, and credits.
 
     JWT Authentication & User Management: Register and delete users, with JWT authentication for secure actions like deleting user and movies.
+
+    Data analysis: The API provides endpoints for data analysis and visualization of gender distribution based on movie production country, production company, movie genre, department and production year.
 
 The API supports pagination and structured data, ensuring easy integration with movie-related applications.
 

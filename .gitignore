@@ -2,3 +2,4 @@
 __pycache__
 logs/
 movie_data
+build-context.tar

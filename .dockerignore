@@ -1,7 +1,6 @@
-# Ignore all CSV files in movie_data
+# Ignore all CSV files in movie_data except specific ones
+!movie_data/
 movie_data/*
-
-# Except these CSV files (to decrease the image size)
 !movie_data/credits.csv
 !movie_data/movies_metadata.csv
 !movie_data/ratings_small.csv
